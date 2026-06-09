@@ -11,198 +11,120 @@
     
     <style>
         :root {
-            --bg-color: #fcf6e8; /* Arada Bet ላይ ያለው ክሬም ከለር */
+            --bg-color: #fcf6e8;
             --card-color: #f3ebd4;
-            --primary-color: #f1b82a; /* ቢጫ ቁልፎች */
+            --primary-color: #f1b82a;
             --text-dark: #2c2512;
             --text-muted: #73674c;
+            --aviator-red: #e11d48;
         }
 
         body {
             font-family: 'Poppins', Arial, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-dark);
-            margin: 0;
-            padding: 0;
-            padding-bottom: 80px; 
+            margin: 0; padding: 0;
+            padding-bottom: 80px;
             user-select: none;
+            -webkit-user-select: none;
         }
 
-        /* Header */
         .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-            background-color: var(--bg-color);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 20px; background-color: var(--bg-color);
         }
-        .logo {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--text-dark);
-        }
+        .logo { font-size: 24px; font-weight: 700; }
 
-        /* Tab Content */
-        .tab-content {
-            display: none;
-            padding: 15px;
-            animation: fadeIn 0.3s ease-in-out;
-        }
-        .tab-content.active {
-            display: block;
-        }
+        .tab-content { display: none; padding: 15px; animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: block; }
 
-        /* Balance Card */
         .balance-card {
-            background-color: var(--card-color);
-            padding: 20px;
-            border-radius: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
+            background-color: var(--card-color); padding: 20px; border-radius: 12px;
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;
         }
-        .balance-title {
-            font-size: 12px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            font-weight: 600;
-        }
-        .balance-amount {
-            font-size: 28px;
-            font-weight: 700;
-            margin-top: 5px;
-        }
+        .balance-amount { font-size: 28px; font-weight: 700; }
+        
         .btn-deposit {
-            background-color: var(--primary-color);
-            color: var(--text-dark);
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
+            background-color: var(--primary-color); color: var(--text-dark);
+            border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer;
         }
 
         /* Games Grid */
-        .games-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-top: 10px;
-        }
+        .games-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
         .game-card {
-            background-color: #222;
-            border-radius: 12px;
-            overflow: hidden;
-            position: relative;
-            aspect-ratio: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            padding: 12px;
-            color: white;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            background-size: cover;
-            background-position: center;
+            background-color: #222; border-radius: 12px; overflow: hidden; position: relative;
+            aspect-ratio: 1; display: flex; flex-direction: column; justify-content: flex-end;
+            padding: 12px; color: white; cursor: pointer; background-size: cover; background-position: center;
         }
         .game-card::after {
-            content: '';
-            position: absolute;
-            bottom: 0; left: 0; right: 0; top: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-            z-index: 1;
+            content: ''; position: absolute; bottom: 0; left: 0; right: 0; top: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); z-index: 1;
         }
-        .game-title {
-            font-weight: 600;
-            font-size: 14px;
-            z-index: 2;
+        .game-title { font-weight: 600; z-index: 2; }
+
+        /* Real Game Engine UI Styles */
+        .game-screen {
+            display: none; background: #141518; color: white; position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0; z-index: 2000; padding: 20px; box-sizing: border-box;
         }
-        .badge-hot {
-            position: absolute;
-            top: 8px; right: 8px;
-            background-color: #ff3b30;
-            color: white;
-            font-size: 10px;
-            padding: 3px 6px;
-            border-radius: 6px;
-            font-weight: bold;
-            z-index: 2;
+        .game-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .close-game { font-size: 24px; cursor: pointer; color: #fff; }
+        
+        /* Aviator Custom UI */
+        #aviator-area {
+            height: 200px; background: #1c1d22; border-radius: 10px; margin-bottom: 15px;
+            position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center;
+        }
+        #plane {
+            position: absolute; bottom: 20px; left: 20px; font-size: 30px; color: var(--aviator-red);
+            transition: all 0.1s linear; display: none; z-index: 3;
+        }
+        #multiplier-display { font-size: 45px; font-weight: 700; color: white; z-index: 4; }
+
+        /* Mines Custom UI */
+        .mines-board {
+            display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 20px 0;
+        }
+        .mine-tile {
+            aspect-ratio: 1; background: #2c2d35; border-radius: 8px; display: flex;
+            justify-content: center; align-items: center; font-size: 20px; font-weight: bold; cursor: pointer;
+        }
+        .mine-tile.revealed { background: #4cd964; }
+        .mine-tile.exploded { background: #ff3b30; }
+
+        /* Inputs & Control Buttons */
+        .bet-controls { background: #1c1d22; padding: 15px; border-radius: 10px; }
+        .game-input {
+            width: 100%; padding: 12px; background: #2c2d35; border: none;
+            color: white; border-radius: 6px; margin-bottom: 10px; font-size: 16px; box-sizing: border-box;
+        }
+        .btn-play {
+            width: 100%; padding: 14px; border: none; border-radius: 6px;
+            font-size: 16px; font-weight: bold; cursor: pointer;
         }
 
-        /* Forms */
-        .form-group {
-            background-color: var(--card-color);
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 12px;
-            text-align: left;
-        }
-        .form-group label {
-            display: block;
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-bottom: 5px;
-        }
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            box-sizing: border-box;
-            background: #fff;
-        }
+        /* Forms & System List Items */
+        .form-group { background-color: var(--card-color); padding: 15px; border-radius: 12px; margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 5px; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+        .list-item { display: flex; justify-content: space-between; padding: 15px; background-color: var(--card-color); margin-bottom: 8px; border-radius: 10px; }
 
-        /* List Items */
-        .list-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 15px;
-            background-color: var(--card-color);
-            margin-bottom: 8px;
-            border-radius: 10px;
-            font-size: 14px;
-        }
-        .list-item .label { color: var(--text-muted); }
-        .list-item .value { font-weight: 600; }
-
-        /* Navigation Bar */
+        /* Navigation */
         .nav-bar {
-            position: fixed;
-            bottom: 0; left: 0; right: 0;
-            height: 65px;
-            background-color: #fff;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-            z-index: 1000;
+            position: fixed; bottom: 0; left: 0; right: 0; height: 65px;
+            background-color: #fff; display: flex; justify-content: space-around; align-items: center;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 1000;
         }
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            color: var(--text-muted);
-            font-size: 11px;
-            cursor: pointer;
-            text-decoration: none;
-            width: 20%;
-        }
-        .nav-item i {
-            font-size: 20px;
-            margin-bottom: 4px;
-        }
-        .nav-item.active {
-            color: #d49a17;
-        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 11px; cursor: pointer; width: 20%; }
+        .nav-item i { font-size: 20px; margin-bottom: 4px; }
+        .nav-item.active { color: #d49a17; }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
+    <!-- Header -->
     <div class="header">
         <div class="logo">Z-Time Games</div>
         <div style="background: var(--card-color); padding: 5px 10px; border-radius: 20px; font-size: 12px;">
@@ -210,10 +132,11 @@
         </div>
     </div>
 
+    <!-- 1. SPORTS TAB -->
     <div id="sports" class="tab-content active">
         <div class="balance-card">
             <div>
-                <div class="balance-title">Balance</div>
+                <div style="font-size:12px; color:var(--text-muted);">Balance</div>
                 <div class="balance-amount">ETB <span class="user-balance">0.00</span></div>
             </div>
             <button class="btn-deposit" onclick="switchTab('wallet')">Deposit</button>
@@ -222,104 +145,110 @@
         <p style="color: var(--text-muted);">በቅርቡ የሚለቀቅ... በስፖርት ጨዋታዎች ላይ መወራረድ በቅርቡ ይጀምራል።</p>
     </div>
 
+    <!-- 2. GAMES TAB -->
     <div id="games" class="tab-content">
         <div class="balance-card">
             <div>
-                <div class="balance-title">Balance</div>
+                <div style="font-size:12px; color:var(--text-muted);">Balance</div>
                 <div class="balance-amount">ETB <span class="user-balance">0.00</span></div>
             </div>
             <button class="btn-deposit" onclick="switchTab('wallet')">+</button>
         </div>
-        
         <h3>Top Games</h3>
         <div class="games-grid">
-            <div class="game-card" style="background-image: url('https://images.unsplash.com/photo-1543269865-cbf427effbad?w=200');" onclick="playGame('Aviator')">
-                <span class="badge-hot">HOT</span>
-                <div class="game-title">Aviator</div>
+            <div class="game-card" style="background-image: url('https://images.unsplash.com/photo-1543269865-cbf427effbad?w=200');" onclick="openAviator()">
+                <div class="game-title">Aviator (Live)</div>
             </div>
-            <div class="game-card" style="background-image: url('https://images.unsplash.com/photo-1606167668584-78701c57f13d?w=200');" onclick="playGame('Mines')">
-                <span class="badge-hot">HOT</span>
-                <div class="game-title">Mines</div>
-            </div>
-            <div class="game-card" style="background-image: url('https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=200');" onclick="playGame('Plinko')">
-                <div class="game-title">Plinko 1000</div>
-            </div>
-            <div class="game-card" style="background-image: url('https://images.unsplash.com/photo-1596838132731-3301c3fd4317?w=200');" onclick="playGame('Fast Keno')">
-                <div class="game-title">Fast Keno</div>
+            <div class="game-card" style="background-image: url('https://images.unsplash.com/photo-1606167668584-78701c57f13d?w=200');" onclick="openMines()">
+                <div class="game-title">Mines (Live)</div>
             </div>
         </div>
     </div>
 
+    <!-- 3. INVITE TAB -->
     <div id="invite" class="tab-content">
         <div class="form-group" style="text-align: center; padding: 30px 15px;">
             <i class="fa-solid fa-gift" style="font-size: 40px; color: var(--primary-color);"></i>
             <h2>Invite & Earn</h2>
-            <p style="color: var(--text-muted);">ጓደኞችዎን ይጋብዙ እና ከሚያስገቡት ተቀማጭ (Deposit) 5% ያግኙ።</p>
+            <p style="color: var(--text-muted);">ጓደኞችዎን ይጋብዙ እና ከሚያስገቡት ተቀማጭ 5% ያግኙ።</p>
             <button class="btn-deposit" style="width: 100%;" onclick="copyInviteLink()">Invite a Friend <i class="fa-solid fa-copy"></i></button>
         </div>
     </div>
 
+    <!-- 4. WALLET TAB -->
     <div id="wallet" class="tab-content">
         <div class="balance-card" style="background-color: #2c2512; color: white;">
             <div>
-                <div class="balance-title" style="color: #aaa;">Main Balance</div>
+                <div style="color: #aaa; font-size:12px;">Main Balance</div>
                 <div class="balance-amount" style="color: var(--primary-color);">ETB <span class="user-balance">0.00</span></div>
             </div>
             <i class="fa-solid fa-wallet" style="font-size: 30px; color: var(--primary-color);"></i>
         </div>
-
         <h3>የሂሳብ ማስተላለፊያ (Manual)</h3>
         <div class="form-group">
-            <label>የአሰራር አይነት ይምረጡ</label>
+            <label>የአሰራር አይነት</label>
             <select id="tx-type" onchange="toggleWalletForm()">
                 <option value="deposit">ብር ማስገባት (Deposit)</option>
                 <option value="withdraw">ብር ማውጣት (Withdraw)</option>
             </select>
         </div>
-
         <div id="deposit-form">
-            <div class="form-group" style="background-color: #fffde7; border: 1px solid var(--primary-color);">
-                <strong>መመሪያ፦</strong> እባክዎ በቴሌብር (Telebirr) ቁጥራችን <code>0912345678</code> ላይ ገንዘብ ካስተላለፉ በኋላ የትራንዛክሽን ቁጥሩን (TxID) ከታች ያስገቡ።
-            </div>
-            <div class="form-group">
-                <label>የብር መጠን (ETB)</label>
-                <input type="number" id="dep-amount" placeholder="100">
-            </div>
-            <div class="form-group">
-                <label>የግብይት መታወቂያ ቁጥር (Transaction ID)</label>
-                <input type="text" id="dep-txid" placeholder="A1B2C3D4...">
-            </div>
+            <div class="form-group" style="background-color: #fffde7;">መመሪያ፡ በቴሌብር <code>0912345678</code> ላይ ልከው የ TxID ያስገቡ።</div>
+            <div class="form-group"><label>የብር መጠን</label><input type="number" id="dep-amount" placeholder="100"></div>
+            <div class="form-group"><label>Transaction ID</label><input type="text" id="dep-txid" placeholder="A1B2C3D..."></div>
             <button class="btn-deposit" style="width: 100%;" onclick="submitDeposit()">ዴፖዚት ጠይቅ</button>
         </div>
-
         <div id="withdraw-form" style="display: none;">
-            <div class="form-group">
-                <label>የብር መጠን (ETB)</label>
-                <input type="number" id="wit-amount" placeholder="50">
-            </div>
-            <div class="form-group">
-                <label>ብር የሚላክበት የባንክ/ቴሌብር ስልክ ቁጥር</label>
-                <input type="text" id="wit-phone" placeholder="09...">
-            </div>
+            <div class="form-group"><label>የብር መጠን</label><input type="number" id="wit-amount" placeholder="50"></div>
+            <div class="form-group"><label>የቴሌብር ስልክ ቁጥር</label><input type="text" id="wit-phone" placeholder="09..."></div>
             <button class="btn-deposit" style="width:100%; background-color:#2c2512; color:white;" onclick="submitWithdraw()">ማውጫ ጠይቅ</button>
         </div>
     </div>
 
+    <!-- 5. PROFILE TAB -->
     <div id="profile" class="tab-content">
         <div class="form-group" style="display: flex; align-items: center; gap: 15px;">
-            <div style="width: 50px; height: 50px; background: var(--primary-color); border-radius: 50%; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:20px;" id="avatar-letter">U</div>
+            <div style="width: 50px; height: 50px; background: var(--primary-color); border-radius: 50%; display:flex; align-items:center; justify-content:center; font-weight:bold;" id="avatar-letter">U</div>
             <div>
-                <div style="font-weight: 700; font-size: 18px;" id="profile-username">Username</div>
-                <div style="font-size: 12px; color: var(--text-muted);">Member ID: <span id="member-id">00000</span></div>
+                <div style="font-weight: 700;" id="profile-username">@Username</div>
+                <div style="font-size: 12px;">ID: <span id="member-id">000</span></div>
             </div>
         </div>
-
-        <h3>Account Details</h3>
-        <div class="list-item"><span class="label">Phone</span><span class="value" id="prof-phone">Not set</span></div>
-        <div class="list-item"><span class="label">Age</span><span class="value">Not set</span></div>
         <div class="list-item"><span class="label">Payout Account</span><span class="value">Telebirr</span></div>
     </div>
 
+    <!-- REAL ENGINE: AVIATOR GAME SCREEN -->
+    <div id="aviator-screen" class="game-screen">
+        <div class="game-header">
+            <h3>Aviator Game</h3>
+            <span class="close-game" onclick="closeGame('aviator-screen')">&times;</span>
+        </div>
+        <div style="margin-bottom:10px;">Balance: ETB <span class="user-balance">0.00</span></div>
+        <div id="aviator-area">
+            <div id="plane"><i class="fa-solid fa-plane"></i></div>
+            <div id="multiplier-display">1.00x</div>
+        </div>
+        <div class="bet-controls">
+            <input type="number" id="aviator-bet" class="game-input" placeholder="የውርርድ መጠን (ETB)">
+            <button id="aviator-btn" class="btn-play" style="background:var(--aviator-red); color:white;" onclick="startAviatorRound()">BET</button>
+        </div>
+    </div>
+
+    <!-- REAL ENGINE: MINES GAME SCREEN -->
+    <div id="mines-screen" class="game-screen">
+        <div class="game-header">
+            <h3>Mines Game (5x5)</h3>
+            <span class="close-game" onclick="closeGame('mines-screen')">&times;</span>
+        </div>
+        <div style="margin-bottom:10px;">Balance: ETB <span class="user-balance">0.00</span> | ቀጣይ ማባዣ: <span id="mines-next-mult">1.20x</span></div>
+        <div class="mines-board" id="mines-board"></div>
+        <div class="bet-controls">
+            <input type="number" id="mines-bet" class="game-input" placeholder="የውርርድ መጠን (ETB)">
+            <button id="mines-btn" class="btn-play" style="background:#4cd964; color:black;" onclick="startMinesGame()">START GAME</button>
+        </div>
+    </div>
+
+    <!-- Navigation Bar -->
     <div class="nav-bar">
         <div class="nav-item active" onclick="switchTab('sports', this)"><i class="fa-solid fa-building-columns"></i>Sports</div>
         <div class="nav-item" onclick="switchTab('games', this)"><i class="fa-solid fa-gamepad"></i>Games</div>
@@ -329,15 +258,18 @@
     </div>
 
     <script>
-        // የአንተን Supabase መረጃዎች እዚህ ማገናኘት
         const SUPABASE_URL = "https://pfmpsnpiafhzeunbpemm.supabase.co";
         const SUPABASE_KEY = "sb_publishable_3JXvZ4QYWC-c7wjTPLk3RA_v18uEzJN";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         const tg = window.Telegram?.WebApp;
-        let currentUserId = "8525980303"; // በብሮውዘር ለመሞከር
-        let currentUsername = "ZTime_Player";
+        let currentUserId = "8525980303"; 
+        let currentUsername = "ebla2127";
         let userBalance = 0;
+
+        // የጨዋታ ተለዋዋጮች (Game Variables)
+        let aviatorInterval, currentMultiplier = 1.0, isAviatorRunning = false, aviatorBetAmount = 0;
+        let minesList = [], revealedCount = 0, minesBetAmount = 0, isMinesActive = false;
 
         async function initUser() {
             if (tg && tg.initDataUnsafe?.user) {
@@ -345,108 +277,203 @@
                 currentUsername = tg.initDataUnsafe.user.username || "No_Name";
                 tg.expand();
             }
-
             document.getElementById('profile-username').innerText = "@" + currentUsername;
             document.getElementById('avatar-letter').innerText = currentUsername.charAt(0).toUpperCase();
             document.getElementById('member-id').innerText = currentUserId;
 
-            // የSupabase ግንኙነት
-            const { data, error } = await supabaseClient
-                .from('users')
-                .upsert({ telegram_id: currentUserId, username: currentUsername }, { onConflict: 'telegram_id' })
-                .select()
-                .single();
+            let { data } = await supabaseClient.from('users').upsert({ telegram_id: currentUserId, username: currentUsername }, { onConflict: 'telegram_id' }).select().single();
+            if (data) { userBalance = data.balance || 0; updateBalanceUI(userBalance); }
+        }
 
-            if (data) {
-                userBalance = data.balance || 0;
-                updateBalanceUI(userBalance);
-                if (data.phone) document.getElementById('prof-phone').innerText = data.phone;
-            }
+        async function updateDatabaseBalance(newBal) {
+            userBalance = newBal;
+            updateBalanceUI(userBalance);
+            await supabaseClient.from('users').update({ balance: newBal }).eq('telegram_id', currentUserId);
         }
 
         function updateBalanceUI(bal) {
-            document.querySelectorAll('.user-balance').forEach(el => {
-                el.innerText = bal.toFixed(2);
-            });
+            document.querySelectorAll('.user-balance').forEach(el => el.innerText = bal.toFixed(2));
         }
 
         function switchTab(tabId, element) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-            
             document.getElementById(tabId).classList.add('active');
-            if (element) {
-                element.classList.add('active');
-            } else {
-                const items = document.querySelectorAll('.nav-item');
-                if(tabId === 'wallet') items[3].classList.add('active');
-            }
+            if (element) element.classList.add('active');
         }
 
         function toggleWalletForm() {
             const type = document.getElementById('tx-type').value;
-            if (type === 'deposit') {
-                document.getElementById('deposit-form').style.display = 'block';
-                document.getElementById('withdraw-form').style.display = 'none';
-            } else {
-                document.getElementById('deposit-form').style.display = 'none';
-                document.getElementById('withdraw-form').style.display = 'block';
+            document.getElementById('deposit-form').style.display = type === 'deposit' ? 'block' : 'none';
+            document.getElementById('withdraw-form').style.display = type === 'withdraw' ? 'block' : 'none';
+        }
+
+        /* ================= AVIATOR GAME ENGINE ================= */
+        function openAviator() { document.getElementById('aviator-screen').style.display = 'block'; }
+        
+        function startAviatorRound() {
+            if (isAviatorRunning) {
+                // Cashout Logic
+                isAviatorRunning = false;
+                clearInterval(aviatorInterval);
+                let winAmount = aviatorBetAmount * currentMultiplier;
+                updateDatabaseBalance(userBalance + winAmount);
+                alert(`ትልቅ ድል! ETB ${winAmount.toFixed(2)} አሸነፉ (${currentMultiplier.toFixed(2)}x)`);
+                resetAviatorUI();
+                return;
+            }
+
+            let betInput = document.getElementById('aviator-bet');
+            aviatorBetAmount = parseFloat(betInput.value);
+            if (!aviatorBetAmount || aviatorBetAmount <= 0 || aviatorBetAmount > userBalance) return alert('ትክክለኛ የብር መጠን ያስገቡ!');
+
+            updateDatabaseBalance(userBalance - aviatorBetAmount);
+            isAviatorRunning = true;
+            currentMultiplier = 1.0;
+            
+            document.getElementById('plane').style.display = 'block';
+            document.getElementById('plane').style.bottom = '20px';
+            document.getElementById('plane').style.left = '20px';
+            
+            let btn = document.getElementById('aviator-btn');
+            btn.innerText = "CASH OUT";
+            btn.style.background = "#4cd964";
+
+            let crashPoint = (Math.random() * 5) + 1.1; // Random Crash Point
+
+            aviatorInterval = setInterval(() => {
+                currentMultiplier += 0.05;
+                document.getElementById('multiplier-display').innerText = currentMultiplier.toFixed(2) + "x";
+                
+                // የፕሌኑን እንቅስቃሴ ማሳያ (Animation)
+                let left = parseInt(document.getElementById('plane').style.left) + 2;
+                let bottom = parseInt(document.getElementById('plane').style.bottom) + 1;
+                if(left < 200) {
+                    document.getElementById('plane').style.left = left + "px";
+                    document.getElementById('plane').style.bottom = bottom + "px";
+                }
+
+                if (currentMultiplier >= crashPoint) {
+                    // Flew Away (ተበላን!)
+                    clearInterval(aviatorInterval);
+                    isAviatorRunning = false;
+                    document.getElementById('multiplier-display').style.color = "var(--aviator-red)";
+                    document.getElementById('multiplier-display').innerText = "FLEW AWAY";
+                    alert("አውሮፕላኑ በረረ! ተበልተዋል።");
+                    setTimeout(resetAviatorUI, 2000);
+                }
+            }, 100);
+        }
+
+        function resetAviatorUI() {
+            document.getElementById('aviator-btn').innerText = "BET";
+            document.getElementById('aviator-btn').style.background = "var(--aviator-red)";
+            document.getElementById('multiplier-display').style.color = "white";
+            document.getElementById('multiplier-display').innerText = "1.00x";
+            document.getElementById('plane').style.display = 'none';
+        }
+
+        /* ================= MINES GAME ENGINE ================= */
+        function openMines() {
+            document.getElementById('mines-screen').style.display = 'block';
+            buildMinesBoard();
+        }
+
+        function buildMinesBoard() {
+            let board = document.getElementById('mines-board');
+            board.innerHTML = '';
+            for(let i=0; i<25; i++) {
+                let tile = document.createElement('div');
+                tile.className = 'mine-tile';
+                tile.dataset.index = i;
+                tile.onclick = () => clickTile(i);
+                board.appendChild(tile);
             }
         }
 
-        async function submitDeposit() {
-            const amount = parseFloat(document.getElementById('dep-amount').value);
-            const txid = document.getElementById('dep-txid').value;
-
-            if (!amount || !txid) return alert('እባክዎ ሁሉንም ሳጥኖች ይሙሉ!');
-
-            const { error } = await supabaseClient.from('transactions').insert({
-                telegram_id: currentUserId,
-                type: 'deposit',
-                amount: amount,
-                tx_id_or_phone: txid,
-                status: 'pending'
-            });
-
-            if (!error) {
-                alert('የዴፖዚት ጥያቄዎ በተሳካ ሁኔታ ቀርቧል። አድሚኑ አረጋግጦ ሲያበቃ ብር ይጨመርልዎታል።');
-                document.getElementById('dep-amount').value = '';
-                document.getElementById('dep-txid').value = '';
-            } else {
-                alert('ስህተት ተፈጥሯል፡ እባክዎ ሰንጠረዦች በትክክል መፈጠራቸውን ያረጋግጡ።');
+        function startMinesGame() {
+            if (isMinesActive) {
+                // Cashout
+                let mult = 1 + (revealedCount * 0.25);
+                let win = minesBetAmount * mult;
+                updateDatabaseBalance(userBalance + win);
+                alert(`በአጠቃላይ ETB ${win.toFixed(2)} ወሰዱ!`);
+                endMinesGame();
+                return;
             }
+
+            minesBetAmount = parseFloat(document.getElementById('mines-bet').value);
+            if (!minesBetAmount || minesBetAmount <= 0 || minesBetAmount > userBalance) return alert('ትክክለኛ የብር መጠን ያስገቡ!');
+
+            updateDatabaseBalance(userBalance - minesBetAmount);
+            isMinesActive = true;
+            revealedCount = 0;
+
+            // 3 ቦምቦችን በዘፈቀደ መደበቅ (Set 3 random mines)
+            minesList = Array(25).fill(false);
+            let count = 0;
+            while(count < 3) {
+                let rand = Math.floor(Math.random() * 25);
+                if(!minesList[rand]) { minesList[rand] = true; count++; }
+            }
+
+            let btn = document.getElementById('mines-btn');
+            btn.innerText = "CASH OUT";
+            btn.style.background = "#f1b82a";
+            buildMinesBoard();
+            updateMinesNextMultiplier();
+        }
+
+        function clickTile(idx) {
+            if(!isMinesActive) return;
+            let tiles = document.getElementsByClassName('mine-tile');
+            let tile = tiles[idx];
+            if(tile.classList.contains('revealed') || tile.classList.contains('exploded')) return;
+
+            if(minesList[idx]) {
+                // ቦምብ ፈነዳ!
+                tile.classList.add('exploded');
+                tile.innerHTML = "💣";
+                alert("ቦምብ ፈነዳ! ተበልተዋል።");
+                endMinesGame();
+            } else {
+                // ኮከብ ተገኘ
+                tile.classList.add('revealed');
+                tile.innerHTML = "💎";
+                revealedCount++;
+                updateMinesNextMultiplier();
+            }
+        }
+
+        function updateMinesNextMultiplier() {
+            let nextMult = 1 + (revealedCount * 0.25);
+            document.getElementById('mines-next-mult').innerText = nextMult.toFixed(2) + "x";
+        }
+
+        function endMinesGame() {
+            isMinesActive = false;
+            let btn = document.getElementById('mines-btn');
+            btn.innerText = "START GAME";
+            btn.style.background = "#4cd964";
+        }
+
+        function closeGame(id) { document.getElementById(id).style.display = 'none'; }
+        
+        async function submitDeposit() {
+            let amt = parseFloat(document.getElementById('dep-amount').value);
+            let tx = document.getElementById('dep-txid').value;
+            if(!amt || !tx) return alert('ሁሉንም ይሙሉ');
+            await supabaseClient.from('transactions').insert({ telegram_id: currentUserId, type: 'deposit', amount: amt, tx_id_or_phone: tx, status: 'pending' });
+            alert('የዲፖዚት ጥያቄ ቀርቧል!');
         }
 
         async function submitWithdraw() {
-            const amount = parseFloat(document.getElementById('wit-amount').value);
-            const phone = document.getElementById('wit-phone').value;
-
-            if (!amount || !phone) return alert('እባክዎ ሁሉንም ሳጥኖች ይሙሉ!');
-            if (amount > userBalance) return alert('በቂ ሂሳብ የሎትም!');
-
-            const { error } = await supabaseClient.from('transactions').insert({
-                telegram_id: currentUserId,
-                type: 'withdrawal',
-                amount: amount,
-                tx_id_or_phone: phone,
-                status: 'pending'
-            });
-
-            if (!error) {
-                alert('የማውጫ ጥያቄዎ ቀርቧል። አድሚኑ በቴሌብርዎ ብር ልኮ ሲያበቃ ከሂሳብዎ ላይ ይቆረጣል።');
-                document.getElementById('wit-amount').value = '';
-                document.getElementById('wit-phone').value = '';
-            }
-        }
-
-        function playGame(gameName) {
-            alert(gameName + " ጨዋታ በቅርቡ ይጀምራል! በአሁኑ ሰዓት በዲዛይን ስራ ላይ ነን።");
-        }
-
-        function copyInviteLink() {
-            const link = "https://t.me/የአንተ_ቦት_username?start=" + currentUserId;
-            navigator.clipboard.writeText(link);
-            alert("የመጋበዣ ሊንክዎ ኮፒ ተደርጓል!");
+            let amt = parseFloat(document.getElementById('wit-amount').value);
+            let ph = document.getElementById('wit-phone').value;
+            if(!amt || !ph) return alert('ሁሉንም ይሙሉ');
+            if(amt > userBalance) return alert('በቂ ሂሳብ የሎትም');
+            await supabaseClient.from('transactions').insert({ telegram_id: currentUserId, type: 'withdrawal', amount: amt, tx_id_or_phone: ph, status: 'pending' });
+            alert('የማውጫ ጥያቄ ቀርቧል!');
         }
 
         initUser();
