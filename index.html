@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Z-Time Games</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-color: #fcf6e8; /* Arada Bet ላይ ያለው ክሬም ከለር */
+            --card-color: #f3ebd4;
+            --primary-color: #f1b82a; /* ቢጫ ቁልፎች */
+            --text-dark: #2c2512;
+            --text-muted: #73674c;
+        }
+
+        body {
+            font-family: 'Poppins', Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 0;
+            padding-bottom: 80px; 
+            user-select: none;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: var(--bg-color);
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            padding: 15px;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Balance Card */
+        .balance-card {
+            background-color: var(--card-color);
+            padding: 20px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .balance-title {
+            font-size: 12px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        .balance-amount {
+            font-size: 28px;
+            font-weight: 700;
+            margin-top: 5px;
+        }
+        .btn-deposit {
+            background-color: var(--primary-color);
+            color: var(--text-dark);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Games Grid */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 10px;
+        }
+        .game-card {
+            background-color: #222;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 12px;
+            color: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            background-size: cover;
+            background-position: center;
+        }
+        .game-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0; top: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            z-index: 1;
+        }
+        .game-title {
+            font-weight: 600;
+            font-size: 14px;
+            z-index: 2;
+        }
+        .badge-hot {
+            position: absolute;
+            top: 8px; right: 8px;
+            background-color: #ff3b30;
+            color: white;
+            font-size: 10px;
+            padding: 3px 6px;
+            border-radius: 6px;
+            font-weight: bold;
+            z-index: 2;
+        }
+
+        /* Forms */
+        .form-group {
+            background-color: var(--card-color);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+            background: #fff;
+        }
+
+        /* List Items */
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            background-color: var(--card-color);
+            margin-bottom: 8px;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+        .list-item .label { color: var(--text-muted); }
+        .list-item .value { font-weight: 600; }
+
+        /* Navigation Bar */
+        .nav-bar {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            height: 65px;
+            background-color: #fff;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            z-index: 1000;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-muted);
+            font-size: 11px;
+            cursor: pointer;
+            text-decoration: none;
+            width: 20%;
+        }
+        .nav-item i {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+        .nav-item.active {
+            color: #d49a17;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="logo">Z-Time Games</div>
+        <div style="background: var(--card-color); padding: 5px 10px; border-radius: 20px; font-size: 12px;">
+            <i class="fa-solid fa-circle" style="color: #4cd964;"></i> Active Player
+        </div>
+    </div>
+
+    <div id="sports" class="tab-content active">
+        <div class="balance-card">
+            <div>
+                <div class="balance-title">Balance</div>
+                <div class="balance-amount">ETB <span class="user-balance">0.00</span></div>
+            </div>
+            <button class="btn-deposit" onclick="switchTab('wallet')">Deposit</button>
+        </div>
+        <h3>Live Sports Betting</h3>
+        <p style="color: var(--text-muted);">በቅርቡ የሚለቀቅ... በስፖርት ጨዋታዎች ላይ መወራረድ በቅርቡ ይጀምራል።</p>
+    </div>
+
+    <div id="games" class="tab-content">
+        <div class="balance-card">
+            <div>
+                <div class="balance-title">Balance</div>
+                <div class="balance-amount">ETB <span class="user-balance">0.00</span></div>
+            </div>
+            <button class="btn-deposit" onclick="switchTab('wallet')">+</button>
+        </div>
+        
+        <h3>Top Games</h3>
+        <div class="games-grid">
+            <div class="game-card" style="background-image: url('https://images.unsplash.com/photo-1543269865-cbf427effbad?w=200');" onclick="playGame('Aviator')">
+                <span class="badge-hot">HOT</span>
+                <div class="game-title">Aviator</div>
+            </div>
+            <div class="game-card" style="background-image: url('https://images.unsplash.com/photo-1606167668584-78701c57f13d?w=200');" onclick="playGame('Mines')">
+                <span class="badge-hot">HOT</span>
+                <div class="game-title">Mines</div>
+            </div>
+            <div class="game-card" style="background-image: url('https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=200');" onclick="playGame('Plinko')">
+                <div class="game-title">Plinko 1000</div>
+            </div>
+            <div class="game-card" style="background-image: url('https://images.unsplash.com/photo-1596838132731-3301c3fd4317?w=200');" onclick="playGame('Fast Keno')">
+                <div class="game-title">Fast Keno</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="invite" class="tab-content">
+        <div class="form-group" style="text-align: center; padding: 30px 15px;">
+            <i class="fa-solid fa-gift" style="font-size: 40px; color: var(--primary-color);"></i>
+            <h2>Invite & Earn</h2>
+            <p style="color: var(--text-muted);">ጓደኞችዎን ይጋብዙ እና ከሚያስገቡት ተቀማጭ (Deposit) 5% ያግኙ።</p>
+            <button class="btn-deposit" style="width: 100%;" onclick="copyInviteLink()">Invite a Friend <i class="fa-solid fa-copy"></i></button>
+        </div>
+    </div>
+
+    <div id="wallet" class="tab-content">
+        <div class="balance-card" style="background-color: #2c2512; color: white;">
+            <div>
+                <div class="balance-title" style="color: #aaa;">Main Balance</div>
+                <div class="balance-amount" style="color: var(--primary-color);">ETB <span class="user-balance">0.00</span></div>
+            </div>
+            <i class="fa-solid fa-wallet" style="font-size: 30px; color: var(--primary-color);"></i>
+        </div>
+
+        <h3>የሂሳብ ማስተላለፊያ (Manual)</h3>
+        <div class="form-group">
+            <label>የአሰራር አይነት ይምረጡ</label>
+            <select id="tx-type" onchange="toggleWalletForm()">
+                <option value="deposit">ብር ማስገባት (Deposit)</option>
+                <option value="withdraw">ብር ማውጣት (Withdraw)</option>
+            </select>
+        </div>
+
+        <div id="deposit-form">
+            <div class="form-group" style="background-color: #fffde7; border: 1px solid var(--primary-color);">
+                <strong>መመሪያ፦</strong> እባክዎ በቴሌብር (Telebirr) ቁጥራችን <code>0912345678</code> ላይ ገንዘብ ካስተላለፉ በኋላ የትራንዛክሽን ቁጥሩን (TxID) ከታች ያስገቡ።
+            </div>
+            <div class="form-group">
+                <label>የብር መጠን (ETB)</label>
+                <input type="number" id="dep-amount" placeholder="100">
+            </div>
+            <div class="form-group">
+                <label>የግብይት መታወቂያ ቁጥር (Transaction ID)</label>
+                <input type="text" id="dep-txid" placeholder="A1B2C3D4...">
+            </div>
+            <button class="btn-deposit" style="width: 100%;" onclick="submitDeposit()">ዴፖዚት ጠይቅ</button>
+        </div>
+
+        <div id="withdraw-form" style="display: none;">
+            <div class="form-group">
+                <label>የብር መጠን (ETB)</label>
+                <input type="number" id="wit-amount" placeholder="50">
+            </div>
+            <div class="form-group">
+                <label>ብር የሚላክበት የባንክ/ቴሌብር ስልክ ቁጥር</label>
+                <input type="text" id="wit-phone" placeholder="09...">
+            </div>
+            <button class="btn-deposit" style="width:100%; background-color:#2c2512; color:white;" onclick="submitWithdraw()">ማውጫ ጠይቅ</button>
+        </div>
+    </div>
+
+    <div id="profile" class="tab-content">
+        <div class="form-group" style="display: flex; align-items: center; gap: 15px;">
+            <div style="width: 50px; height: 50px; background: var(--primary-color); border-radius: 50%; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:20px;" id="avatar-letter">U</div>
+            <div>
+                <div style="font-weight: 700; font-size: 18px;" id="profile-username">Username</div>
+                <div style="font-size: 12px; color: var(--text-muted);">Member ID: <span id="member-id">00000</span></div>
+            </div>
+        </div>
+
+        <h3>Account Details</h3>
+        <div class="list-item"><span class="label">Phone</span><span class="value" id="prof-phone">Not set</span></div>
+        <div class="list-item"><span class="label">Age</span><span class="value">Not set</span></div>
+        <div class="list-item"><span class="label">Payout Account</span><span class="value">Telebirr</span></div>
+    </div>
+
+    <div class="nav-bar">
+        <div class="nav-item active" onclick="switchTab('sports', this)"><i class="fa-solid fa-building-columns"></i>Sports</div>
+        <div class="nav-item" onclick="switchTab('games', this)"><i class="fa-solid fa-gamepad"></i>Games</div>
+        <div class="nav-item" onclick="switchTab('invite', this)"><i class="fa-solid fa-gift"></i>Invite</div>
+        <div class="nav-item" onclick="switchTab('wallet', this)"><i class="fa-solid fa-wallet"></i>Wallet</div>
+        <div class="nav-item" onclick="switchTab('profile', this)"><i class="fa-solid fa-user"></i>Profile</div>
+    </div>
+
+    <script>
+        // የአንተን Supabase መረጃዎች እዚህ ማገናኘት
+        const SUPABASE_URL = "https://pfmpsnpiafhzeunbpemm.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_3JXvZ4QYWC-c7wjTPLk3RA_v18uEzJN";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        const tg = window.Telegram?.WebApp;
+        let currentUserId = "8525980303"; // በብሮውዘር ለመሞከር
+        let currentUsername = "ZTime_Player";
+        let userBalance = 0;
+
+        async function initUser() {
+            if (tg && tg.initDataUnsafe?.user) {
+                currentUserId = tg.initDataUnsafe.user.id.toString();
+                currentUsername = tg.initDataUnsafe.user.username || "No_Name";
+                tg.expand();
+            }
+
+            document.getElementById('profile-username').innerText = "@" + currentUsername;
+            document.getElementById('avatar-letter').innerText = currentUsername.charAt(0).toUpperCase();
+            document.getElementById('member-id').innerText = currentUserId;
+
+            // የSupabase ግንኙነት
+            const { data, error } = await supabaseClient
+                .from('users')
+                .upsert({ telegram_id: currentUserId, username: currentUsername }, { onConflict: 'telegram_id' })
+                .select()
+                .single();
+
+            if (data) {
+                userBalance = data.balance || 0;
+                updateBalanceUI(userBalance);
+                if (data.phone) document.getElementById('prof-phone').innerText = data.phone;
+            }
+        }
+
+        function updateBalanceUI(bal) {
+            document.querySelectorAll('.user-balance').forEach(el => {
+                el.innerText = bal.toFixed(2);
+            });
+        }
+
+        function switchTab(tabId, element) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            if (element) {
+                element.classList.add('active');
+            } else {
+                const items = document.querySelectorAll('.nav-item');
+                if(tabId === 'wallet') items[3].classList.add('active');
+            }
+        }
+
+        function toggleWalletForm() {
+            const type = document.getElementById('tx-type').value;
+            if (type === 'deposit') {
+                document.getElementById('deposit-form').style.display = 'block';
+                document.getElementById('withdraw-form').style.display = 'none';
+            } else {
+                document.getElementById('deposit-form').style.display = 'none';
+                document.getElementById('withdraw-form').style.display = 'block';
+            }
+        }
+
+        async function submitDeposit() {
+            const amount = parseFloat(document.getElementById('dep-amount').value);
+            const txid = document.getElementById('dep-txid').value;
+
+            if (!amount || !txid) return alert('እባክዎ ሁሉንም ሳጥኖች ይሙሉ!');
+
+            const { error } = await supabaseClient.from('transactions').insert({
+                telegram_id: currentUserId,
+                type: 'deposit',
+                amount: amount,
+                tx_id_or_phone: txid,
+                status: 'pending'
+            });
+
+            if (!error) {
+                alert('የዴፖዚት ጥያቄዎ በተሳካ ሁኔታ ቀርቧል። አድሚኑ አረጋግጦ ሲያበቃ ብር ይጨመርልዎታል።');
+                document.getElementById('dep-amount').value = '';
+                document.getElementById('dep-txid').value = '';
+            } else {
+                alert('ስህተት ተፈጥሯል፡ እባክዎ ሰንጠረዦች በትክክል መፈጠራቸውን ያረጋግጡ።');
+            }
+        }
+
+        async function submitWithdraw() {
+            const amount = parseFloat(document.getElementById('wit-amount').value);
+            const phone = document.getElementById('wit-phone').value;
+
+            if (!amount || !phone) return alert('እባክዎ ሁሉንም ሳጥኖች ይሙሉ!');
+            if (amount > userBalance) return alert('በቂ ሂሳብ የሎትም!');
+
+            const { error } = await supabaseClient.from('transactions').insert({
+                telegram_id: currentUserId,
+                type: 'withdrawal',
+                amount: amount,
+                tx_id_or_phone: phone,
+                status: 'pending'
+            });
+
+            if (!error) {
+                alert('የማውጫ ጥያቄዎ ቀርቧል። አድሚኑ በቴሌብርዎ ብር ልኮ ሲያበቃ ከሂሳብዎ ላይ ይቆረጣል።');
+                document.getElementById('wit-amount').value = '';
+                document.getElementById('wit-phone').value = '';
+            }
+        }
+
+        function playGame(gameName) {
+            alert(gameName + " ጨዋታ በቅርቡ ይጀምራል! በአሁኑ ሰዓት በዲዛይን ስራ ላይ ነን።");
+        }
+
+        function copyInviteLink() {
+            const link = "https://t.me/የአንተ_ቦት_username?start=" + currentUserId;
+            navigator.clipboard.writeText(link);
+            alert("የመጋበዣ ሊንክዎ ኮፒ ተደርጓል!");
+        }
+
+        initUser();
+    </script>
+</body>
+</html>
