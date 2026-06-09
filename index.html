@@ -4,16 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Z-Time Games</title>
+    <!-- Telegram & Supabase SDKs -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Google Font & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
-            --bg-color: #fcf6e8;
+            --bg-color: #fcf6e8; /* Arada Bet Cream Theme */
             --card-color: #f3ebd4;
-            --primary-color: #f1b82a;
+            --primary-color: #f1b82a; /* Yellow Buttons */
             --text-dark: #2c2512;
             --text-muted: #73674c;
             --aviator-red: #e11d48;
@@ -29,87 +31,81 @@
             -webkit-user-select: none;
         }
 
+        /* Header Style */
         .header {
             display: flex; justify-content: space-between; align-items: center;
             padding: 15px 20px; background-color: var(--bg-color);
         }
-        .logo { font-size: 24px; font-weight: 700; }
+        .logo { font-size: 24px; font-weight: 700; color: var(--text-dark); }
 
-        .tab-content { display: none; padding: 15px; animation: fadeIn 0.3s ease; }
+        /* Active Tab Content */
+        .tab-content { display: none; padding: 15px; animation: fadeIn 0.3s ease-in-out; }
         .tab-content.active { display: block; }
 
+        /* Cards and Layouts */
         .balance-card {
             background-color: var(--card-color); padding: 20px; border-radius: 12px;
             display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;
         }
-        .balance-amount { font-size: 28px; font-weight: 700; }
+        .balance-title { font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
+        .balance-amount { font-size: 28px; font-weight: 700; margin-top: 5px; }
         
         .btn-deposit {
             background-color: var(--primary-color); color: var(--text-dark);
             border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer;
         }
 
-        /* Games Grid */
-        .games-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        /* 10 Games Grid */
+        .games-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 10px; }
         .game-card {
             background-color: #222; border-radius: 12px; overflow: hidden; position: relative;
-            aspect-ratio: 1; display: flex; flex-direction: column; justify-content: flex-end;
-            padding: 12px; color: white; cursor: pointer; background-size: cover; background-position: center;
+            aspect-ratio: 1.1; display: flex; flex-direction: column; justify-content: flex-end;
+            padding: 12px; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            background-size: cover; background-position: center; cursor: pointer;
         }
         .game-card::after {
             content: ''; position: absolute; bottom: 0; left: 0; right: 0; top: 0;
             background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); z-index: 1;
         }
-        .game-title { font-weight: 600; z-index: 2; }
+        .game-title { font-weight: 600; font-size: 13px; z-index: 2; }
+        .badge-hot { position: absolute; top: 8px; right: 8px; background-color: #ff3b30; color: white; font-size: 9px; padding: 2px 5px; border-radius: 4px; font-weight: bold; z-index: 2; }
 
-        /* Real Game Engine UI Styles */
-        .game-screen {
-            display: none; background: #141518; color: white; position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0; z-index: 2000; padding: 20px; box-sizing: border-box;
+        /* REAL GAME OVERLAYS (Popups) */
+        .game-popup {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: #141518; color: white; z-index: 2000; padding: 20px; box-sizing: border-box;
+            overflow-y: auto;
         }
-        .game-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .close-game { font-size: 24px; cursor: pointer; color: #fff; }
-        
-        /* Aviator Custom UI */
-        #aviator-area {
-            height: 200px; background: #1c1d22; border-radius: 10px; margin-bottom: 15px;
+        .game-popup-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #2c2d35; padding-bottom: 10px; }
+        .close-popup { font-size: 28px; cursor: pointer; color: #fff; }
+
+        /* Aviator Arena */
+        #aviator-arena {
+            height: 180px; background: #1c1d22; border-radius: 10px; margin-bottom: 15px;
             position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center;
         }
-        #plane {
-            position: absolute; bottom: 20px; left: 20px; font-size: 30px; color: var(--aviator-red);
-            transition: all 0.1s linear; display: none; z-index: 3;
-        }
-        #multiplier-display { font-size: 45px; font-weight: 700; color: white; z-index: 4; }
+        #aviator-plane { position: absolute; bottom: 20px; left: 20px; font-size: 26px; color: var(--aviator-red); display: none; z-index: 3; }
+        #aviator-mult { font-size: 40px; font-weight: 700; z-index: 4; }
 
-        /* Mines Custom UI */
-        .mines-board {
-            display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 20px 0;
-        }
-        .mine-tile {
-            aspect-ratio: 1; background: #2c2d35; border-radius: 8px; display: flex;
-            justify-content: center; align-items: center; font-size: 20px; font-weight: bold; cursor: pointer;
-        }
-        .mine-tile.revealed { background: #4cd964; }
-        .mine-tile.exploded { background: #ff3b30; }
+        /* Mines Arena */
+        .mines-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin: 15px 0; }
+        .mine-node { aspect-ratio: 1; background: #2c2d35; border-radius: 6px; display: flex; justify-content: center; align-items: center; font-size: 18px; font-weight: bold; cursor: pointer; }
+        .mine-node.safe { background: #4cd964; color: black; }
+        .mine-node.boom { background: #ff3b30; }
 
-        /* Inputs & Control Buttons */
-        .bet-controls { background: #1c1d22; padding: 15px; border-radius: 10px; }
-        .game-input {
-            width: 100%; padding: 12px; background: #2c2d35; border: none;
-            color: white; border-radius: 6px; margin-bottom: 10px; font-size: 16px; box-sizing: border-box;
-        }
-        .btn-play {
-            width: 100%; padding: 14px; border: none; border-radius: 6px;
-            font-size: 16px; font-weight: bold; cursor: pointer;
-        }
-
-        /* Forms & System List Items */
-        .form-group { background-color: var(--card-color); padding: 15px; border-radius: 12px; margin-bottom: 12px; }
+        /* Forms & Inputs */
+        .form-group { background-color: var(--card-color); padding: 15px; border-radius: 12px; margin-bottom: 12px; text-align: left; }
         .form-group label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 5px; }
-        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
-        .list-item { display: flex; justify-content: space-between; padding: 15px; background-color: var(--card-color); margin-bottom: 8px; border-radius: 10px; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; background: #fff; }
+        .list-item { display: flex; justify-content: space-between; padding: 15px; background-color: var(--card-color); margin-bottom: 8px; border-radius: 10px; font-size: 14px; }
+        .list-item .label { color: var(--text-muted); }
+        .list-item .value { font-weight: 600; }
 
-        /* Navigation */
+        .control-panel { background: #1c1d22; padding: 15px; border-radius: 10px; }
+        .bet-input { width: 100%; padding: 12px; background: #2c2d35; border: none; color: white; border-radius: 6px; margin-bottom: 10px; font-size: 16px; box-sizing: border-box; }
+        .action-btn { width: 100%; padding: 12px; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; }
+
+        /* Bottom Nav */
         .nav-bar {
             position: fixed; bottom: 0; left: 0; right: 0; height: 65px;
             background-color: #fff; display: flex; justify-content: space-around; align-items: center;
@@ -136,7 +132,7 @@
     <div id="sports" class="tab-content active">
         <div class="balance-card">
             <div>
-                <div style="font-size:12px; color:var(--text-muted);">Balance</div>
+                <div class="balance-title">Balance</div>
                 <div class="balance-amount">ETB <span class="user-balance">0.00</span></div>
             </div>
             <button class="btn-deposit" onclick="switchTab('wallet')">Deposit</button>
@@ -145,32 +141,69 @@
         <p style="color: var(--text-muted);">በቅርቡ የሚለቀቅ... በስፖርት ጨዋታዎች ላይ መወራረድ በቅርቡ ይጀምራል።</p>
     </div>
 
-    <!-- 2. GAMES TAB -->
+    <!-- 2. GAMES TAB (10 Games List) -->
     <div id="games" class="tab-content">
         <div class="balance-card">
             <div>
-                <div style="font-size:12px; color:var(--text-muted);">Balance</div>
+                <div class="balance-title">Balance</div>
                 <div class="balance-amount">ETB <span class="user-balance">0.00</span></div>
             </div>
             <button class="btn-deposit" onclick="switchTab('wallet')">+</button>
         </div>
-        <h3>Top Games</h3>
+        
+        <h3>Top 10 Games</h3>
         <div class="games-grid">
-            <div class="game-card" style="background-image: url('https://images.unsplash.com/photo-1543269865-cbf427effbad?w=200');" onclick="openAviator()">
-                <div class="game-title">Aviator (Live)</div>
+            <!-- 1. Aviator -->
+            <div class="game-card" style="background-image: url('https://images.unsplash.com/photo-1543269865-cbf427effbad?w=200');" onclick="launchAviator()">
+                <span class="badge-hot">LIVE</span>
+                <div class="game-title">Aviator</div>
             </div>
-            <div class="game-card" style="background-image: url('https://images.unsplash.com/photo-1606167668584-78701c57f13d?w=200');" onclick="openMines()">
-                <div class="game-title">Mines (Live)</div>
+            <!-- 2. Mines -->
+            <div class="game-card" style="background-image: url('https://images.unsplash.com/photo-1606167668584-78701c57f13d?w=200');" onclick="launchMines()">
+                <span class="badge-hot">LIVE</span>
+                <div class="game-title">Mines</div>
+            </div>
+            <!-- 3. Plinko -->
+            <div class="game-card" style="background-image: url('https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=200');" onclick="launchGenericGame('Plinko 1000')">
+                <div class="game-title">Plinko 1000</div>
+            </div>
+            <!-- 4. Fast Keno -->
+            <div class="game-card" style="background-image: url('https://images.unsplash.com/photo-1596838132731-3301c3fd4317?w=200');" onclick="launchGenericGame('Fast Keno')">
+                <div class="game-title">Fast Keno</div>
+            </div>
+            <!-- 5. Dice Roller -->
+            <div class="game-card" style="background-image: url('https://images.unsplash.com/photo-1522069169874-c58ec4b76be5?w=200');" onclick="launchGenericGame('Dice Roller')">
+                <div class="game-title">Dice Roller</div>
+            </div>
+            <!-- 6. Penalty Shoot -->
+            <div class="game-card" style="background-image: url('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=200');" onclick="launchGenericGame('Penalty Shootout')">
+                <div class="game-title">Penalty Shootout</div>
+            </div>
+            <!-- 7. Crystal Crush -->
+            <div class="game-card" style="background-image: url('https://images.unsplash.com/photo-1551269901-5c5e14c25df7?w=200');" onclick="launchGenericGame('Crystal Crush')">
+                <div class="game-title">Crystal Crush</div>
+            </div>
+            <!-- 8. Wheel of Fortune -->
+            <div class="game-card" style="background-image: url('https://images.unsplash.com/photo-1513151233558-d860c5398176?w=200');" onclick="launchGenericGame('Wheel of Fortune')">
+                <div class="game-title">Wheel of Fortune</div>
+            </div>
+            <!-- 9. Tower Climb -->
+            <div class="game-card" style="background-image: url('https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=200');" onclick="launchGenericGame('Tower Climb')">
+                <div class="game-title">Tower Climb</div>
+            </div>
+            <!-- 10. Blackjack Light -->
+            <div class="game-card" style="background-image: url('https://images.unsplash.com/photo-1541252260730-0412e8e2108e?w=200');" onclick="launchGenericGame('Blackjack Light')">
+                <div class="game-title">Blackjack Light</div>
             </div>
         </div>
     </div>
 
-    <!-- 3. INVITE TAB -->
+    <!-- 3. REFERRAL TAB -->
     <div id="invite" class="tab-content">
         <div class="form-group" style="text-align: center; padding: 30px 15px;">
             <i class="fa-solid fa-gift" style="font-size: 40px; color: var(--primary-color);"></i>
             <h2>Invite & Earn</h2>
-            <p style="color: var(--text-muted);">ጓደኞችዎን ይጋብዙ እና ከሚያስገቡት ተቀማጭ 5% ያግኙ።</p>
+            <p style="color: var(--text-muted);">ጓደኞችዎን ይጋብዙ እና ከሚያስገቡት ተቀማጭ (Deposit) 5% ያግኙ።</p>
             <button class="btn-deposit" style="width: 100%;" onclick="copyInviteLink()">Invite a Friend <i class="fa-solid fa-copy"></i></button>
         </div>
     </div>
@@ -179,28 +212,33 @@
     <div id="wallet" class="tab-content">
         <div class="balance-card" style="background-color: #2c2512; color: white;">
             <div>
-                <div style="color: #aaa; font-size:12px;">Main Balance</div>
+                <div class="balance-title" style="color: #aaa;">Main Balance</div>
                 <div class="balance-amount" style="color: var(--primary-color);">ETB <span class="user-balance">0.00</span></div>
             </div>
             <i class="fa-solid fa-wallet" style="font-size: 30px; color: var(--primary-color);"></i>
         </div>
+
         <h3>የሂሳብ ማስተላለፊያ (Manual)</h3>
         <div class="form-group">
-            <label>የአሰራር አይነት</label>
+            <label>የአሰራር አይነት ይምረጡ</label>
             <select id="tx-type" onchange="toggleWalletForm()">
                 <option value="deposit">ብር ማስገባት (Deposit)</option>
                 <option value="withdraw">ብር ማውጣት (Withdraw)</option>
             </select>
         </div>
+
         <div id="deposit-form">
-            <div class="form-group" style="background-color: #fffde7;">መመሪያ፡ በቴሌብር <code>0912345678</code> ላይ ልከው የ TxID ያስገቡ።</div>
-            <div class="form-group"><label>የብር መጠን</label><input type="number" id="dep-amount" placeholder="100"></div>
-            <div class="form-group"><label>Transaction ID</label><input type="text" id="dep-txid" placeholder="A1B2C3D..."></div>
+            <div class="form-group" style="background-color: #fffde7; border: 1px solid var(--primary-color);">
+                <strong>መመሪያ፦</strong> እባክዎ በቴሌብር ቁጥራችን <code>0912345678</code> ላይ ገንዘብ ካስተላለፉ በኋላ የትራንዛክሽን ቁጥሩን (TxID) ከታች ያስገቡ።
+            </div>
+            <div class="form-group"><label>የብር መጠን (ETB)</label><input type="number" id="dep-amount" placeholder="100"></div>
+            <div class="form-group"><label>የግብይት መታወቂያ ቁጥር (Transaction ID)</label><input type="text" id="dep-txid" placeholder="A1B2C3D4..."></div>
             <button class="btn-deposit" style="width: 100%;" onclick="submitDeposit()">ዴፖዚት ጠይቅ</button>
         </div>
+
         <div id="withdraw-form" style="display: none;">
-            <div class="form-group"><label>የብር መጠን</label><input type="number" id="wit-amount" placeholder="50"></div>
-            <div class="form-group"><label>የቴሌብር ስልክ ቁጥር</label><input type="text" id="wit-phone" placeholder="09..."></div>
+            <div class="form-group"><label>የብር መጠን (ETB)</label><input type="number" id="wit-amount" placeholder="50"></div>
+            <div class="form-group"><label>ብር የሚላክበት የባንክ/ቴሌብር ስልክ ቁጥር</label><input type="text" id="wit-phone" placeholder="09..."></div>
             <button class="btn-deposit" style="width:100%; background-color:#2c2512; color:white;" onclick="submitWithdraw()">ማውጫ ጠይቅ</button>
         </div>
     </div>
@@ -208,47 +246,68 @@
     <!-- 5. PROFILE TAB -->
     <div id="profile" class="tab-content">
         <div class="form-group" style="display: flex; align-items: center; gap: 15px;">
-            <div style="width: 50px; height: 50px; background: var(--primary-color); border-radius: 50%; display:flex; align-items:center; justify-content:center; font-weight:bold;" id="avatar-letter">U</div>
+            <div style="width: 50px; height: 50px; background: var(--primary-color); border-radius: 50%; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:20px;" id="avatar-letter">E</div>
             <div>
-                <div style="font-weight: 700;" id="profile-username">@Username</div>
-                <div style="font-size: 12px;">ID: <span id="member-id">000</span></div>
+                <div style="font-weight: 700; font-size: 18px;" id="profile-username">@ebla2127</div>
+                <div style="font-size: 12px; color: var(--text-muted);">Member ID: <span id="member-id">8525980303</span></div>
             </div>
         </div>
+        <h3>Account Details</h3>
+        <div class="list-item"><span class="label">Phone</span><span class="value" id="prof-phone">Not set</span></div>
         <div class="list-item"><span class="label">Payout Account</span><span class="value">Telebirr</span></div>
     </div>
 
-    <!-- REAL ENGINE: AVIATOR GAME SCREEN -->
-    <div id="aviator-screen" class="game-screen">
-        <div class="game-header">
-            <h3>Aviator Game</h3>
-            <span class="close-game" onclick="closeGame('aviator-screen')">&times;</span>
+    <!-- ================= REAL GAME ENGINE POPUPS ================= -->
+    
+    <!-- AVIATOR POPUP -->
+    <div id="popup-aviator" class="game-popup">
+        <div class="game-popup-header">
+            <h3>Aviator Engine</h3>
+            <span class="close-popup" onclick="closePopup('popup-aviator')">&times;</span>
         </div>
-        <div style="margin-bottom:10px;">Balance: ETB <span class="user-balance">0.00</span></div>
-        <div id="aviator-area">
-            <div id="plane"><i class="fa-solid fa-plane"></i></div>
-            <div id="multiplier-display">1.00x</div>
+        <div style="margin-bottom: 10px;">የእርስዎ ሂሳብ: ETB <span class="user-balance">0.00</span></div>
+        <div id="aviator-arena">
+            <div id="aviator-plane"><i class="fa-solid fa-plane"></i></div>
+            <div id="aviator-mult">1.00x</div>
         </div>
-        <div class="bet-controls">
-            <input type="number" id="aviator-bet" class="game-input" placeholder="የውርርድ መጠን (ETB)">
-            <button id="aviator-btn" class="btn-play" style="background:var(--aviator-red); color:white;" onclick="startAviatorRound()">BET</button>
-        </div>
-    </div>
-
-    <!-- REAL ENGINE: MINES GAME SCREEN -->
-    <div id="mines-screen" class="game-screen">
-        <div class="game-header">
-            <h3>Mines Game (5x5)</h3>
-            <span class="close-game" onclick="closeGame('mines-screen')">&times;</span>
-        </div>
-        <div style="margin-bottom:10px;">Balance: ETB <span class="user-balance">0.00</span> | ቀጣይ ማባዣ: <span id="mines-next-mult">1.20x</span></div>
-        <div class="mines-board" id="mines-board"></div>
-        <div class="bet-controls">
-            <input type="number" id="mines-bet" class="game-input" placeholder="የውርርድ መጠን (ETB)">
-            <button id="mines-btn" class="btn-play" style="background:#4cd964; color:black;" onclick="startMinesGame()">START GAME</button>
+        <div class="control-panel">
+            <input type="number" id="bet-aviator-amount" class="bet-input" placeholder="የውርርድ መጠን (ETB)">
+            <button id="btn-aviator-action" class="action-btn" style="background: var(--aviator-red); color: white;" onclick="runAviatorRound()">BET</button>
         </div>
     </div>
 
-    <!-- Navigation Bar -->
+    <!-- MINES POPUP -->
+    <div id="popup-mines" class="game-popup">
+        <div class="game-popup-header">
+            <h3>Mines Engine (5x5)</h3>
+            <span class="close-popup" onclick="closePopup('popup-mines')">&times;</span>
+        </div>
+        <div style="margin-bottom: 10px;">የእርስዎ ሂሳብ: ETB <span class="user-balance">0.00</span> | ቀጣይ ማባዣ: <span id="mines-multiplier-view">1.25x</span></div>
+        <div class="mines-grid" id="mines-grid-box"></div>
+        <div class="control-panel">
+            <input type="number" id="bet-mines-amount" class="bet-input" placeholder="የውርርድ መጠን (ETB)">
+            <button id="btn-mines-action" class="action-btn" style="background: #4cd964; color: black;" onclick="runMinesRound()">START GAME</button>
+        </div>
+    </div>
+
+    <!-- GENERIC GAMES POPUP -->
+    <div id="popup-generic" class="game-popup">
+        <div class="game-popup-header">
+            <h3 id="generic-game-title">Game Title</h3>
+            <span class="close-popup" onclick="closePopup('popup-generic')">&times;</span>
+        </div>
+        <div style="margin-bottom: 15px;">የእርስዎ ሂሳብ: ETB <span class="user-balance">0.00</span></div>
+        <div style="height: 150px; background: #1c1d22; border-radius: 10px; display: flex; flex-direction: column; justify-content: center; align-items: center; margin-bottom: 20px;">
+            <div id="generic-status-icon" style="font-size: 40px; color: var(--primary-color); margin-bottom: 10px;"><i class="fa-solid fa-dice"></i></div>
+            <div id="generic-result-text" style="font-size: 22px; font-weight: bold;">ለመጀመር ይወራረዱ</div>
+        </div>
+        <div class="control-panel">
+            <input type="number" id="bet-generic-amount" class="bet-input" placeholder="የውርርድ መጠን (ETB)">
+            <button class="action-btn" style="background: var(--primary-color); color: var(--text-dark);" onclick="runGenericCalculation()">ውርርድ አስምር (PLACE BET)</button>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation Bar -->
     <div class="nav-bar">
         <div class="nav-item active" onclick="switchTab('sports', this)"><i class="fa-solid fa-building-columns"></i>Sports</div>
         <div class="nav-item" onclick="switchTab('games', this)"><i class="fa-solid fa-gamepad"></i>Games</div>
@@ -267,9 +326,10 @@
         let currentUsername = "ebla2127";
         let userBalance = 0;
 
-        // የጨዋታ ተለዋዋጮች (Game Variables)
-        let aviatorInterval, currentMultiplier = 1.0, isAviatorRunning = false, aviatorBetAmount = 0;
-        let minesList = [], revealedCount = 0, minesBetAmount = 0, isMinesActive = false;
+        // Engines state
+        let avTimer, avMult = 1.0, isAvLive = false, avBet = 0;
+        let hiddenMines = [], revealedNodes = 0, minesBet = 0, isMinesLive = false;
+        let activeGenericGame = "";
 
         async function initUser() {
             if (tg && tg.initDataUnsafe?.user) {
@@ -277,15 +337,23 @@
                 currentUsername = tg.initDataUnsafe.user.username || "No_Name";
                 tg.expand();
             }
+
             document.getElementById('profile-username').innerText = "@" + currentUsername;
             document.getElementById('avatar-letter').innerText = currentUsername.charAt(0).toUpperCase();
             document.getElementById('member-id').innerText = currentUserId;
 
-            let { data } = await supabaseClient.from('users').upsert({ telegram_id: currentUserId, username: currentUsername }, { onConflict: 'telegram_id' }).select().single();
-            if (data) { userBalance = data.balance || 0; updateBalanceUI(userBalance); }
+            const { data } = await supabaseClient
+                .from('users')
+                .upsert({ telegram_id: currentUserId, username: currentUsername }, { onConflict: 'telegram_id' })
+                .select().single();
+
+            if (data) {
+                userBalance = data.balance || 0;
+                updateBalanceUI(userBalance);
+            }
         }
 
-        async function updateDatabaseBalance(newBal) {
+        async function syncBalance(newBal) {
             userBalance = newBal;
             updateBalanceUI(userBalance);
             await supabaseClient.from('users').update({ balance: newBal }).eq('telegram_id', currentUserId);
@@ -308,172 +376,188 @@
             document.getElementById('withdraw-form').style.display = type === 'withdraw' ? 'block' : 'none';
         }
 
-        /* ================= AVIATOR GAME ENGINE ================= */
-        function openAviator() { document.getElementById('aviator-screen').style.display = 'block'; }
+        function closePopup(id) { document.getElementById(id).style.display = 'none'; }
+
+        /* ================= 1. AVIATOR LOGIC ================= */
+        function launchAviator() { document.getElementById('popup-aviator').style.display = 'block'; }
         
-        function startAviatorRound() {
-            if (isAviatorRunning) {
-                // Cashout Logic
-                isAviatorRunning = false;
-                clearInterval(aviatorInterval);
-                let winAmount = aviatorBetAmount * currentMultiplier;
-                updateDatabaseBalance(userBalance + winAmount);
-                alert(`ትልቅ ድል! ETB ${winAmount.toFixed(2)} አሸነፉ (${currentMultiplier.toFixed(2)}x)`);
-                resetAviatorUI();
+        function runAviatorRound() {
+            if (isAvLive) {
+                isAvLive = false;
+                clearInterval(avTimer);
+                let win = avBet * avMult;
+                syncBalance(userBalance + win);
+                alert(`የተሳካ ስኬት! ETB ${win.toFixed(2)} አሸነፉ (${avMult.toFixed(2)}x)`);
+                clearAviator();
                 return;
             }
 
-            let betInput = document.getElementById('aviator-bet');
-            aviatorBetAmount = parseFloat(betInput.value);
-            if (!aviatorBetAmount || aviatorBetAmount <= 0 || aviatorBetAmount > userBalance) return alert('ትክክለኛ የብር መጠን ያስገቡ!');
+            avBet = parseFloat(document.getElementById('bet-aviator-amount').value);
+            if (!avBet || avBet <= 0 || avBet > userBalance) return alert('ትክክለኛ የብር መጠን ያስገቡ!');
 
-            updateDatabaseBalance(userBalance - aviatorBetAmount);
-            isAviatorRunning = true;
-            currentMultiplier = 1.0;
+            syncBalance(userBalance - avBet);
+            isAvLive = true;
+            avMult = 1.0;
             
-            document.getElementById('plane').style.display = 'block';
-            document.getElementById('plane').style.bottom = '20px';
-            document.getElementById('plane').style.left = '20px';
+            document.getElementById('aviator-plane').style.display = 'block';
+            document.getElementById('aviator-plane').style.bottom = '20px';
+            document.getElementById('aviator-plane').style.left = '20px';
             
-            let btn = document.getElementById('aviator-btn');
+            let btn = document.getElementById('btn-aviator-action');
             btn.innerText = "CASH OUT";
-            btn.style.background = "#4cd964";
+            btn.style.background = "#4cd96 green";
 
-            let crashPoint = (Math.random() * 5) + 1.1; // Random Crash Point
+            let crashPoint = (Math.random() * 4) + 1.1; 
 
-            aviatorInterval = setInterval(() => {
-                currentMultiplier += 0.05;
-                document.getElementById('multiplier-display').innerText = currentMultiplier.toFixed(2) + "x";
+            avTimer = setInterval(() => {
+                avMult += 0.04;
+                document.getElementById('aviator-mult').innerText = avMult.toFixed(2) + "x";
                 
-                // የፕሌኑን እንቅስቃሴ ማሳያ (Animation)
-                let left = parseInt(document.getElementById('plane').style.left) + 2;
-                let bottom = parseInt(document.getElementById('plane').style.bottom) + 1;
-                if(left < 200) {
-                    document.getElementById('plane').style.left = left + "px";
-                    document.getElementById('plane').style.bottom = bottom + "px";
+                let l = parseInt(document.getElementById('aviator-plane').style.left) + 2;
+                let b = parseInt(document.getElementById('aviator-plane').style.bottom) + 1;
+                if(l < 180) {
+                    document.getElementById('aviator-plane').style.left = l + "px";
+                    document.getElementById('aviator-plane').style.bottom = b + "px";
                 }
 
-                if (currentMultiplier >= crashPoint) {
-                    // Flew Away (ተበላን!)
-                    clearInterval(aviatorInterval);
-                    isAviatorRunning = false;
-                    document.getElementById('multiplier-display').style.color = "var(--aviator-red)";
-                    document.getElementById('multiplier-display').innerText = "FLEW AWAY";
+                if (avMult >= crashPoint) {
+                    clearInterval(avTimer);
+                    isAvLive = false;
+                    document.getElementById('aviator-mult').innerText = "FLEW AWAY";
                     alert("አውሮፕላኑ በረረ! ተበልተዋል።");
-                    setTimeout(resetAviatorUI, 2000);
+                    setTimeout(clearAviator, 1500);
                 }
             }, 100);
         }
 
-        function resetAviatorUI() {
-            document.getElementById('aviator-btn').innerText = "BET";
-            document.getElementById('aviator-btn').style.background = "var(--aviator-red)";
-            document.getElementById('multiplier-display').style.color = "white";
-            document.getElementById('multiplier-display').innerText = "1.00x";
-            document.getElementById('plane').style.display = 'none';
+        function clearAviator() {
+            let btn = document.getElementById('btn-aviator-action');
+            btn.innerText = "BET";
+            btn.style.background = "var(--aviator-red)";
+            document.getElementById('aviator-mult').innerText = "1.00x";
+            document.getElementById('aviator-plane').style.display = 'none';
         }
 
-        /* ================= MINES GAME ENGINE ================= */
-        function openMines() {
-            document.getElementById('mines-screen').style.display = 'block';
-            buildMinesBoard();
+        /* ================= 2. MINES LOGIC ================= */
+        function launchMines() {
+            document.getElementById('popup-mines').style.display = 'block';
+            createMinesGrid();
         }
 
-        function buildMinesBoard() {
-            let board = document.getElementById('mines-board');
-            board.innerHTML = '';
+        function createMinesGrid() {
+            let container = document.getElementById('mines-grid-box');
+            container.innerHTML = '';
             for(let i=0; i<25; i++) {
-                let tile = document.createElement('div');
-                tile.className = 'mine-tile';
-                tile.dataset.index = i;
-                tile.onclick = () => clickTile(i);
-                board.appendChild(tile);
+                let node = document.createElement('div');
+                node.className = 'mine-node';
+                node.dataset.index = i;
+                node.onclick = () => selectMineNode(i);
+                container.appendChild(node);
             }
         }
 
-        function startMinesGame() {
-            if (isMinesActive) {
-                // Cashout
-                let mult = 1 + (revealedCount * 0.25);
-                let win = minesBetAmount * mult;
-                updateDatabaseBalance(userBalance + win);
-                alert(`በአጠቃላይ ETB ${win.toFixed(2)} ወሰዱ!`);
-                endMinesGame();
+        function runMinesRound() {
+            if (isMinesLive) {
+                let mult = 1 + (revealedNodes * 0.30);
+                let win = minesBet * mult;
+                syncBalance(userBalance + win);
+                alert(`ETB ${win.toFixed(2)} ብር ወደ አካውንትዎ ገባ!`);
+                stopMines();
                 return;
             }
 
-            minesBetAmount = parseFloat(document.getElementById('mines-bet').value);
-            if (!minesBetAmount || minesBetAmount <= 0 || minesBetAmount > userBalance) return alert('ትክክለኛ የብር መጠን ያስገቡ!');
+            minesBet = parseFloat(document.getElementById('bet-mines-amount').value);
+            if (!minesBet || minesBet <= 0 || minesBet > userBalance) return alert('ትክክለኛ የብር መጠን ያስገቡ!');
 
-            updateDatabaseBalance(userBalance - minesBetAmount);
-            isMinesActive = true;
-            revealedCount = 0;
+            syncBalance(userBalance - minesBet);
+            isMinesLive = true;
+            revealedNodes = 0;
 
-            // 3 ቦምቦችን በዘፈቀደ መደበቅ (Set 3 random mines)
-            minesList = Array(25).fill(false);
-            let count = 0;
-            while(count < 3) {
-                let rand = Math.floor(Math.random() * 25);
-                if(!minesList[rand]) { minesList[rand] = true; count++; }
+            hiddenMines = Array(25).fill(false);
+            let deployed = 0;
+            while(deployed < 3) {
+                let spot = Math.floor(Math.random() * 25);
+                if(!hiddenMines[spot]) { hiddenMines[spot] = true; deployed++; }
             }
 
-            let btn = document.getElementById('mines-btn');
-            btn.innerText = "CASH OUT";
-            btn.style.background = "#f1b82a";
-            buildMinesBoard();
-            updateMinesNextMultiplier();
+            document.getElementById('btn-mines-action').innerText = "CASH OUT";
+            createMinesGrid();
+            refreshMinesMultView();
         }
 
-        function clickTile(idx) {
-            if(!isMinesActive) return;
-            let tiles = document.getElementsByClassName('mine-tile');
-            let tile = tiles[idx];
-            if(tile.classList.contains('revealed') || tile.classList.contains('exploded')) return;
+        function selectMineNode(idx) {
+            if(!isMinesLive) return;
+            let nodes = document.getElementsByClassName('mine-node');
+            let node = nodes[idx];
+            if(node.classList.contains('safe') || node.classList.contains('boom')) return;
 
-            if(minesList[idx]) {
-                // ቦምብ ፈነዳ!
-                tile.classList.add('exploded');
-                tile.innerHTML = "💣";
-                alert("ቦምብ ፈነዳ! ተበልተዋል።");
-                endMinesGame();
+            if(hiddenMines[idx]) {
+                node.classList.add('boom');
+                node.innerHTML = "💣";
+                alert("ቦምብ አገኙ! ተበልተዋል።");
+                stopMines();
             } else {
-                // ኮከብ ተገኘ
-                tile.classList.add('revealed');
-                tile.innerHTML = "💎";
-                revealedCount++;
-                updateMinesNextMultiplier();
+                node.classList.add('safe');
+                node.innerHTML = "💎";
+                revealedNodes++;
+                refreshMinesMultView();
             }
         }
 
-        function updateMinesNextMultiplier() {
-            let nextMult = 1 + (revealedCount * 0.25);
-            document.getElementById('mines-next-mult').innerText = nextMult.toFixed(2) + "x";
+        function refreshMinesMultView() {
+            let next = 1 + (revealedNodes * 0.30);
+            document.getElementById('mines-multiplier-view').innerText = next.toFixed(2) + "x";
         }
 
-        function endMinesGame() {
-            isMinesActive = false;
-            let btn = document.getElementById('mines-btn');
-            btn.innerText = "START GAME";
-            btn.style.background = "#4cd964";
+        function stopMines() {
+            isMinesLive = false;
+            document.getElementById('btn-mines-action').innerText = "START GAME";
         }
 
-        function closeGame(id) { document.getElementById(id).style.display = 'none'; }
-        
+        /* ================= 3-10. OTHER GENERIC GAMES LOGIC ================= */
+        function launchGenericGame(title) {
+            activeGenericGame = title;
+            document.getElementById('generic-game-title').innerText = title;
+            document.getElementById('generic-result-text').innerText = "ለመጀመር ይወራረዱ";
+            document.getElementById('popup-generic').style.display = 'block';
+        }
+
+        function runGenericCalculation() {
+            let gBet = parseFloat(document.getElementById('bet-generic-amount').value);
+            if (!gBet || gBet <= 0 || gBet > userBalance) return alert('ትክክለኛ የብር መጠን ያስገቡ!');
+
+            syncBalance(userBalance - gBet);
+            document.getElementById('generic-result-text').innerText = "በማሽከርከር ላይ...";
+
+            setTimeout(() => {
+                let randomResult = Math.random();
+                if(randomResult > 0.55) { // 45% Win rate
+                    let winMult = (Math.random() * 1.5 + 1.2); // 1.2x to 2.7x
+                    let finalWin = gBet * winMult;
+                    syncBalance(userBalance + finalWin);
+                    document.getElementById('generic-result-text').innerText = `አሸነፉ! +${winMult.toFixed(2)}x (ETB ${finalWin.toFixed(2)})`;
+                } else {
+                    document.getElementById('generic-result-text').innerText = "የዚህ ዙር አልተሳካም! ይሞክሩ።";
+                }
+            }, 1000);
+        }
+
+        /* ================= MANUAL TRANSACTION SUBMISSIONS ================= */
         async function submitDeposit() {
             let amt = parseFloat(document.getElementById('dep-amount').value);
             let tx = document.getElementById('dep-txid').value;
-            if(!amt || !tx) return alert('ሁሉንም ይሙሉ');
+            if(!amt || !tx) return alert('እባክዎ ሁሉንም ሳጥኖች ይሙሉ!');
             await supabaseClient.from('transactions').insert({ telegram_id: currentUserId, type: 'deposit', amount: amt, tx_id_or_phone: tx, status: 'pending' });
-            alert('የዲፖዚት ጥያቄ ቀርቧል!');
+            alert('የዴፖዚት ጥያቄዎ በተሳካ ሁኔታ ቀርቧል።');
         }
 
         async function submitWithdraw() {
             let amt = parseFloat(document.getElementById('wit-amount').value);
             let ph = document.getElementById('wit-phone').value;
-            if(!amt || !ph) return alert('ሁሉንም ይሙሉ');
-            if(amt > userBalance) return alert('በቂ ሂሳብ የሎትም');
+            if(!amt || !ph) return alert('እባክዎ ሁሉንም ሳጥኖች ይሙሉ!');
+            if(amt > userBalance) return alert('በቂ ሂሳብ የሎትም!');
             await supabaseClient.from('transactions').insert({ telegram_id: currentUserId, type: 'withdrawal', amount: amt, tx_id_or_phone: ph, status: 'pending' });
-            alert('የማውጫ ጥያቄ ቀርቧል!');
+            alert('የማውጫ ጥያቄዎ ቀርቧል።');
         }
 
         initUser();
