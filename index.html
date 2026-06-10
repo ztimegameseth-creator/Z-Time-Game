@@ -8,7 +8,7 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Google Font & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -69,7 +69,7 @@
         .game-desc { font-size: 12px; color: #ddd; z-index: 2; }
         .badge-hot { position: absolute; top: 12px; right: 12px; background-color: #ff3b30; color: white; font-size: 10px; padding: 3px 8px; border-radius: 4px; font-weight: bold; z-index: 2; }
 
-        /* ================= WALLET TAB (ፅሁፎቹ የጎሉበት ዲዛይን) ================= */
+        /* ================= WALLET TAB DESIGN ================= */
         .wallet-form-group { 
             background-color: var(--card-color); 
             padding: 20px; 
@@ -79,14 +79,14 @@
         }
         .wallet-form-group label { 
             display: block; 
-            font-size: 16px; /* ከበፊቱ ከፍ የተደረገ */
+            font-size: 16px; 
             font-weight: 600;
             color: var(--text-dark); 
             margin-bottom: 8px; 
         }
         .wallet-form-group input, .wallet-form-group select { 
             width: 100%; 
-            padding: 14px; /* ትልልቅ ሳጥኖች */
+            padding: 14px; 
             font-size: 16px; 
             border: 1px solid #ccc; 
             border-radius: 8px; 
@@ -99,7 +99,7 @@
             border: 1px solid var(--primary-color);
             padding: 15px;
             border-radius: 10px;
-            font-size: 15px; /* ትልቅና ግልጽ ፅሁፍ */
+            font-size: 15px; 
             line-height: 1.5;
             margin-bottom: 15px;
             color: #4a3f1a;
@@ -235,7 +235,7 @@
         </div>
     </div>
 
-    <!-- 4. WALLET TAB (የጎሉ ትልልቅ ፅሁፎችና ዲዛይን) -->
+    <!-- 4. WALLET TAB -->
     <div id="wallet" class="tab-content">
         <div class="balance-card" style="background-color: #2c2512; color: white;">
             <div>
@@ -371,7 +371,7 @@
         let kenoBetAmount = 5;
         let isKenoPopupOpen = false;
 
-        // BACKGROUND SERVER-LIKE TIME TRACKING
+        // Background Engine Variables
         let currentRoundDrawnBalls = [];
         let isUserBetInCurrentRound = false;
         let placedBetData = null; 
@@ -398,7 +398,6 @@
                 updateBalanceUI(userBalance);
             }
 
-            // አፑ እንደተከፈተ የ Live ሰዓቱን ከበስተጀርባ ማስጀመር (ተጠቃሚው Kenoን ቢከፍትም ባይከፍትም ይቆጥራል!)
             startBackgroundLiveEngine();
         }
 
@@ -430,9 +429,8 @@
             setInterval(() => {
                 const now = new Date();
                 const seconds = now.getSeconds(); 
-                let countdown = 60 - seconds; // በየደቂቃው አዲስ ዙር (0ኛ ሴኮንድ ላይ እጣ ይወጣል)
+                let countdown = 60 - seconds; 
 
-                // UIው ክፍት ከሆነ ሰዓቱን ማሳየት
                 if (isKenoPopupOpen) {
                     document.getElementById('timer-seconds').innerText = countdown;
                     
@@ -449,7 +447,6 @@
                     }
                 }
 
-                // ልክ ደቂቃው ሲሞላ (0ኛ ሴኮንድ ላይ) እጣ ማውጣት በጀርባ ይጀምራል!
                 if (countdown === 60 || countdown === 0) {
                     triggerGlobalDraw();
                 }
@@ -457,7 +454,6 @@
         }
 
         function triggerGlobalDraw() {
-            // በጀርባ የ 20 ቁጥሮች እጣ ማመንጨት
             currentRoundDrawnBalls = [];
             while(currentRoundDrawnBalls.length < 20) {
                 let randNum = Math.floor(Math.random() * 80) + 1;
@@ -466,11 +462,9 @@
                 }
             }
 
-            // ተጠቃሚው ፖፕአፑን ከፍቶ እያየ ከሆነ የቀጥታ አኒሜሽን ማሳየት
             if (isKenoPopupOpen) {
                 renderLiveBallsWithAnimation();
             } else {
-                // ተጠቃሚው ዘግቶ ወጥቶ ከሆነ ግን ሰሌዳ ሳይበላሽ ሂሳቡን በጀርባ ማካሄድ
                 processPayoutBackend();
             }
         }
@@ -483,19 +477,16 @@
 
             let ballCount = 0;
             let drawInterval = setInterval(() => {
-                if(!isKenoPopupOpen) { // ተጠቃሚው አኒሜሽኑ መሃል ላይ እያለ ቢዘጋው እንኳ እንዳይበላሽ
+                if(!isKenoPopupOpen) { 
                     clearInterval(drawInterval);
                     processPayoutBackend();
                     return;
                 }
 
                 let currentBall = currentRoundDrawnBalls[ballCount];
-                
-                // በሰንጠረዡ ላይ ማብራት
                 let gridCell = document.querySelector(`[data-num='${currentBall}']`);
                 if(gridCell) gridCell.classList.add('drawn');
 
-                // ኳሷን መደርደር
                 let ball = document.createElement('div');
                 ball.className = 'ball';
                 ball.innerText = currentBall;
@@ -506,36 +497,49 @@
                     clearInterval(drawInterval);
                     processPayoutBackend();
                 }
-            }, 500); // ፈጠን ያለ ውብ አኒሜሽን
+            }, 500); 
         }
 
+        /* ================= KENO PAYOUT ENGINE (የአሸናፊነት ሂሳብ ስራ መቆጣጠሪያ) ================= */
         function processPayoutBackend() {
             if (isUserBetInCurrentRound && placedBetData) {
+                let totalSelected = placedBetData.numbers.length;
                 let matches = placedBetData.numbers.filter(n => currentRoundDrawnBalls.includes(n)).length;
                 let winAmount = 0;
+                let bet = placedBetData.bet;
 
-                if (matches === 7 || matches === 8) {
-                    winAmount = placedBetData.bet;
-                } else if (matches === 9) {
-                    winAmount = placedBetData.bet * 2;
-                } else if (matches >= 10 && matches < 20) {
-                    winAmount = placedBetData.bet * (matches - 7);
-                } else if (matches === 20) {
-                    winAmount = placedBetData.bet * 50; 
+                // ተለዋዋጭ የትርፍ ስሌት ቀመር (Dynamic Odds Table)
+                if (totalSelected === 20) {
+                    if (matches === 7 || matches === 8) winAmount = bet; 
+                    else if (matches === 9) winAmount = bet * 2; 
+                    else if (matches >= 10 && matches < 20) winAmount = bet * (matches - 7); 
+                    else if (matches === 20) winAmount = bet * 50; // 10 ብር መድቦ 500 ብር ያገኛል
+                } 
+                else if (totalSelected === 3) {
+                    if (matches === 2) winAmount = bet * 1.5; // 3 ገምቶ 2 ላገኘ
+                    else if (matches === 3) winAmount = bet * 5;
+                } 
+                else if (totalSelected === 4) {
+                    if (matches === 3) winAmount = bet * 3; // 4 ገምቶ 3 ላገኘ
+                    else if (matches === 4) winAmount = bet * 12;
+                } 
+                else {
+                    // ለማንኛውም ሌላ ምርጫዎች (ከ 5 እስከ 19 ቁጥሮች ለገመቱ አጠቃላይ ቀመር)
+                    let ratio = matches / totalSelected;
+                    if (ratio >= 0.75) winAmount = bet * 4; // 75% እና በላይ ካገኘ
+                    else if (ratio >= 0.5) winAmount = bet * 1.5; // 50% ካገኘ (ትንሽዬ ማበረታቻ)
                 }
 
                 if (winAmount > 0) {
                     syncBalance(userBalance + winAmount);
-                    if(isKenoPopupOpen) alert(`🎉 እንኳን ደስ አሎት! ${matches} ቁጥሮች ገጥመውልዎ ETB ${winAmount.toFixed(2)} አሸንፈዋል።`);
+                    if(isKenoPopupOpen) alert(`🎉 እንኳን ደስ አሎት! ${matches}/${totalSelected} ቁጥሮች ገጥመውልዎ ETB ${winAmount.toFixed(2)} አሸንፈዋል።`);
                 } else {
-                    if(isKenoPopupOpen) alert(`የዚህ ዙር እጣ ተጠናቋል። የገጠሙት ቁጥሮች ብዛት: ${matches}። በሚቀጥለው ይሞክሩ!`);
+                    if(isKenoPopupOpen) alert(`የዚህ ዙር እጣ ተጠናቋል። የገጠሙት ቁጥሮች ብዛት: ${matches}/${totalSelected}። በሚቀጥለው ይሞክሩ!`);
                 }
             }
 
-            // የታሪክ ማሳያ ሰሌዳ ላይ መመዝገብ
             saveToHistoryList(currentRoundDrawnBalls);
 
-            // ዙሩን ማፅዳትና ለቀጣዩ ማዘጋጀት
             isUserBetInCurrentRound = false;
             placedBetData = null;
 
@@ -579,10 +583,7 @@
                 cell.innerText = i;
                 cell.dataset.num = i;
                 cell.onclick = () => selectKenoNumber(i, cell);
-                
-                // ተጠቃሚው መርጦት ከነበረና ዘግቶ ቢከፍተው እንዳይጠፋ
                 if(selectedNumbers.includes(i)) cell.classList.add('selected');
-                
                 container.appendChild(cell);
             }
         }
@@ -653,22 +654,48 @@
             histBox.insertBefore(item, histBox.firstChild);
         }
 
-        /* ================= MANUAL TRANSACTION SUBMISSIONS ================= */
+        /* ================= MANUAL TRANSACTION SUBMISSIONS (የተስተካከለው የቪዝነስ ህግ) ================= */
         async function submitDeposit() {
             let amt = parseFloat(document.getElementById('dep-amount').value);
             let tx = document.getElementById('dep-txid').value;
             if(!amt || !tx) return alert('እባክዎ ሁሉንም ሳጥኖች ይሙሉ!');
-            await supabaseClient.from('transactions').insert({ telegram_id: currentUserId, type: 'deposit', amount: amt, tx_id_or_phone: tx, status: 'pending' });
-            alert('የዴፖዚት ጥያቄዎ በተሳካ ሁኔታ ቀርቧል።');
+            
+            // የዴፖዚት መረጃ ወደ Supabase ብቻ ይላካል፤ ባላንስ ላይ አይጨምርም! (አንተ አፕሩቭ እስክታደርገው)
+            await supabaseClient.from('transactions').insert({ 
+                telegram_id: currentUserId, 
+                type: 'deposit', 
+                amount: amt, 
+                tx_id_or_phone: tx, 
+                status: 'pending' 
+            });
+            alert('የዴፖዚት ጥያቄዎ በተሳካ ሁኔታ ቀርቧል። አስተዳዳሪው ሲያረጋግጠው አካውንትዎ ላይ ይጨምራል።');
+            
+            document.getElementById('dep-amount').value = '';
+            document.getElementById('dep-txid').value = '';
         }
 
         async function submitWithdraw() {
             let amt = parseFloat(document.getElementById('wit-amount').value);
             let ph = document.getElementById('wit-phone').value;
             if(!amt || !ph) return alert('እባክዎ ሁሉንም ሳጥኖች ይሙሉ!');
-            if(amt > userBalance) return alert('በቂ ሂሳብ የሎትም!');
-            await supabaseClient.from('transactions').insert({ telegram_id: currentUserId, type: 'withdrawal', amount: amt, tx_id_or_phone: ph, status: 'pending' });
-            alert('የማውጫ ጥያቄዎ ቀርቧል።');
+            if(amt > userBalance) return alert('በቂ የብር ቀሪ የሎትም!');
+            
+            // 1. ወዲያውኑ ከተጠቃሚው ዋና ባላንስ ላይ ብሩን በራስ-ሰር እንቀንሳለን!
+            let updatedBalance = userBalance - amt;
+            await syncBalance(updatedBalance);
+            
+            // 2. ከዚያ የትራንዛክሽን ጥያቄውን ወደ ዴታቤዝ እንልካለን።
+            await supabaseClient.from('transactions').insert({ 
+                telegram_id: currentUserId, 
+                type: 'withdrawal', 
+                amount: amt, 
+                tx_id_or_phone: ph, 
+                status: 'pending' 
+            });
+            alert(`የማውጫ ጥያቄዎ ቀርቧል። ETB ${amt} ከባላንስዎ ላይ በራስ-ሰር ተቀንሷል።`);
+            
+            document.getElementById('wit-amount').value = '';
+            document.getElementById('wit-phone').value = '';
         }
 
         initUser();
