@@ -3,23 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Z-Time Games</title>
-    <!-- Telegram & Supabase SDKs -->
+    <title>Arada Bet</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Google Font & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
             --bg-color: #fcf6e8; /* Arada Bet Cream Theme */
-            --card-color: #f3ebd4;
-            --primary-color: #f1b82a; /* Yellow Buttons */
+            --card-color: #f5ebd2; /* Darker cream for containers */
+            --primary-color: #f1b82a; /* Yellow Theme Buttons */
             --text-dark: #2c2512;
-            --text-muted: #73674c;
-            --keno-blue: #1e3a8a;
-            --keno-gold: #fbbf24;
+            --text-muted: #7d735c;
+            --border-color: #e6dac0;
         }
 
         body {
@@ -32,323 +29,328 @@
             -webkit-user-select: none;
         }
 
-        /* Header Style */
+        /* Top Header Area */
         .header {
             display: flex; justify-content: space-between; align-items: center;
             padding: 15px 20px; background-color: var(--bg-color);
         }
-        .logo { font-size: 24px; font-weight: 700; color: var(--text-dark); }
+        .logo { font-size: 26px; font-weight: 700; color: var(--text-dark); letter-spacing: -0.5px; }
+        .top-right-controls { display: flex; align-items: center; gap: 8px; }
+        .balance-hide-btn { background: #e9dec4; border: none; padding: 8px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+        .btn-plus-top { background: var(--primary-color); border: none; width: 36px; height: 36px; border-radius: 6px; font-size: 20px; font-weight: bold; cursor: pointer; }
 
-        /* Active Tab Content */
-        .tab-content { display: none; padding: 15px; animation: fadeIn 0.3s ease-in-out; }
+        /* Navigation Content Switching */
+        .tab-content { display: none; padding: 15px; animation: fadeIn 0.2s ease-in-out; }
         .tab-content.active { display: block; }
+        .section-subtitle { font-size: 11px; color: var(--primary-color); text-transform: uppercase; font-weight: 700; margin-bottom: 2px; letter-spacing: 0.5px; }
+        .section-title { font-size: 22px; font-weight: 700; margin: 0 0 15px 0; }
 
-        /* Cards and Layouts */
-        .balance-card {
-            background-color: var(--card-color); padding: 20px; border-radius: 12px;
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;
+        /* Wallet Buttons (Deposit / Withdraw Layout) */
+        .wallet-actions-row { display: flex; gap: 12px; margin-bottom: 15px; }
+        .btn-wallet-action {
+            flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 14px; font-size: 16px; font-weight: 600; border-radius: 8px; border: none; cursor: pointer;
         }
-        .balance-title { font-size: 12px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
-        .balance-amount { font-size: 28px; font-weight: 700; margin-top: 5px; }
-        
-        .btn-deposit {
-            background-color: var(--primary-color); color: var(--text-dark);
-            border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer;
-        }
+        .btn-wallet-action.dep { background-color: var(--primary-color); color: var(--text-dark); }
+        .btn-wallet-action.wit { background-color: #fff; color: var(--text-dark); border: 1px solid #ccc; }
 
-        /* Games Grid */
-        .games-grid { display: grid; grid-template-columns: repeat(1, 1fr); gap: 12px; margin-top: 10px; }
-        .game-card {
-            background-color: #2c2512; border-radius: 12px; overflow: hidden; position: relative;
-            height: 140px; display: flex; flex-direction: column; justify-content: flex-end;
-            padding: 20px; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            background-image: linear-gradient(to right, rgba(0,0,0,0.8), transparent), url('https://images.unsplash.com/photo-1596838132731-3301c3fd4317?w=400');
-            background-size: cover; background-position: center; cursor: pointer;
+        /* Exact Replica Cards of Wallet Screen */
+        .main-balance-card {
+            background-color: var(--card-color); padding: 20px; border-radius: 8px;
+            position: relative; margin-bottom: 12px; border: 1px solid var(--border-color);
         }
-        .game-title { font-weight: 700; font-size: 22px; z-index: 2; margin-bottom: 5px; color: var(--primary-color); }
-        .game-desc { font-size: 12px; color: #ddd; z-index: 2; }
-        .badge-hot { position: absolute; top: 12px; right: 12px; background-color: #ff3b30; color: white; font-size: 10px; padding: 3px 8px; border-radius: 4px; font-weight: bold; z-index: 2; }
+        .mb-lbl { font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
+        .mb-amt { font-size: 28px; font-weight: 700; margin-top: 5px; }
+        .mb-icon { position: absolute; right: 20px; top: 55px; font-size: 24px; color: var(--primary-color); }
 
-        /* ================= WALLET TAB DESIGN ================= */
-        .wallet-form-group { 
-            background-color: var(--card-color); 
-            padding: 20px; 
-            border-radius: 14px; 
-            margin-bottom: 18px; 
-            text-align: left; 
-        }
-        .wallet-form-group label { 
-            display: block; 
-            font-size: 16px; 
-            font-weight: 600;
-            color: var(--text-dark); 
-            margin-bottom: 8px; 
-        }
-        .wallet-form-group input, .wallet-form-group select { 
-            width: 100%; 
-            padding: 14px; 
-            font-size: 16px; 
-            border: 1px solid #ccc; 
-            border-radius: 8px; 
-            box-sizing: border-box; 
-            background: #fff;
-            color: var(--text-dark);
-        }
-        .wallet-instruction {
-            background-color: #fffde7; 
-            border: 1px solid var(--primary-color);
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 15px; 
-            line-height: 1.5;
-            margin-bottom: 15px;
-            color: #4a3f1a;
-        }
-        .wallet-btn-submit {
-            width: 100%; 
-            padding: 16px; 
-            font-size: 17px; 
-            font-weight: 700; 
-            border-radius: 10px;
-            border: none;
-            cursor: pointer;
-        }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); background: var(--card-color); border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 12px; overflow: hidden; }
+        .stat-item { padding: 12px; text-align: left; border-right: 1px solid var(--border-color); }
+        .stat-item:last-child { border-right: none; }
+        .stat-lbl { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+        .stat-val { font-size: 16px; font-weight: 700; margin-top: 4px; }
 
-        /* ================= KENO POPUP & LIVE SCREEN ================= */
-        .game-popup {
-            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: #0f172a; color: white; z-index: 2000; overflow-y: auto; box-sizing: border-box;
-        }
-        
-        /* Splash Screen */
-        #keno-splash {
-            position: absolute; top:0; left:0; right:0; bottom:0; background: #1e1e24;
-            display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 3000;
-        }
-        .spinner { width: 50px; height: 50px; border: 5px solid #333; border-top: 5px solid var(--primary-color); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
+        .quick-note-box { background-color: var(--card-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; margin-bottom: 15px; }
+        .qn-title { font-size: 13px; font-weight: 700; margin-bottom: 5px; }
+        .qn-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
 
-        .keno-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #1e293b; border-bottom: 2px solid var(--primary-color); }
-        .timer-box { background: #ef4444; color: white; padding: 5px 12px; border-radius: 6px; font-weight: bold; font-size: 14px; display: flex; align-items: center; gap: 5px; }
+        .trans-history-bar { background-color: var(--card-color); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px; display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .th-title { font-size: 14px; font-weight: 700; }
+        .th-desc { font-size: 12px; color: var(--text-muted); }
 
-        /* 1 to 80 Grid Table */
-        .keno-container { padding: 15px; }
-        .keno-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; margin-bottom: 15px; }
-        .keno-num {
-            aspect-ratio: 1; background: #334155; border-radius: 4px; display: flex; justify-content: center;
-            align-items: center; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s;
-        }
-        .keno-num.selected { background: var(--primary-color); color: var(--text-dark); transform: scale(1.05); }
-        .keno-num.drawn { background: #10b981 !important; color: white; animation: pulse 0.4s ease; }
-
-        /* Control Panel Styles */
-        .keno-controls { background: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 15px; }
-        .bet-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .stepper { display: flex; align-items: center; gap: 10px; }
-        .btn-step { background: #475569; color: white; border: none; width: 35px; height: 35px; border-radius: 6px; font-size: 18px; font-weight: bold; cursor: pointer; }
-        .bet-display { font-size: 18px; font-weight: bold; width: 80px; text-align: center; }
-        
-        .btn-clear { background: #f43f5e; color: white; border: none; padding: 8px 15px; border-radius: 6px; font-weight: 600; cursor: pointer; }
-        .btn-action { width: 100%; padding: 14px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; background: var(--primary-color); color: var(--text-dark); }
-        .btn-action:disabled { background: #475569; color: #94a3b8; cursor: not-allowed; }
-
-        /* Drawn Balls Panel */
-        .drawn-balls-box { background: #1e293b; padding: 12px; border-radius: 10px; margin-bottom: 15px; min-height: 70px; }
-        .balls-wrapper { display: flex; flex-wrap: wrap; gap: 6px; }
-        .ball { width: 28px; height: 28px; background: #10b981; color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 11px; font-weight: bold; animation: popBall 0.3s ease-out forwards; }
-
-        /* History Section */
-        .history-box { background: #1e293b; padding: 12px; border-radius: 10px; }
-        .history-item { font-size: 12px; color: #cbd5e1; border-bottom: 1px solid #334155; padding: 6px 0; display: flex; gap: 8px; overflow-x: auto; }
-
-        /* Profile, Invite and General styles */
-        .form-group { background-color: var(--card-color); padding: 15px; border-radius: 12px; margin-bottom: 12px; text-align: left; }
-        .list-item { display: flex; justify-content: space-between; padding: 15px; background-color: var(--card-color); margin-bottom: 8px; border-radius: 10px; font-size: 14px; }
-        .list-item .label { color: var(--text-muted); }
-        .list-item .value { font-weight: 600; }
-
-        /* Bottom Nav */
+        /* Bottom Tab Navigation Bar */
         .nav-bar {
             position: fixed; bottom: 0; left: 0; right: 0; height: 65px;
             background-color: #fff; display: flex; justify-content: space-around; align-items: center;
             box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 1000;
         }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 11px; cursor: pointer; width: 20%; }
-        .nav-item i { font-size: 20px; margin-bottom: 4px; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 11px; cursor: pointer; width: 20%; font-weight: 500; }
+        .nav-item i { font-size: 20px; margin-bottom: 4px; color: #a1967d; }
         .nav-item.active { color: #d49a17; }
+        .nav-item.active i { color: #d49a17; }
+
+        /* ================= MODAL DIALOGS SYSTEM (SCREENSHOT COPIES) ================= */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.4); z-index: 5000; justify-content: center; align-items: flex-end;
+        }
+        .modal-sheet {
+            background: #fbf5e6; width: 100%; max-width: 500px; border-radius: 24px 24px 0 0;
+            box-sizing: border-box; padding: 20px; animation: slideUp 0.25s ease-out;
+            border-top: 1px solid var(--border-color);
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-size: 16px; font-weight: bold; font-style: italic; }
+        .modal-lbl { font-size: 11px; color: #8e8266; font-weight: 700; text-transform: uppercase; margin-bottom: 6px; display: block; }
+        
+        .modal-balance-text { font-size: 12px; color: var(--text-dark); font-weight: 500; }
+        .modal-limits { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; font-weight: 500; }
+
+        /* Input Box Formats */
+        .amt-input-wrapper { background: #eedeb9; border-radius: 8px; padding: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .amt-input-wrapper input { background: transparent; border: none; font-size: 22px; font-weight: 700; text-align: center; width: 80%; outline: none; font-style: italic; }
+        .amt-input-wrapper span { font-size: 14px; font-weight: 600; color: var(--text-muted); }
+
+        .phone-input-box { width: 100%; background: #eedeb9; border: none; padding: 14px; font-size: 15px; font-weight: 600; border-radius: 8px; box-sizing: border-box; outline: none; margin-bottom: 10px; }
+        .info-sub-text { font-size: 11px; color: var(--text-muted); line-height: 1.4; margin-bottom: 15px; }
+
+        /* Increment Quick Buttons Grid */
+        .quick-amt-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 15px; }
+        .btn-quick-chip { background: #eedeb9; border: none; padding: 8px 0; font-size: 12px; font-weight: 700; font-style: italic; border-radius: 6px; cursor: pointer; }
+
+        /* Verification Details View */
+        .verif-card { background: #eedeb9; padding: 12px; border-radius: 8px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px; }
+        .verif-row { display: flex; justify-content: space-between; align-items: center; }
+        .verif-row div:first-child { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+        .verif-row div:last-child { font-size: 14px; font-weight: 700; font-style: italic; }
+
+        .tx-textarea { width: 100%; height: 75px; background: #eedeb9; border: none; padding: 12px; font-size: 13px; font-weight: 500; border-radius: 8px; box-sizing: border-box; outline: none; resize: none; margin-bottom: 15px; }
+
+        /* Main Master Action Confirmation Button */
+        .btn-modal-confirm {
+            width: 100%; padding: 15px; background: var(--primary-color); border: none;
+            border-radius: 12px; font-size: 15px; font-weight: 700; text-transform: uppercase;
+            cursor: pointer; display: flex; justify-content: center; align-items: center; min-height: 50px;
+        }
+        .btn-modal-confirm:disabled { background: #e0d5ba; color: #9c927a; cursor: not-allowed; }
+
+        /* Search Spinner Animation */
+        .search-loader {
+            width: 22px; height: 22px; border: 3px solid rgba(0,0,0,0.1);
+            border-top: 3px solid var(--text-dark); border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        /* Profile, Games and Other Elements */
+        .games-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .game-thumb { background: #fff; border-radius: 8px; overflow: hidden; aspect-ratio: 1; position: relative; cursor: pointer; }
+        .game-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .hot-tag { position: absolute; top: 4px; right: 4px; background: red; color: white; font-size: 8px; padding: 2px 4px; border-radius: 3px; font-weight: bold; }
 
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes popBall { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body>
 
-    <!-- Header -->
     <div class="header">
-        <div class="logo">Z-Time Games</div>
-        <div style="background: var(--card-color); padding: 5px 10px; border-radius: 20px; font-size: 12px;">
-            <i class="fa-solid fa-circle" style="color: #4cd964;"></i> Active Player
+        <div class="logo">Arada Bet</div>
+        <div class="top-right-controls">
+            <button class="balance-hide-btn"><span style="letter-spacing:-1px;">•••••</span> <i class="fa-regular fa-eye"></i></button>
+            <button class="btn-plus-top" onclick="switchTab('wallet')">+</button>
         </div>
     </div>
 
-    <!-- 1. SPORTS TAB -->
     <div id="sports" class="tab-content active">
-        <div class="balance-card">
-            <div>
-                <div class="balance-title">Balance</div>
-                <div class="balance-amount">ETB <span class="user-balance">0.00</span></div>
-            </div>
-            <button class="btn-deposit" onclick="switchTab('wallet')">Deposit</button>
+        <div class="main-balance-card">
+            <div class="mb-lbl">Balance</div>
+            <div class="mb-amt">ETB <span class="user-balance">0.00</span></div>
+            <button style="position:absolute; right:15px; top:20px; background:var(--primary-color); border:none; padding:8px 14px; border-radius:6px; font-weight:600;" onclick="switchTab('wallet')">Deposit</button>
         </div>
-        <h3>Live Sports Betting</h3>
-        <p style="color: var(--text-muted);">በቅርቡ የሚለቀቅ... በስፖርት ጨዋታዎች ላይ መወራረድ በቅርቡ ይጀምራል።</p>
+        <h3 style="font-size:18px; margin-top:20px;">Live Sports Betting</h3>
+        <p style="color: var(--text-muted); font-size:13px;">በቅርቡ የሚለቀቅ... በስፖርት ጨዋታዎች ላይ መወራረድ በቅርቡ ይጀምራል።</p>
     </div>
 
-    <!-- 2. GAMES TAB -->
     <div id="games" class="tab-content">
-        <div class="balance-card">
-            <div>
-                <div class="balance-title">Balance</div>
-                <div class="balance-amount">ETB <span class="user-balance">0.00</span></div>
-            </div>
-            <button class="btn-deposit" onclick="switchTab('wallet')">+</button>
+        <div class="main-balance-card">
+            <div class="mb-lbl">Balance</div>
+            <div class="mb-amt">ETB <span class="user-balance">0.00</span></div>
+            <button style="position:absolute; right:15px; top:20px; background:var(--primary-color); border:none; padding:8px 14px; border-radius:6px; font-weight:600;" onclick="switchTab('wallet')">Deposit</button>
         </div>
-        
-        <h3>Top Live Games</h3>
+        <div class="section-title" style="font-size:15px;">Top Games</div>
         <div class="games-grid">
-            <div class="game-card" onclick="openKenoGame()">
-                <span class="badge-hot">LIVE MATCH</span>
-                <div class="game-title">Live Fast Keno</div>
-                <div class="game-desc">ቁጥሮችን ይምረጡ፣ በየደቂቃው በቀጥታ ይጫወቱ እና ያሸንፉ!</div>
+            <div class="game-thumb">
+                <span class="hot-tag">HOT</span>
+                <img src="https://images.unsplash.com/photo-1596838132731-3301c3fd4317?w=150" alt="Keno">
             </div>
+            <div class="game-thumb"><span class="hot-tag">HOT</span><img src="https://images.unsplash.com/photo-1541252260730-0412e8e2108e?w=150" alt="Aviator"></div>
+            <div class="game-thumb"><img src="https://images.unsplash.com/photo-1518609878373-06d740f60d8b?w=150" alt="Bingo"></div>
+            <div class="game-thumb"><span class="hot-tag">HOT</span><img src="https://images.unsplash.com/photo-1511193311914-0346f16efe90?w=150" alt="Slots"></div>
         </div>
     </div>
 
-    <!-- 3. REFERRAL TAB -->
     <div id="invite" class="tab-content">
-        <div class="form-group" style="text-align: center; padding: 30px 15px;">
-            <i class="fa-solid fa-gift" style="font-size: 40px; color: var(--primary-color);"></i>
-            <h2>Invite & Earn</h2>
-            <p style="color: var(--text-muted);">ጓደኞችዎን ይጋብዙ እና ከሚያስገቡት ተቀማጭ (Deposit) 5% ያግኙ።</p>
-            <button class="btn-deposit" style="width: 100%;">Invite a Friend <i class="fa-solid fa-copy"></i></button>
+        <div class="section-subtitle">Referral Program</div>
+        <div class="section-title">Invite & earn</div>
+        <div class="quick-note-box" style="text-align:center; padding:30px 15px;">
+            <i class="fa-solid fa-gift" style="font-size:36px; color:var(--primary-color); margin-bottom:12px;"></i>
+            <div class="qn-title" style="font-size:18px;">REFER&nbsp;&amp;&nbsp;EARVE</div>
+            <div class="qn-desc">Invite friends and earn 5% from their deposits.</div>
         </div>
+        <button style="width:100%; padding:15px; background:var(--primary-color); border:none; border-radius:8px; font-weight:600; font-size:15px;"><i class="fa-solid fa-share-nodes"></i> Invite a friend</button>
     </div>
 
-    <!-- 4. WALLET TAB -->
     <div id="wallet" class="tab-content">
-        <div class="balance-card" style="background-color: #2c2512; color: white;">
+        <div class="section-subtitle">Account Funds</div>
+        <div class="section-title">Wallet</div>
+
+        <div class="wallet-actions-row">
+            <button class="btn-wallet-action dep" onclick="openDepositModal()"><i class="fa-solid fa-plus"></i> Deposit</button>
+            <button class="btn-wallet-action wit" onclick="openWithdrawModal()"><i class="fa-solid fa-minus"></i> Withdraw</button>
+        </div>
+
+        <div class="main-balance-card">
+            <div class="mb-lbl">Main Balance</div>
+            <div class="mb-amt">ETB <span class="user-balance" id="wallet-main-bal-view">18.00</span></div>
+            <i class="fa-solid fa-wallet mb-icon"></i>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-lbl">Total</div>
+                <div class="stat-val" id="stat-total-cnt">6</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-lbl">Pending</div>
+                <div class="stat-val" style="color:#d49a17;" id="stat-pending-cnt">2</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-lbl">Done</div>
+                <div class="stat-val" style="color:#10b981;" id="stat-done-cnt">1</div>
+            </div>
+        </div>
+
+        <div class="quick-note-box">
+            <div class="qn-title">Quick note</div>
+            <div class="qn-desc">Pending deposits can be opened from the transaction list to submit proof or transaction ID.</div>
+        </div>
+
+        <div class="trans-history-bar">
+            <i class="fa-solid fa-clock-rotate-left" style="font-size:20px; color:#d49a17;"></i>
             <div>
-                <div class="balance-title" style="color: #aaa;">Main Balance</div>
-                <div class="balance-amount" style="color: var(--primary-color);">ETB <span class="user-balance">0.00</span></div>
+                <div class="th-title">TRANSACTIONS</div>
+                <div class="th-desc">Deposit and withdrawal history</div>
             </div>
-            <i class="fa-solid fa-wallet" style="font-size: 30px; color: var(--primary-color);"></i>
-        </div>
-
-        <h2 style="margin-top: 20px;">የሂሳብ ማስተላለፊያ (Manual)</h2>
-        <div class="wallet-form-group">
-            <label>የአሰራር አይነት ይምረጡ</label>
-            <select id="tx-type" onchange="toggleWalletForm()">
-                <option value="deposit">ብር ማስገባት (Deposit)</option>
-                <option value="withdraw">ብር ማውጣት (Withdraw)</option>
-            </select>
-        </div>
-
-        <div id="deposit-form">
-            <div class="wallet-instruction">
-                <strong>💡 መመሪያ፦</strong> እባክዎ በቴሌብር ቁጥራችን <code style="font-size:16px; background:#f1b82a; padding:2px 6px; border-radius:4px;">0912345678</code> ላይ ገንዘብ ካስተላለፉ በኋላ የትራንዛክሽን ቁጥሩን (TxID) ከታች ያስገቡ።
-            </div>
-            <div class="wallet-form-group">
-                <label>የብር መጠን (ETB)</label>
-                <input type="number" id="dep-amount" placeholder="ምሳሌ: 100">
-            </div>
-            <div class="wallet-form-group">
-                <label>የግብይት መታወቂያ ቁጥር (Transaction ID)</label>
-                <input type="text" id="dep-txid" placeholder="ምሳሌ: A1B2C3D4...">
-            </div>
-            <button class="wallet-btn-submit" style="background: var(--primary-color); color: var(--text-dark);" onclick="submitDeposit()">ዴፖዚት ጠይቅ</button>
-        </div>
-
-        <div id="withdraw-form" style="display: none;">
-            <div class="wallet-form-group">
-                <label>የብር መጠን (ETB)</label>
-                <input type="number" id="wit-amount" placeholder="ምሳሌ: 50">
-            </div>
-            <div class="wallet-form-group">
-                <label>ብር የሚላክበት የባንክ/ቴሌብር ስልክ ቁጥር</label>
-                <input type="text" id="wit-phone" placeholder="ምሳሌ: 09...">
-            </div>
-            <button class="wallet-btn-submit" style="background:#2c2512; color:white;" onclick="submitWithdraw()">ማውጫ ጠይቅ</button>
         </div>
     </div>
 
-    <!-- 5. PROFILE TAB -->
     <div id="profile" class="tab-content">
-        <div class="form-group" style="display: flex; align-items: center; gap: 15px;">
-            <div style="width: 50px; height: 50px; background: var(--primary-color); border-radius: 50%; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:20px;" id="avatar-letter">E</div>
+        <div class="section-subtitle">Account Center</div>
+        <div class="section-title">Profile</div>
+        <div class="quick-note-box" style="display:flex; align-items:center; gap:15px;">
+            <div style="width:45px; height:45px; background:#4cd964; border-radius:6px; color:white; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:20px;">E</div>
             <div>
-                <div style="font-weight: 700; font-size: 18px;" id="profile-username">@ebla2127</div>
-                <div style="font-size: 12px; color: var(--text-muted);">Member ID: <span id="member-id">8525980303</span></div>
+                <div style="font-weight:700; font-size:16px;">@ebla2127</div>
+                <div style="font-size:11px; color:var(--text-muted);">Member ID: 8525980303</div>
             </div>
         </div>
-        <h3>Account Details</h3>
-        <div class="list-item"><span class="label">Payout Account</span><span class="value">Telebirr</span></div>
     </div>
 
-    <!-- ================= LIVE KENO POPUP SYSTEM ================= -->
-    <div id="popup-keno" class="game-popup">
-        <!-- Splash Screen Cover -->
-        <div id="keno-splash">
-            <div class="spinner"></div>
-            <div style="font-size: 18px; font-weight: bold; color: var(--primary-color);">LOADING LIVE KENO...</div>
-            <div style="font-size: 12px; color: #aaa; margin-top: 5px;">Connecting to Live Betting Pool</div>
-        </div>
 
-        <!-- Real Game Panel -->
-        <div class="keno-header">
-            <div>
-                <span style="font-size: 18px; font-weight: bold; color: var(--primary-color);">LIVE KENO</span>
-                <div style="font-size: 11px; color: #94a3b8;">Balance: ETB <span class="user-balance">0.00</span></div>
+    <div class="modal-overlay" id="modal-dep-step1" onclick="closeAllModals(event)">
+        <div class="modal-sheet" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <span onclick="closeModal('modal-dep-step1')"><i class="fa-solid fa-chevron-left"></i></span>
+                <span>Deposit Funds</span>
+                <span onclick="closeModal('modal-dep-step1')">&times;</span>
             </div>
-            <div class="timer-box" id="keno-timer-display">
-                <i class="fa-solid fa-clock"></i> <span id="timer-seconds">60</span>s
+            
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                <span class="modal-lbl">Enter Amount</span>
+                <span class="modal-balance-text">Balance: <span class="user-balance">18</span> ETB</span>
             </div>
-            <span style="font-size: 30px; cursor: pointer;" onclick="closeKenoGame()">&times;</span>
+
+            <div class="amt-input-wrapper">
+                <input type="number" id="dep-amt-input" value="0" oninput="validateDepAmount()">
+                <span>ETB</span>
+            </div>
+
+            <div class="quick-amt-grid">
+                <button class="btn-quick-chip" onclick="addDepAmount(30)">+30</button>
+                <button class="btn-quick-chip" onclick="addDepAmount(50)">+50</button>
+                <button class="btn-quick-chip" onclick="addDepAmount(100)">+100</button>
+                <button class="btn-quick-chip" onclick="addDepAmount(500)">+500</button>
+                <button class="btn-quick-chip" onclick="addDepAmount(1000)">+1000</button>
+            </div>
+
+            <button class="btn-modal-confirm" id="btn-dep-confirm" onclick="goToDepositStep2()" disabled>Confirm Deposit</button>
         </div>
+    </div>
 
-        <div class="keno-container">
-            <!-- 1 to 80 Grid Table -->
-            <div class="keno-grid" id="keno-grid-table"></div>
+    <div class="modal-overlay" id="modal-dep-step2" onclick="closeAllModals(event)">
+        <div class="modal-sheet" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <span onclick="backToDepStep1()"><i class="fa-solid fa-chevron-left"></i></span>
+                <span>Apply Verification</span>
+                <span onclick="closeModal('modal-dep-step2')">&times;</span>
+            </div>
 
-            <!-- Control Box (+ , - , clear, bet) -->
-            <div class="keno-controls">
-                <div class="bet-row">
-                    <div class="stepper">
-                        <button class="btn-step" onclick="adjustBet(-5)">-</button>
-                        <div class="bet-display">ETB <span id="keno-bet-value">5</span></div>
-                        <button class="btn-step" onclick="adjustBet(5)">+</button>
-                    </div>
-                    <button class="btn-clear" onclick="clearSelectedNumbers()">Clear <i class="fa-solid fa-trash"></i></button>
+            <span class="modal-lbl" style="color:#d49a17;">Instructions</span>
+            <div class="verif-card">
+                <div class="verif-row">
+                    <div>Account Name</div>
+                    <div>Alemitu Gerito Lino</div>
                 </div>
-                <div style="font-size:12px; color:#cbd5e1; margin-bottom:10px;" id="selected-count-msg">የመረጧቸው ቁጥሮች: 0 (እስከ 20 መምረጥ ይችላሉ)</div>
-                <button id="btn-submit-keno" class="btn-action" onclick="placeKenoBet()">ውርርድ አስምር (PLACE BET)</button>
+                <div class="verif-row">
+                    <div>Account Number</div>
+                    <div style="display:flex; align-items:center; gap:6px;">0976765611 <i class="fa-regular fa-credit-card" style="color:#8e8266;"></i></div>
+                </div>
             </div>
 
-            <!-- Drawn Balls Live Feed -->
-            <h4 style="margin: 10px 0 5px 0; color: var(--primary-color);"><i class="fa-solid fa-circle-dot"></i> Live Drawn Balls (20)</h4>
-            <div class="drawn-balls-box">
-                <div class="balls-wrapper" id="live-drawn-balls-container"></div>
-            </div>
+            <span class="modal-lbl">Paste Telebirr SMS or Trans. ID</span>
+            <textarea class="tx-textarea" id="dep-txid-input" placeholder="Paste the SMS or Transaction ID here..." oninput="validateDepTx()"></textarea>
 
-            <!-- Game History Panel -->
-            <h4 style="margin: 15px 0 5px 0; color: #94a3b8;"><i class="fa-solid fa-history"></i> Recent Draws History</h4>
-            <div class="history-box" id="keno-history-list">
-                <div style="color: #64748b; font-size:12px;">ምንም ያለፈ ታሪክ የለም።</div>
-            </div>
+            <button class="btn-modal-confirm" id="btn-dep-submit" onclick="executeDepositSearchAction()" disabled>Verify & Add Balance</button>
         </div>
     </div>
 
-    <!-- Bottom Navigation Bar -->
+    <div class="modal-overlay" id="modal-withdraw" onclick="closeAllModals(event)">
+        <div class="modal-sheet" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <span onclick="closeModal('modal-withdraw')"><i class="fa-solid fa-chevron-left"></i></span>
+                <span>Withdraw Funds</span>
+                <span onclick="closeModal('modal-withdraw')">&times;</span>
+            </div>
+
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                <span class="modal-lbl">Enter Amount</span>
+                <span class="modal-balance-text">Balance: <span class="user-balance">18</span> ETB</span>
+            </div>
+            <div class="modal-limits">Min 50 ETB · Max 10000 ETB</div>
+
+            <div class="amt-input-wrapper">
+                <input type="number" id="wit-amt-input" value="0" oninput="validateWitForm()">
+                <span>ETB</span>
+            </div>
+
+            <div class="quick-amt-grid">
+                <button class="btn-quick-chip" onclick="addWitAmount(50)">+50</button>
+                <button class="btn-quick-chip" onclick="addWitAmount(100)">+100</button>
+                <button class="btn-quick-chip" onclick="addWitAmount(200)">+200</button>
+                <button class="btn-quick-chip" onclick="addWitAmount(500)">+500</button>
+                <button class="btn-quick-chip" onclick="addWitAmount(1000)">+1000</button>
+            </div>
+
+            <span class="modal-lbl">Withdrawal Account Phone</span>
+            <input type="text" class="phone-input-box" id="wit-phone-input" placeholder="09XXXXXXXX" oninput="validateWitForm()">
+            
+            <div class="info-sub-text" id="wit-error-msg" style="color:red; display:none;">Insufficient balance</div>
+            <div class="info-sub-text" id="wit-normal-msg">No withdrawal account set yet. Enter one now and it will be saved for next time (or set it in Profile &gt; Settings).</div>
+
+            <button class="btn-modal-confirm" id="btn-wit-submit" onclick="executeWithdrawSearchAction()" disabled>Confirm Withdraw</button>
+        </div>
+    </div>
+
+
     <div class="nav-bar">
         <div class="nav-item active" onclick="switchTab('sports', this)"><i class="fa-solid fa-building-columns"></i>Sports</div>
         <div class="nav-item" onclick="switchTab('games', this)"><i class="fa-solid fa-gamepad"></i>Games</div>
@@ -357,58 +359,43 @@
         <div class="nav-item" onclick="switchTab('profile', this)"><i class="fa-solid fa-user"></i>Profile</div>
     </div>
 
+
     <script>
+        // Supabase Database Parameters 
         const SUPABASE_URL = "https://pfmpsnpiafhzeunbpemm.supabase.co";
         const SUPABASE_KEY = "sb_publishable_3JXvZ4QYWC-c7wjTPLk3RA_v18uEzJN";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let currentUserId = "8525980303"; 
-        let currentUsername = "ebla2127";
-        let userBalance = 0;
+        let userBalance = 18.00; // Starting replica state image match
 
-        // Keno Game State
-        let selectedNumbers = [];
-        let kenoBetAmount = 5;
-        let isKenoPopupOpen = false;
-
-        // Background Engine Variables
-        let currentRoundDrawnBalls = [];
-        let isUserBetInCurrentRound = false;
-        let placedBetData = null; 
-
-        async function initUser() {
+        // Init Setup Hook
+        async function initAccount() {
             const tg = window.Telegram?.WebApp;
             if (tg && tg.initDataUnsafe?.user) {
                 currentUserId = tg.initDataUnsafe.user.id.toString();
-                currentUsername = tg.initDataUnsafe.user.username || "No_Name";
                 tg.expand();
             }
-
-            document.getElementById('profile-username').innerText = "@" + currentUsername;
-            document.getElementById('avatar-letter').innerText = currentUsername.charAt(0).toUpperCase();
-            document.getElementById('member-id').innerText = currentUserId;
-
-            const { data } = await supabaseClient
-                .from('users')
-                .upsert({ telegram_id: currentUserId, username: currentUsername }, { onConflict: 'telegram_id' })
-                .select().single();
-
-            if (data) {
-                userBalance = data.balance || 0;
-                updateBalanceUI(userBalance);
-            }
-
-            startBackgroundLiveEngine();
-        }
-
-        async function syncBalance(newBal) {
-            userBalance = newBal;
             updateBalanceUI(userBalance);
-            await supabaseClient.from('users').update({ balance: newBal }).eq('telegram_id', currentUserId);
+            loadTransactionCounts();
         }
 
         function updateBalanceUI(bal) {
+            userBalance = bal;
             document.querySelectorAll('.user-balance').forEach(el => el.innerText = bal.toFixed(2));
+        }
+
+        async function loadTransactionCounts() {
+            // ይህ ካውንተሮቹን ከዴታቤዝህ ላይ ቆጥሮ ያስቀምጣል
+            try {
+                const { count: total } = await supabaseClient.from('transactions').select('*', { count: 'exact', head: true }).eq('telegram_id', currentUserId);
+                const { count: pending } = await supabaseClient.from('transactions').select('*', { count: 'exact', head: true }).eq('telegram_id', currentUserId).eq('status', 'pending');
+                const { count: done } = await supabaseClient.from('transactions').select('*', { count: 'exact', head: true }).eq('telegram_id', currentUserId).eq('status', 'approved');
+                
+                if(total !== null) document.getElementById('stat-total-cnt').innerText = total;
+                if(pending !== null) document.getElementById('stat-pending-cnt').innerText = pending;
+                if(done !== null) document.getElementById('stat-done-cnt').innerText = done;
+            } catch (e) { console.log(e); }
         }
 
         function switchTab(tabId, element) {
@@ -418,287 +405,131 @@
             if (element) element.classList.add('active');
         }
 
-        function toggleWalletForm() {
-            const type = document.getElementById('tx-type').value;
-            document.getElementById('deposit-form').style.display = type === 'deposit' ? 'block' : 'none';
-            document.getElementById('withdraw-form').style.display = type === 'withdraw' ? 'block' : 'none';
+        /* ================= MODAL CONTROLLER ACTIONS ================= */
+        function openDepositModal() {
+            document.getElementById('dep-amt-input').value = "0";
+            document.getElementById('btn-dep-confirm').disabled = true;
+            document.getElementById('modal-dep-step1').style.display = 'flex';
         }
 
-        /* ================= SERVER-LIKE GLOBAL TIME ENGINE ================= */
-        function startBackgroundLiveEngine() {
-            setInterval(() => {
-                const now = new Date();
-                const seconds = now.getSeconds(); 
-                let countdown = 60 - seconds; 
-
-                if (isKenoPopupOpen) {
-                    document.getElementById('timer-seconds').innerText = countdown;
-                    
-                    if (countdown <= 10) {
-                        document.getElementById('keno-timer-display').style.background = "#b91c1c";
-                        document.getElementById('btn-submit-keno').innerText = "ውርርድ ተዘግቷል (CLOSED)";
-                        document.getElementById('btn-submit-keno').disabled = true;
-                    } else {
-                        document.getElementById('keno-timer-display').style.background = "#ef4444";
-                        if(!isUserBetInCurrentRound) {
-                            document.getElementById('btn-submit-keno').disabled = false;
-                            document.getElementById('btn-submit-keno').innerText = "ውርርድ አስምር (PLACE BET)";
-                        }
-                    }
-                }
-
-                if (countdown === 60 || countdown === 0) {
-                    triggerGlobalDraw();
-                }
-            }, 1000);
+        function openWithdrawModal() {
+            document.getElementById('wit-amt-input').value = "0";
+            document.getElementById('wit-phone-input').value = "";
+            document.getElementById('btn-wit-submit').disabled = true;
+            document.getElementById('wit-error-msg').style.display = 'none';
+            document.getElementById('modal-withdraw').style.display = 'flex';
         }
 
-        function triggerGlobalDraw() {
-            currentRoundDrawnBalls = [];
-            while(currentRoundDrawnBalls.length < 20) {
-                let randNum = Math.floor(Math.random() * 80) + 1;
-                if(!currentRoundDrawnBalls.includes(randNum)) {
-                    currentRoundDrawnBalls.push(randNum);
-                }
-            }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function closeAllModals(e) { if(e.target.classList.contains('modal-overlay')) e.target.style.display = 'none'; }
 
-            if (isKenoPopupOpen) {
-                renderLiveBallsWithAnimation();
-            } else {
-                processPayoutBackend();
-            }
+        /* DEPOSIT STEP ENGINE */
+        function addDepAmount(val) {
+            let current = parseFloat(document.getElementById('dep-amt-input').value) || 0;
+            document.getElementById('dep-amt-input').value = current + val;
+            validateDepAmount();
+        }
+        function validateDepAmount() {
+            let amt = parseFloat(document.getElementById('dep-amt-input').value) || 0;
+            document.getElementById('btn-dep-confirm').disabled = (amt <= 0);
+        }
+        function goToDepositStep2() {
+            closeModal('modal-dep-step1');
+            document.getElementById('dep-txid-input').value = "";
+            document.getElementById('btn-dep-submit').disabled = true;
+            document.getElementById('modal-dep-step2').style.display = 'flex';
+        }
+        function backToDepStep1() {
+            closeModal('modal-dep-step2');
+            document.getElementById('modal-dep-step1').style.display = 'flex';
+        }
+        function validateDepTx() {
+            let tx = document.getElementById('dep-txid-input').value.trim();
+            document.getElementById('btn-dep-submit').disabled = (tx.length < 5);
         }
 
-        function renderLiveBallsWithAnimation() {
-            let container = document.getElementById('live-drawn-balls-container');
-            container.innerHTML = '';
-            document.getElementById('btn-submit-keno').innerText = "እጣ እየወጣ ነው (LIVE DRAWING...)";
-            document.getElementById('btn-submit-keno').disabled = true;
+        // CONFIRM SEARCH ENGINE ACTION FOR DEPOSIT
+        async function executeDepositSearchAction() {
+            let submitBtn = document.getElementById('btn-dep-submit');
+            let amt = parseFloat(document.getElementById('dep-amt-input').value);
+            let txData = document.getElementById('dep-txid-input').value;
 
-            let ballCount = 0;
-            let drawInterval = setInterval(() => {
-                if(!isKenoPopupOpen) { 
-                    clearInterval(drawInterval);
-                    processPayoutBackend();
-                    return;
-                }
+            // ቁልፉን ወደ መፈለጊያ አኒሜሽን መቀየር (Search/Loading Effect)
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<div class="search-loader"></div>`;
 
-                let currentBall = currentRoundDrawnBalls[ballCount];
-                let gridCell = document.querySelector(`[data-num='${currentBall}']`);
-                if(gridCell) gridCell.classList.add('drawn');
+            // በስተጀርባ ዴታቤዝ ላይ ማስቀመጥ (Deposit ህግ: ባላንስ ላይ ወዲያው አይጨምርም!)
+            await supabaseClient.from('transactions').insert({
+                telegram_id: currentUserId,
+                type: 'deposit',
+                amount: amt,
+                tx_id_or_phone: txData,
+                status: 'pending'
+            });
 
-                let ball = document.createElement('div');
-                ball.className = 'ball';
-                ball.innerText = currentBall;
-                container.appendChild(ball);
-
-                ballCount++;
-                if(ballCount >= 20) {
-                    clearInterval(drawInterval);
-                    processPayoutBackend();
-                }
-            }, 500); 
-        }
-
-        /* ================= KENO PAYOUT ENGINE (የአሸናፊነት ሂሳብ ስራ መቆጣጠሪያ) ================= */
-        function processPayoutBackend() {
-            if (isUserBetInCurrentRound && placedBetData) {
-                let totalSelected = placedBetData.numbers.length;
-                let matches = placedBetData.numbers.filter(n => currentRoundDrawnBalls.includes(n)).length;
-                let winAmount = 0;
-                let bet = placedBetData.bet;
-
-                // ተለዋዋጭ የትርፍ ስሌት ቀመር (Dynamic Odds Table)
-                if (totalSelected === 20) {
-                    if (matches === 7 || matches === 8) winAmount = bet; 
-                    else if (matches === 9) winAmount = bet * 2; 
-                    else if (matches >= 10 && matches < 20) winAmount = bet * (matches - 7); 
-                    else if (matches === 20) winAmount = bet * 50; // 10 ብር መድቦ 500 ብር ያገኛል
-                } 
-                else if (totalSelected === 3) {
-                    if (matches === 2) winAmount = bet * 1.5; // 3 ገምቶ 2 ላገኘ
-                    else if (matches === 3) winAmount = bet * 5;
-                } 
-                else if (totalSelected === 4) {
-                    if (matches === 3) winAmount = bet * 3; // 4 ገምቶ 3 ላገኘ
-                    else if (matches === 4) winAmount = bet * 12;
-                } 
-                else {
-                    // ለማንኛውም ሌላ ምርጫዎች (ከ 5 እስከ 19 ቁጥሮች ለገመቱ አጠቃላይ ቀመር)
-                    let ratio = matches / totalSelected;
-                    if (ratio >= 0.75) winAmount = bet * 4; // 75% እና በላይ ካገኘ
-                    else if (ratio >= 0.5) winAmount = bet * 1.5; // 50% ካገኘ (ትንሽዬ ማበረታቻ)
-                }
-
-                if (winAmount > 0) {
-                    syncBalance(userBalance + winAmount);
-                    if(isKenoPopupOpen) alert(`🎉 እንኳን ደስ አሎት! ${matches}/${totalSelected} ቁጥሮች ገጥመውልዎ ETB ${winAmount.toFixed(2)} አሸንፈዋል።`);
-                } else {
-                    if(isKenoPopupOpen) alert(`የዚህ ዙር እጣ ተጠናቋል። የገጠሙት ቁጥሮች ብዛት: ${matches}/${totalSelected}። በሚቀጥለው ይሞክሩ!`);
-                }
-            }
-
-            saveToHistoryList(currentRoundDrawnBalls);
-
-            isUserBetInCurrentRound = false;
-            placedBetData = null;
-
-            if (isKenoPopupOpen) {
-                setTimeout(() => {
-                    if(isKenoPopupOpen) {
-                        buildKenoGrid80();
-                        document.getElementById('live-drawn-balls-container').innerHTML = '';
-                        selectedNumbers = [];
-                        document.getElementById('selected-count-msg').innerText = "የመረጧቸው ቁጥሮች: 0 (እስከ 20 መምረጥ ይችላሉ)";
-                    }
-                }, 3000);
-            }
-        }
-
-        /* ================= LIVE KENO UI INTERFACES ================= */
-        function openKenoGame() {
-            isKenoPopupOpen = true;
-            document.getElementById('popup-keno').style.display = 'block';
-            document.getElementById('keno-splash').style.display = 'flex';
-            
-            buildKenoGrid80();
-            
+            // አኒሜሽኑ ለ 2 ሰከንድ እንዲታይ ማድረግ
             setTimeout(() => {
-                document.getElementById('keno-splash').style.display = 'none';
-                document.getElementById('live-drawn-balls-container').innerHTML = '';
-            }, 1500);
+                alert("ግብይቱ እየተፈለገ ነው! አስተዳዳሪው ሲያረጋግጠው ይጨመርልዎታል።");
+                closeModal('modal-dep-step2');
+                loadTransactionCounts();
+            }, 2000);
         }
 
-        function closeKenoGame() {
-            isKenoPopupOpen = false;
-            document.getElementById('popup-keno').style.display = 'none';
+        /* WITHDRAW STEP ENGINE */
+        function addWitAmount(val) {
+            let current = parseFloat(document.getElementById('wit-amt-input').value) || 0;
+            document.getElementById('wit-amt-input').value = current + val;
+            validateWitForm();
         }
+        function validateWitForm() {
+            let amt = parseFloat(document.getElementById('wit-amt-input').value) || 0;
+            let phone = document.getElementById('wit-phone-input').value.trim();
+            let submitBtn = document.getElementById('btn-wit-submit');
+            let errorMsg = document.getElementById('wit-error-msg');
 
-        function buildKenoGrid80() {
-            let container = document.getElementById('keno-grid-table');
-            container.innerHTML = '';
-            for(let i=1; i<=80; i++) {
-                let cell = document.createElement('div');
-                cell.className = 'keno-num';
-                cell.innerText = i;
-                cell.dataset.num = i;
-                cell.onclick = () => selectKenoNumber(i, cell);
-                if(selectedNumbers.includes(i)) cell.classList.add('selected');
-                container.appendChild(cell);
-            }
-        }
-
-        function selectKenoNumber(num, element) {
-            const now = new Date();
-            if((60 - now.getSeconds()) <= 10) return alert("ውርርድ ተዘግቷል! እባክዎ ቀጣዩን ዙር ይጠብቁ።");
-            if(isUserBetInCurrentRound) return alert("ውርርድ አስምረዋል! እባክዎ እጣው እስኪያልቅ ይጠብቁ።");
-
-            if(selectedNumbers.includes(num)) {
-                selectedNumbers = selectedNumbers.filter(n => n !== num);
-                element.classList.remove('selected');
+            if (amt > userBalance) {
+                errorMsg.style.display = 'block';
+                submitBtn.disabled = true;
             } else {
-                if(selectedNumbers.length >= 20) return alert("ከ 20 በላይ ቁጥሮችን መምረጥ አይቻልም!");
-                selectedNumbers.push(num);
-                element.classList.add('selected');
+                errorMsg.style.display = 'none';
+                submitBtn.disabled = (amt < 50 || phone.length < 9);
             }
-            document.getElementById('selected-count-msg').innerText = `የመረጧቸው ቁጥሮች: ${selectedNumbers.length} (እስከ 20 መምረጥ ይችላሉ)`;
         }
 
-        function adjustBet(val) {
-            if(isUserBetInCurrentRound) return;
-            kenoBetAmount += val;
-            if(kenoBetAmount < 5) kenoBetAmount = 5; 
-            document.getElementById('keno-bet-value').innerText = kenoBetAmount;
-        }
+        // CONFIRM SEARCH ENGINE ACTION FOR WITHDRAWAL
+        async function executeWithdrawSearchAction() {
+            let submitBtn = document.getElementById('btn-wit-submit');
+            let amt = parseFloat(document.getElementById('wit-amt-input').value);
+            let phoneNum = document.getElementById('wit-phone-input').value;
 
-        function clearSelectedNumbers() {
-            if(isUserBetInCurrentRound) return;
-            selectedNumbers = [];
-            document.querySelectorAll('.keno-num').forEach(el => el.classList.remove('selected'));
-            document.getElementById('selected-count-msg').innerText = "የመረጧቸው ቁጥሮች: 0 (እስከ 20 መምረጥ ይችላሉ)";
-        }
+            // ቁልፉን ወደ መፈለጊያ አኒሜሽን መቀየር (Search/Loading Effect)
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<div class="search-loader"></div>`;
 
-        function placeKenoBet() {
-            if(selectedNumbers.length < 2) return alert("እባክዎ ቢያንስ 2 ቁጥሮችን ይምረጡ!");
-            if(kenoBetAmount > userBalance) return alert("በቂ የብር ቀሪ የሎትም!");
-            if(isUserBetInCurrentRound) return alert("በዚህ ዙር ላይ አስቀድመው ውርርድ አስምረዋል!");
+            // Withdrawal ህግ: ወዲያውኑ ከባላንስ ላይ መቀነስ!
+            let newBalance = userBalance - amt;
+            updateBalanceUI(newBalance);
+            await supabaseClient.from('users').update({ balance: newBalance }).eq('telegram_id', currentUserId);
 
-            syncBalance(userBalance - kenoBetAmount);
-            
-            isUserBetInCurrentRound = true;
-            placedBetData = {
-                numbers: [...selectedNumbers],
-                bet: kenoBetAmount
-            };
-
-            document.getElementById('btn-submit-keno').innerText = "ውርርድ ተመዝግቧል ✓";
-            document.getElementById('btn-submit-keno').disabled = true;
-        }
-
-        function saveToHistoryList(draws) {
-            let histBox = document.getElementById('keno-history-list');
-            if(histBox.innerHTML.includes("ምንም ያለፈ ታሪክ የለም")) histBox.innerHTML = '';
-
-            let item = document.createElement('div');
-            item.className = 'history-item';
-            
-            let timeStamp = document.createElement('strong');
-            timeStamp.innerText = "DRAW: ";
-            timeStamp.style.color = "var(--primary-color)";
-            item.appendChild(timeStamp);
-
-            let numbersText = document.createElement('span');
-            numbersText.innerText = draws.slice(0, 8).join(', ') + "...";
-            item.appendChild(numbersText);
-
-            histBox.insertBefore(item, histBox.firstChild);
-        }
-
-        /* ================= MANUAL TRANSACTION SUBMISSIONS (የተስተካከለው የቪዝነስ ህግ) ================= */
-        async function submitDeposit() {
-            let amt = parseFloat(document.getElementById('dep-amount').value);
-            let tx = document.getElementById('dep-txid').value;
-            if(!amt || !tx) return alert('እባክዎ ሁሉንም ሳጥኖች ይሙሉ!');
-            
-            // የዴፖዚት መረጃ ወደ Supabase ብቻ ይላካል፤ ባላንስ ላይ አይጨምርም! (አንተ አፕሩቭ እስክታደርገው)
-            await supabaseClient.from('transactions').insert({ 
-                telegram_id: currentUserId, 
-                type: 'deposit', 
-                amount: amt, 
-                tx_id_or_phone: tx, 
-                status: 'pending' 
+            // ጥያቄውን ዴታቤዝ ውስጥ ማስገባት
+            await supabaseClient.from('transactions').insert({
+                telegram_id: currentUserId,
+                type: 'withdrawal',
+                amount: amt,
+                tx_id_or_phone: phoneNum,
+                status: 'pending'
             });
-            alert('የዴፖዚት ጥያቄዎ በተሳካ ሁኔታ ቀርቧል። አስተዳዳሪው ሲያረጋግጠው አካውንትዎ ላይ ይጨምራል።');
-            
-            document.getElementById('dep-amount').value = '';
-            document.getElementById('dep-txid').value = '';
+
+            // አኒሜሽኑ ለ 2 ሰከንድ እንዲታይ ማድረግ
+            setTimeout(() => {
+                alert(`የማውጫ ጥያቄዎ ቀርቧል። ETB ${amt} ከባላንስዎ ላይ ተቀንሷል።`);
+                closeModal('modal-withdraw');
+                loadTransactionCounts();
+            }, 2000);
         }
 
-        async function submitWithdraw() {
-            let amt = parseFloat(document.getElementById('wit-amount').value);
-            let ph = document.getElementById('wit-phone').value;
-            if(!amt || !ph) return alert('እባክዎ ሁሉንም ሳጥኖች ይሙሉ!');
-            if(amt > userBalance) return alert('በቂ የብር ቀሪ የሎትም!');
-            
-            // 1. ወዲያውኑ ከተጠቃሚው ዋና ባላንስ ላይ ብሩን በራስ-ሰር እንቀንሳለን!
-            let updatedBalance = userBalance - amt;
-            await syncBalance(updatedBalance);
-            
-            // 2. ከዚያ የትራንዛክሽን ጥያቄውን ወደ ዴታቤዝ እንልካለን።
-            await supabaseClient.from('transactions').insert({ 
-                telegram_id: currentUserId, 
-                type: 'withdrawal', 
-                amount: amt, 
-                tx_id_or_phone: ph, 
-                status: 'pending' 
-            });
-            alert(`የማውጫ ጥያቄዎ ቀርቧል። ETB ${amt} ከባላንስዎ ላይ በራስ-ሰር ተቀንሷል።`);
-            
-            document.getElementById('wit-amount').value = '';
-            document.getElementById('wit-phone').value = '';
-        }
-
-        initUser();
+        // Run On Start
+        initAccount();
     </script>
 </body>
 </html>
