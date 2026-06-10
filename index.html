@@ -8,7 +8,7 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Google Font & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -69,7 +69,52 @@
         .game-desc { font-size: 12px; color: #ddd; z-index: 2; }
         .badge-hot { position: absolute; top: 12px; right: 12px; background-color: #ff3b30; color: white; font-size: 10px; padding: 3px 8px; border-radius: 4px; font-weight: bold; z-index: 2; }
 
-        /* ================= KENO PROFESSIONAL POPUP & LIVE SCREEN ================= */
+        /* ================= WALLET TAB (ፅሁፎቹ የጎሉበት ዲዛይን) ================= */
+        .wallet-form-group { 
+            background-color: var(--card-color); 
+            padding: 20px; 
+            border-radius: 14px; 
+            margin-bottom: 18px; 
+            text-align: left; 
+        }
+        .wallet-form-group label { 
+            display: block; 
+            font-size: 16px; /* ከበፊቱ ከፍ የተደረገ */
+            font-weight: 600;
+            color: var(--text-dark); 
+            margin-bottom: 8px; 
+        }
+        .wallet-form-group input, .wallet-form-group select { 
+            width: 100%; 
+            padding: 14px; /* ትልልቅ ሳጥኖች */
+            font-size: 16px; 
+            border: 1px solid #ccc; 
+            border-radius: 8px; 
+            box-sizing: border-box; 
+            background: #fff;
+            color: var(--text-dark);
+        }
+        .wallet-instruction {
+            background-color: #fffde7; 
+            border: 1px solid var(--primary-color);
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 15px; /* ትልቅና ግልጽ ፅሁፍ */
+            line-height: 1.5;
+            margin-bottom: 15px;
+            color: #4a3f1a;
+        }
+        .wallet-btn-submit {
+            width: 100%; 
+            padding: 16px; 
+            font-size: 17px; 
+            font-weight: 700; 
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* ================= KENO POPUP & LIVE SCREEN ================= */
         .game-popup {
             display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: #0f172a; color: white; z-index: 2000; overflow-y: auto; box-sizing: border-box;
@@ -114,6 +159,12 @@
         /* History Section */
         .history-box { background: #1e293b; padding: 12px; border-radius: 10px; }
         .history-item { font-size: 12px; color: #cbd5e1; border-bottom: 1px solid #334155; padding: 6px 0; display: flex; gap: 8px; overflow-x: auto; }
+
+        /* Profile, Invite and General styles */
+        .form-group { background-color: var(--card-color); padding: 15px; border-radius: 12px; margin-bottom: 12px; text-align: left; }
+        .list-item { display: flex; justify-content: space-between; padding: 15px; background-color: var(--card-color); margin-bottom: 8px; border-radius: 10px; font-size: 14px; }
+        .list-item .label { color: var(--text-muted); }
+        .list-item .value { font-weight: 600; }
 
         /* Bottom Nav */
         .nav-bar {
@@ -184,7 +235,7 @@
         </div>
     </div>
 
-    <!-- 4. WALLET TAB -->
+    <!-- 4. WALLET TAB (የጎሉ ትልልቅ ፅሁፎችና ዲዛይን) -->
     <div id="wallet" class="tab-content">
         <div class="balance-card" style="background-color: #2c2512; color: white;">
             <div>
@@ -194,8 +245,8 @@
             <i class="fa-solid fa-wallet" style="font-size: 30px; color: var(--primary-color);"></i>
         </div>
 
-        <h3>የሂሳብ ማስተላለፊያ (Manual)</h3>
-        <div class="form-group">
+        <h2 style="margin-top: 20px;">የሂሳብ ማስተላለፊያ (Manual)</h2>
+        <div class="wallet-form-group">
             <label>የአሰራር አይነት ይምረጡ</label>
             <select id="tx-type" onchange="toggleWalletForm()">
                 <option value="deposit">ብር ማስገባት (Deposit)</option>
@@ -204,18 +255,30 @@
         </div>
 
         <div id="deposit-form">
-            <div class="form-group" style="background-color: #fffde7; border: 1px solid var(--primary-color);">
-                <strong>መመሪያ፦</strong> እባክዎ በቴሌብር ቁጥራችን <code>0954406366</code> ላይ ገንዘብ ካስተላለፉ በኋላ የትራንዛክሽን ቁጥሩን (TxID) ከታች ያስገቡ።
+            <div class="wallet-instruction">
+                <strong>💡 መመሪያ፦</strong> እባክዎ በቴሌብር ቁጥራችን <code style="font-size:16px; background:#f1b82a; padding:2px 6px; border-radius:4px;">0912345678</code> ላይ ገንዘብ ካስተላለፉ በኋላ የትራንዛክሽን ቁጥሩን (TxID) ከታች ያስገቡ።
             </div>
-            <div class="form-group"><label>የብር መጠን (ETB)</label><input type="number" id="dep-amount" placeholder="100"></div>
-            <div class="form-group"><label>የግብይት መታወቂያ ቁጥር (Transaction ID)</label><input type="text" id="dep-txid" placeholder="A1B2C3D4..."></div>
-            <button class="btn-deposit" style="width: 100%;" onclick="submitDeposit()">ዴፖዚት ጠይቅ</button>
+            <div class="wallet-form-group">
+                <label>የብር መጠን (ETB)</label>
+                <input type="number" id="dep-amount" placeholder="ምሳሌ: 100">
+            </div>
+            <div class="wallet-form-group">
+                <label>የግብይት መታወቂያ ቁጥር (Transaction ID)</label>
+                <input type="text" id="dep-txid" placeholder="ምሳሌ: A1B2C3D4...">
+            </div>
+            <button class="wallet-btn-submit" style="background: var(--primary-color); color: var(--text-dark);" onclick="submitDeposit()">ዴፖዚት ጠይቅ</button>
         </div>
 
         <div id="withdraw-form" style="display: none;">
-            <div class="form-group"><label>የብር መጠን (ETB)</label><input type="number" id="wit-amount" placeholder="50"></div>
-            <div class="form-group"><label>ብር የሚላክበት የባንክ/ቴሌብር ስልክ ቁጥር</label><input type="text" id="wit-phone" placeholder="09..."></div>
-            <button class="btn-deposit" style="width:100%; background-color:#2c2512; color:white;" onclick="submitWithdraw()">ማውጫ ጠይቅ</button>
+            <div class="wallet-form-group">
+                <label>የብር መጠን (ETB)</label>
+                <input type="number" id="wit-amount" placeholder="ምሳሌ: 50">
+            </div>
+            <div class="wallet-form-group">
+                <label>ብር የሚላክበት የባንክ/ቴሌብር ስልክ ቁጥር</label>
+                <input type="text" id="wit-phone" placeholder="ምሳሌ: 09...">
+            </div>
+            <button class="wallet-btn-submit" style="background:#2c2512; color:white;" onclick="submitWithdraw()">ማውጫ ጠይቅ</button>
         </div>
     </div>
 
@@ -274,9 +337,7 @@
             <!-- Drawn Balls Live Feed -->
             <h4 style="margin: 10px 0 5px 0; color: var(--primary-color);"><i class="fa-solid fa-circle-dot"></i> Live Drawn Balls (20)</h4>
             <div class="drawn-balls-box">
-                <div class="balls-wrapper" id="live-drawn-balls-container">
-                    <div style="color: #64748b; font-size:13px; padding-top:10px;">ሰዓቱ ሲያልቅ የቀጥታ እጣዎች እዚህ ይደረደራሉ።</div>
-                </div>
+                <div class="balls-wrapper" id="live-drawn-balls-container"></div>
             </div>
 
             <!-- Game History Panel -->
@@ -308,10 +369,12 @@
         // Keno Game State
         let selectedNumbers = [];
         let kenoBetAmount = 5;
-        let countdownTime = 60;
-        let globalTimerInterval = null;
-        let isBetPlacedThisRound = false;
-        let isDrawingState = false;
+        let isKenoPopupOpen = false;
+
+        // BACKGROUND SERVER-LIKE TIME TRACKING
+        let currentRoundDrawnBalls = [];
+        let isUserBetInCurrentRound = false;
+        let placedBetData = null; 
 
         async function initUser() {
             const tg = window.Telegram?.WebApp;
@@ -334,6 +397,9 @@
                 userBalance = data.balance || 0;
                 updateBalanceUI(userBalance);
             }
+
+            // አፑ እንደተከፈተ የ Live ሰዓቱን ከበስተጀርባ ማስጀመር (ተጠቃሚው Kenoን ቢከፍትም ባይከፍትም ይቆጥራል!)
+            startBackgroundLiveEngine();
         }
 
         async function syncBalance(newBal) {
@@ -359,23 +425,149 @@
             document.getElementById('withdraw-form').style.display = type === 'withdraw' ? 'block' : 'none';
         }
 
-        /* ================= LIVE KENO GAME CONTROL ENGINE ================= */
+        /* ================= SERVER-LIKE GLOBAL TIME ENGINE ================= */
+        function startBackgroundLiveEngine() {
+            setInterval(() => {
+                const now = new Date();
+                const seconds = now.getSeconds(); 
+                let countdown = 60 - seconds; // በየደቂቃው አዲስ ዙር (0ኛ ሴኮንድ ላይ እጣ ይወጣል)
+
+                // UIው ክፍት ከሆነ ሰዓቱን ማሳየት
+                if (isKenoPopupOpen) {
+                    document.getElementById('timer-seconds').innerText = countdown;
+                    
+                    if (countdown <= 10) {
+                        document.getElementById('keno-timer-display').style.background = "#b91c1c";
+                        document.getElementById('btn-submit-keno').innerText = "ውርርድ ተዘግቷል (CLOSED)";
+                        document.getElementById('btn-submit-keno').disabled = true;
+                    } else {
+                        document.getElementById('keno-timer-display').style.background = "#ef4444";
+                        if(!isUserBetInCurrentRound) {
+                            document.getElementById('btn-submit-keno').disabled = false;
+                            document.getElementById('btn-submit-keno').innerText = "ውርርድ አስምር (PLACE BET)";
+                        }
+                    }
+                }
+
+                // ልክ ደቂቃው ሲሞላ (0ኛ ሴኮንድ ላይ) እጣ ማውጣት በጀርባ ይጀምራል!
+                if (countdown === 60 || countdown === 0) {
+                    triggerGlobalDraw();
+                }
+            }, 1000);
+        }
+
+        function triggerGlobalDraw() {
+            // በጀርባ የ 20 ቁጥሮች እጣ ማመንጨት
+            currentRoundDrawnBalls = [];
+            while(currentRoundDrawnBalls.length < 20) {
+                let randNum = Math.floor(Math.random() * 80) + 1;
+                if(!currentRoundDrawnBalls.includes(randNum)) {
+                    currentRoundDrawnBalls.push(randNum);
+                }
+            }
+
+            // ተጠቃሚው ፖፕአፑን ከፍቶ እያየ ከሆነ የቀጥታ አኒሜሽን ማሳየት
+            if (isKenoPopupOpen) {
+                renderLiveBallsWithAnimation();
+            } else {
+                // ተጠቃሚው ዘግቶ ወጥቶ ከሆነ ግን ሰሌዳ ሳይበላሽ ሂሳቡን በጀርባ ማካሄድ
+                processPayoutBackend();
+            }
+        }
+
+        function renderLiveBallsWithAnimation() {
+            let container = document.getElementById('live-drawn-balls-container');
+            container.innerHTML = '';
+            document.getElementById('btn-submit-keno').innerText = "እጣ እየወጣ ነው (LIVE DRAWING...)";
+            document.getElementById('btn-submit-keno').disabled = true;
+
+            let ballCount = 0;
+            let drawInterval = setInterval(() => {
+                if(!isKenoPopupOpen) { // ተጠቃሚው አኒሜሽኑ መሃል ላይ እያለ ቢዘጋው እንኳ እንዳይበላሽ
+                    clearInterval(drawInterval);
+                    processPayoutBackend();
+                    return;
+                }
+
+                let currentBall = currentRoundDrawnBalls[ballCount];
+                
+                // በሰንጠረዡ ላይ ማብራት
+                let gridCell = document.querySelector(`[data-num='${currentBall}']`);
+                if(gridCell) gridCell.classList.add('drawn');
+
+                // ኳሷን መደርደር
+                let ball = document.createElement('div');
+                ball.className = 'ball';
+                ball.innerText = currentBall;
+                container.appendChild(ball);
+
+                ballCount++;
+                if(ballCount >= 20) {
+                    clearInterval(drawInterval);
+                    processPayoutBackend();
+                }
+            }, 500); // ፈጠን ያለ ውብ አኒሜሽን
+        }
+
+        function processPayoutBackend() {
+            if (isUserBetInCurrentRound && placedBetData) {
+                let matches = placedBetData.numbers.filter(n => currentRoundDrawnBalls.includes(n)).length;
+                let winAmount = 0;
+
+                if (matches === 7 || matches === 8) {
+                    winAmount = placedBetData.bet;
+                } else if (matches === 9) {
+                    winAmount = placedBetData.bet * 2;
+                } else if (matches >= 10 && matches < 20) {
+                    winAmount = placedBetData.bet * (matches - 7);
+                } else if (matches === 20) {
+                    winAmount = placedBetData.bet * 50; 
+                }
+
+                if (winAmount > 0) {
+                    syncBalance(userBalance + winAmount);
+                    if(isKenoPopupOpen) alert(`🎉 እንኳን ደስ አሎት! ${matches} ቁጥሮች ገጥመውልዎ ETB ${winAmount.toFixed(2)} አሸንፈዋል።`);
+                } else {
+                    if(isKenoPopupOpen) alert(`የዚህ ዙር እጣ ተጠናቋል። የገጠሙት ቁጥሮች ብዛት: ${matches}። በሚቀጥለው ይሞክሩ!`);
+                }
+            }
+
+            // የታሪክ ማሳያ ሰሌዳ ላይ መመዝገብ
+            saveToHistoryList(currentRoundDrawnBalls);
+
+            // ዙሩን ማፅዳትና ለቀጣዩ ማዘጋጀት
+            isUserBetInCurrentRound = false;
+            placedBetData = null;
+
+            if (isKenoPopupOpen) {
+                setTimeout(() => {
+                    if(isKenoPopupOpen) {
+                        buildKenoGrid80();
+                        document.getElementById('live-drawn-balls-container').innerHTML = '';
+                        selectedNumbers = [];
+                        document.getElementById('selected-count-msg').innerText = "የመረጧቸው ቁጥሮች: 0 (እስከ 20 መምረጥ ይችላሉ)";
+                    }
+                }, 3000);
+            }
+        }
+
+        /* ================= LIVE KENO UI INTERFACES ================= */
         function openKenoGame() {
+            isKenoPopupOpen = true;
             document.getElementById('popup-keno').style.display = 'block';
             document.getElementById('keno-splash').style.display = 'flex';
             
             buildKenoGrid80();
             
-            // Splash Screen ለ 2.5 ሴኮንድ አሳይቶ ይጠፋል
             setTimeout(() => {
                 document.getElementById('keno-splash').style.display = 'none';
-                startGlobalKenoClock();
-            }, 2500);
+                document.getElementById('live-drawn-balls-container').innerHTML = '';
+            }, 1500);
         }
 
         function closeKenoGame() {
+            isKenoPopupOpen = false;
             document.getElementById('popup-keno').style.display = 'none';
-            if(globalTimerInterval) { clearInterval(globalTimerInterval); globalTimerInterval = null; }
         }
 
         function buildKenoGrid80() {
@@ -387,13 +579,18 @@
                 cell.innerText = i;
                 cell.dataset.num = i;
                 cell.onclick = () => selectKenoNumber(i, cell);
+                
+                // ተጠቃሚው መርጦት ከነበረና ዘግቶ ቢከፍተው እንዳይጠፋ
+                if(selectedNumbers.includes(i)) cell.classList.add('selected');
+                
                 container.appendChild(cell);
             }
         }
 
         function selectKenoNumber(num, element) {
-            if(isDrawingState) return; // እጣ እየወጣ ውርርድ አይቻልም
-            if(countdownTime <= 10) return alert("ውርርድ ተዘግቷል! እባክዎ ቀጣዩን ዙር ይጠብቁ።");
+            const now = new Date();
+            if((60 - now.getSeconds()) <= 10) return alert("ውርርድ ተዘግቷል! እባክዎ ቀጣዩን ዙር ይጠብቁ።");
+            if(isUserBetInCurrentRound) return alert("ውርርድ አስምረዋል! እባክዎ እጣው እስኪያልቅ ይጠብቁ።");
 
             if(selectedNumbers.includes(num)) {
                 selectedNumbers = selectedNumbers.filter(n => n !== num);
@@ -407,14 +604,14 @@
         }
 
         function adjustBet(val) {
-            if(isDrawingState) return;
+            if(isUserBetInCurrentRound) return;
             kenoBetAmount += val;
-            if(kenoBetAmount < 5) kenoBetAmount = 5; // ከ 5 ብር በታች አይወርድም
+            if(kenoBetAmount < 5) kenoBetAmount = 5; 
             document.getElementById('keno-bet-value').innerText = kenoBetAmount;
         }
 
         function clearSelectedNumbers() {
-            if(isDrawingState) return;
+            if(isUserBetInCurrentRound) return;
             selectedNumbers = [];
             document.querySelectorAll('.keno-num').forEach(el => el.classList.remove('selected'));
             document.getElementById('selected-count-msg').innerText = "የመረጧቸው ቁጥሮች: 0 (እስከ 20 መምረጥ ይችላሉ)";
@@ -422,115 +619,19 @@
 
         function placeKenoBet() {
             if(selectedNumbers.length < 2) return alert("እባክዎ ቢያንስ 2 ቁጥሮችን ይምረጡ!");
-            if(kenoBetAmount > userBalance) return alert("በቂ የላንቲካ ወይም የብር ቀሪ የሎትም!");
-            if(isBetPlacedThisRound) return alert("በዚህ ዙር ላይ አስቀድመው ውርርድ አስምረዋል!");
+            if(kenoBetAmount > userBalance) return alert("በቂ የብር ቀሪ የሎትም!");
+            if(isUserBetInCurrentRound) return alert("በዚህ ዙር ላይ አስቀድመው ውርርድ አስምረዋል!");
 
             syncBalance(userBalance - kenoBetAmount);
-            isBetPlacedThisRound = true;
+            
+            isUserBetInCurrentRound = true;
+            placedBetData = {
+                numbers: [...selectedNumbers],
+                bet: kenoBetAmount
+            };
+
             document.getElementById('btn-submit-keno').innerText = "ውርርድ ተመዝግቧል ✓";
             document.getElementById('btn-submit-keno').disabled = true;
-        }
-
-        // የቀጥታ 1 ደቂቃ ሰዓት ቆጣሪ መቆጣጠሪያ
-        function startGlobalKenoClock() {
-            if(globalTimerInterval) clearInterval(globalTimerInterval);
-            countdownTime = 60;
-            isBetPlacedThisRound = false;
-            isDrawingState = false;
-            selectedNumbers = [];
-            
-            document.getElementById('btn-submit-keno').disabled = false;
-            document.getElementById('btn-submit-keno').innerText = "ውርርድ አስምር (PLACE BET)";
-            document.getElementById('keno-timer-display').style.background = "#ef4444";
-            document.getElementById('live-drawn-balls-container').innerHTML = `<div style="color: #64748b; font-size:13px; padding-top:10px;">ሰዓቱ ሲያልቅ የቀጥታ እጣዎች እዚህ ይደረደራሉ።</div>`;
-            
-            buildKenoGrid80();
-
-            globalTimerInterval = setInterval(() => {
-                countdownTime--;
-                document.getElementById('timer-seconds').innerText = countdownTime;
-
-                if(countdownTime === 10) {
-                    document.getElementById('keno-timer-display').style.background = "#b91c1c";
-                    document.getElementById('btn-submit-keno').innerText = "ውርርድ ተዘግቷል (CLOSED)";
-                    document.getElementById('btn-submit-keno').disabled = true;
-                }
-
-                if(countdownTime <= 0) {
-                    clearInterval(globalTimerInterval);
-                    triggerLiveKenoDraw(); // እጣ ማውጣት መጀመር
-                }
-            }, 1000);
-        }
-
-        // የ 20 የቀጥታ ቁጥሮች እጣ አወጣጣጥ
-        function triggerLiveKenoDraw() {
-            isDrawingState = true;
-            document.getElementById('btn-submit-keno').innerText = "እጣ እየወጣ ነው (LIVE DRAWING...)";
-            let drawnPool = [];
-            let container = document.getElementById('live-drawn-balls-container');
-            container.innerHTML = ''; // ማጽጃ
-
-            let ballCount = 0;
-            let drawInterval = setInterval(() => {
-                let randNum;
-                do {
-                    randNum = Math.floor(Math.random() * 80) + 1;
-                } while(drawnPool.includes(randNum));
-
-                drawnPool.push(randNum);
-
-                // በሰንጠረዡ ላይ እንዲበራ ማድረግ
-                let gridCell = document.querySelector(`[data-num='${randNum}']`);
-                if(gridCell) gridCell.classList.add('drawn');
-
-                // የታችኛው ክብ ኳስ አኒሜሽን መደርደሪያ
-                let ball = document.createElement('div');
-                ball.className = 'ball';
-                ball.innerText = randNum;
-                container.appendChild(ball);
-
-                ballCount++;
-                if(ballCount >= 20) {
-                    clearInterval(drawInterval);
-                    calculateKenoPayouts(drawnPool); // የአሸናፊነት ስሌት መጀመር
-                }
-            }, 800); // በእያንዳንዱ 0.8 ሴኮንድ አንድ ኳስ ይወጣል
-        }
-
-        // የአሸናፊነት ስራ ስሌት ሞተር (Payout Engine)
-        function calculateKenoPayouts(drawnNumbers) {
-            let matches = selectedNumbers.filter(n => drawnNumbers.includes(n)).length;
-            let winAmount = 0;
-
-            if(isBetPlacedThisRound && selectedNumbers.length > 0) {
-                // መሠረታዊ የስራ ሂሳብ ቀመር (Keno Professional Payout Math)
-                if(matches === 7 || matches === 8) {
-                    winAmount = kenoBetAmount; // መደቡ ይመለሳል
-                } else if(matches === 9) {
-                    winAmount = kenoBetAmount * 2; // መደቡ እጥፍ ይሆናል
-                } else if(matches >= 10 && matches < 20) {
-                    winAmount = kenoBetAmount * (matches - 7); // ማባዣው ያድጋል
-                } else if(matches === 20) {
-                    // 10 ብር መድቦ 500 ብር (ያም ማለት 50 እጥፍ ጃክፖት!)
-                    winAmount = kenoBetAmount * 50; 
-                }
-
-                if(winAmount > 0) {
-                    syncBalance(userBalance + winAmount);
-                    alert(`እንኳን ደስ አሎት! ${matches} ቁጥሮች ገጥመውልዎ ETB ${winAmount.toFixed(2)} አሸንፈዋል።`);
-                } else {
-                    alert(`የዚህ ዙር እጣ ተጠናቋል። የገጠሙት ቁጥሮች ብዛት: ${matches}። በሚቀጥለው ይሞክሩ!`);
-                }
-            }
-
-            // የታሪክ ማሳያ ሰሌዳ ላይ መመዝገብ
-            saveToHistoryList(drawnNumbers);
-
-            // ከ 4 ሴኮንድ በኋላ ቀጣዩን አዲስ ዙር በራስ-ሰር መጀመር
-            setTimeout(() => {
-                startGlobalKenoClock();
-            }, 4000);
         }
 
         function saveToHistoryList(draws) {
@@ -545,7 +646,6 @@
             timeStamp.style.color = "var(--primary-color)";
             item.appendChild(timeStamp);
 
-            // የመጀመሪያዎቹን 5 ቁጥሮች ለታሪክ ማሳያነት ማሳጠር
             let numbersText = document.createElement('span');
             numbersText.innerText = draws.slice(0, 8).join(', ') + "...";
             item.appendChild(numbersText);
@@ -553,6 +653,7 @@
             histBox.insertBefore(item, histBox.firstChild);
         }
 
+        /* ================= MANUAL TRANSACTION SUBMISSIONS ================= */
         async function submitDeposit() {
             let amt = parseFloat(document.getElementById('dep-amount').value);
             let tx = document.getElementById('dep-txid').value;
