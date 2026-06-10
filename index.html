@@ -18,7 +18,8 @@
             --primary-color: #f1b82a; /* Yellow Buttons */
             --text-dark: #2c2512;
             --text-muted: #73674c;
-            --aviator-red: #e11d48;
+            --keno-blue: #1e3a8a;
+            --keno-gold: #fbbf24;
         }
 
         body {
@@ -55,55 +56,64 @@
             border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer;
         }
 
-        /* 10 Games Grid */
-        .games-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 10px; }
+        /* Games Grid */
+        .games-grid { display: grid; grid-template-columns: repeat(1, 1fr); gap: 12px; margin-top: 10px; }
         .game-card {
-            background-color: #222; border-radius: 12px; overflow: hidden; position: relative;
-            aspect-ratio: 1.1; display: flex; flex-direction: column; justify-content: flex-end;
-            padding: 12px; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            background-color: #2c2512; border-radius: 12px; overflow: hidden; position: relative;
+            height: 140px; display: flex; flex-direction: column; justify-content: flex-end;
+            padding: 20px; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            background-image: linear-gradient(to right, rgba(0,0,0,0.8), transparent), url('https://images.unsplash.com/photo-1596838132731-3301c3fd4317?w=400');
             background-size: cover; background-position: center; cursor: pointer;
         }
-        .game-card::after {
-            content: ''; position: absolute; bottom: 0; left: 0; right: 0; top: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); z-index: 1;
-        }
-        .game-title { font-weight: 600; font-size: 13px; z-index: 2; }
-        .badge-hot { position: absolute; top: 8px; right: 8px; background-color: #ff3b30; color: white; font-size: 9px; padding: 2px 5px; border-radius: 4px; font-weight: bold; z-index: 2; }
+        .game-title { font-weight: 700; font-size: 22px; z-index: 2; margin-bottom: 5px; color: var(--primary-color); }
+        .game-desc { font-size: 12px; color: #ddd; z-index: 2; }
+        .badge-hot { position: absolute; top: 12px; right: 12px; background-color: #ff3b30; color: white; font-size: 10px; padding: 3px 8px; border-radius: 4px; font-weight: bold; z-index: 2; }
 
-        /* REAL GAME OVERLAYS (Popups) */
+        /* ================= KENO PROFESSIONAL POPUP & LIVE SCREEN ================= */
         .game-popup {
             display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: #141518; color: white; z-index: 2000; padding: 20px; box-sizing: border-box;
-            overflow-y: auto;
+            background: #0f172a; color: white; z-index: 2000; overflow-y: auto; box-sizing: border-box;
         }
-        .game-popup-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #2c2d35; padding-bottom: 10px; }
-        .close-popup { font-size: 28px; cursor: pointer; color: #fff; }
-
-        /* Aviator Arena */
-        #aviator-arena {
-            height: 180px; background: #1c1d22; border-radius: 10px; margin-bottom: 15px;
-            position: relative; overflow: hidden; display: flex; justify-content: center; align-items: center;
+        
+        /* Splash Screen */
+        #keno-splash {
+            position: absolute; top:0; left:0; right:0; bottom:0; background: #1e1e24;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 3000;
         }
-        #aviator-plane { position: absolute; bottom: 20px; left: 20px; font-size: 26px; color: var(--aviator-red); display: none; z-index: 3; }
-        #aviator-mult { font-size: 40px; font-weight: 700; z-index: 4; }
+        .spinner { width: 50px; height: 50px; border: 5px solid #333; border-top: 5px solid var(--primary-color); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
 
-        /* Mines Arena */
-        .mines-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin: 15px 0; }
-        .mine-node { aspect-ratio: 1; background: #2c2d35; border-radius: 6px; display: flex; justify-content: center; align-items: center; font-size: 18px; font-weight: bold; cursor: pointer; }
-        .mine-node.safe { background: #4cd964; color: black; }
-        .mine-node.boom { background: #ff3b30; }
+        .keno-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #1e293b; border-bottom: 2px solid var(--primary-color); }
+        .timer-box { background: #ef4444; color: white; padding: 5px 12px; border-radius: 6px; font-weight: bold; font-size: 14px; display: flex; align-items: center; gap: 5px; }
 
-        /* Forms & Inputs */
-        .form-group { background-color: var(--card-color); padding: 15px; border-radius: 12px; margin-bottom: 12px; text-align: left; }
-        .form-group label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 5px; }
-        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; background: #fff; }
-        .list-item { display: flex; justify-content: space-between; padding: 15px; background-color: var(--card-color); margin-bottom: 8px; border-radius: 10px; font-size: 14px; }
-        .list-item .label { color: var(--text-muted); }
-        .list-item .value { font-weight: 600; }
+        /* 1 to 80 Grid Table */
+        .keno-container { padding: 15px; }
+        .keno-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; margin-bottom: 15px; }
+        .keno-num {
+            aspect-ratio: 1; background: #334155; border-radius: 4px; display: flex; justify-content: center;
+            align-items: center; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+        }
+        .keno-num.selected { background: var(--primary-color); color: var(--text-dark); transform: scale(1.05); }
+        .keno-num.drawn { background: #10b981 !important; color: white; animation: pulse 0.4s ease; }
 
-        .control-panel { background: #1c1d22; padding: 15px; border-radius: 10px; }
-        .bet-input { width: 100%; padding: 12px; background: #2c2d35; border: none; color: white; border-radius: 6px; margin-bottom: 10px; font-size: 16px; box-sizing: border-box; }
-        .action-btn { width: 100%; padding: 12px; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        /* Control Panel Styles */
+        .keno-controls { background: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 15px; }
+        .bet-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .stepper { display: flex; align-items: center; gap: 10px; }
+        .btn-step { background: #475569; color: white; border: none; width: 35px; height: 35px; border-radius: 6px; font-size: 18px; font-weight: bold; cursor: pointer; }
+        .bet-display { font-size: 18px; font-weight: bold; width: 80px; text-align: center; }
+        
+        .btn-clear { background: #f43f5e; color: white; border: none; padding: 8px 15px; border-radius: 6px; font-weight: 600; cursor: pointer; }
+        .btn-action { width: 100%; padding: 14px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; background: var(--primary-color); color: var(--text-dark); }
+        .btn-action:disabled { background: #475569; color: #94a3b8; cursor: not-allowed; }
+
+        /* Drawn Balls Panel */
+        .drawn-balls-box { background: #1e293b; padding: 12px; border-radius: 10px; margin-bottom: 15px; min-height: 70px; }
+        .balls-wrapper { display: flex; flex-wrap: wrap; gap: 6px; }
+        .ball { width: 28px; height: 28px; background: #10b981; color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 11px; font-weight: bold; animation: popBall 0.3s ease-out forwards; }
+
+        /* History Section */
+        .history-box { background: #1e293b; padding: 12px; border-radius: 10px; }
+        .history-item { font-size: 12px; color: #cbd5e1; border-bottom: 1px solid #334155; padding: 6px 0; display: flex; gap: 8px; overflow-x: auto; }
 
         /* Bottom Nav */
         .nav-bar {
@@ -115,7 +125,10 @@
         .nav-item i { font-size: 20px; margin-bottom: 4px; }
         .nav-item.active { color: #d49a17; }
 
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes popBall { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body>
@@ -141,7 +154,7 @@
         <p style="color: var(--text-muted);">በቅርቡ የሚለቀቅ... በስፖርት ጨዋታዎች ላይ መወራረድ በቅርቡ ይጀምራል።</p>
     </div>
 
-    <!-- 2. GAMES TAB (10 Games List) -->
+    <!-- 2. GAMES TAB -->
     <div id="games" class="tab-content">
         <div class="balance-card">
             <div>
@@ -151,49 +164,12 @@
             <button class="btn-deposit" onclick="switchTab('wallet')">+</button>
         </div>
         
-        <h3>Top 10 Games</h3>
+        <h3>Top Live Games</h3>
         <div class="games-grid">
-            <!-- 1. Aviator -->
-            <div class="game-card" style="background-image: url('https://images.unsplash.com/photo-1543269865-cbf427effbad?w=200');" onclick="launchAviator()">
-                <span class="badge-hot">LIVE</span>
-                <div class="game-title">Aviator</div>
-            </div>
-            <!-- 2. Mines -->
-            <div class="game-card" style="background-image: url('https://images.unsplash.com/photo-1606167668584-78701c57f13d?w=200');" onclick="launchMines()">
-                <span class="badge-hot">LIVE</span>
-                <div class="game-title">Mines</div>
-            </div>
-            <!-- 3. Plinko -->
-            <div class="game-card" style="background-image: url('https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=200');" onclick="launchGenericGame('Plinko 1000')">
-                <div class="game-title">Plinko 1000</div>
-            </div>
-            <!-- 4. Fast Keno -->
-            <div class="game-card" style="background-image: url('https://images.unsplash.com/photo-1596838132731-3301c3fd4317?w=200');" onclick="launchGenericGame('Fast Keno')">
-                <div class="game-title">Fast Keno</div>
-            </div>
-            <!-- 5. Dice Roller -->
-            <div class="game-card" style="background-image: url('https://images.unsplash.com/photo-1522069169874-c58ec4b76be5?w=200');" onclick="launchGenericGame('Dice Roller')">
-                <div class="game-title">Dice Roller</div>
-            </div>
-            <!-- 6. Penalty Shoot -->
-            <div class="game-card" style="background-image: url('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=200');" onclick="launchGenericGame('Penalty Shootout')">
-                <div class="game-title">Penalty Shootout</div>
-            </div>
-            <!-- 7. Crystal Crush -->
-            <div class="game-card" style="background-image: url('https://images.unsplash.com/photo-1551269901-5c5e14c25df7?w=200');" onclick="launchGenericGame('Crystal Crush')">
-                <div class="game-title">Crystal Crush</div>
-            </div>
-            <!-- 8. Wheel of Fortune -->
-            <div class="game-card" style="background-image: url('https://images.unsplash.com/photo-1513151233558-d860c5398176?w=200');" onclick="launchGenericGame('Wheel of Fortune')">
-                <div class="game-title">Wheel of Fortune</div>
-            </div>
-            <!-- 9. Tower Climb -->
-            <div class="game-card" style="background-image: url('https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=200');" onclick="launchGenericGame('Tower Climb')">
-                <div class="game-title">Tower Climb</div>
-            </div>
-            <!-- 10. Blackjack Light -->
-            <div class="game-card" style="background-image: url('https://images.unsplash.com/photo-1541252260730-0412e8e2108e?w=200');" onclick="launchGenericGame('Blackjack Light')">
-                <div class="game-title">Blackjack Light</div>
+            <div class="game-card" onclick="openKenoGame()">
+                <span class="badge-hot">LIVE MATCH</span>
+                <div class="game-title">Live Fast Keno</div>
+                <div class="game-desc">ቁጥሮችን ይምረጡ፣ በየደቂቃው በቀጥታ ይጫወቱ እና ያሸንፉ!</div>
             </div>
         </div>
     </div>
@@ -204,7 +180,7 @@
             <i class="fa-solid fa-gift" style="font-size: 40px; color: var(--primary-color);"></i>
             <h2>Invite & Earn</h2>
             <p style="color: var(--text-muted);">ጓደኞችዎን ይጋብዙ እና ከሚያስገቡት ተቀማጭ (Deposit) 5% ያግኙ።</p>
-            <button class="btn-deposit" style="width: 100%;" onclick="copyInviteLink()">Invite a Friend <i class="fa-solid fa-copy"></i></button>
+            <button class="btn-deposit" style="width: 100%;">Invite a Friend <i class="fa-solid fa-copy"></i></button>
         </div>
     </div>
 
@@ -229,7 +205,7 @@
 
         <div id="deposit-form">
             <div class="form-group" style="background-color: #fffde7; border: 1px solid var(--primary-color);">
-                <strong>መመሪያ፦</strong> እባክዎ በቴሌብር ቁጥራችን <code>0912345678</code> ላይ ገንዘብ ካስተላለፉ በኋላ የትራንዛክሽን ቁጥሩን (TxID) ከታች ያስገቡ።
+                <strong>መመሪያ፦</strong> እባክዎ በቴሌብር ቁጥራችን <code>0954406366</code> ላይ ገንዘብ ካስተላለፉ በኋላ የትራንዛክሽን ቁጥሩን (TxID) ከታች ያስገቡ።
             </div>
             <div class="form-group"><label>የብር መጠን (ETB)</label><input type="number" id="dep-amount" placeholder="100"></div>
             <div class="form-group"><label>የግብይት መታወቂያ ቁጥር (Transaction ID)</label><input type="text" id="dep-txid" placeholder="A1B2C3D4..."></div>
@@ -253,57 +229,61 @@
             </div>
         </div>
         <h3>Account Details</h3>
-        <div class="list-item"><span class="label">Phone</span><span class="value" id="prof-phone">Not set</span></div>
         <div class="list-item"><span class="label">Payout Account</span><span class="value">Telebirr</span></div>
     </div>
 
-    <!-- ================= REAL GAME ENGINE POPUPS ================= -->
-    
-    <!-- AVIATOR POPUP -->
-    <div id="popup-aviator" class="game-popup">
-        <div class="game-popup-header">
-            <h3>Aviator Engine</h3>
-            <span class="close-popup" onclick="closePopup('popup-aviator')">&times;</span>
+    <!-- ================= LIVE KENO POPUP SYSTEM ================= -->
+    <div id="popup-keno" class="game-popup">
+        <!-- Splash Screen Cover -->
+        <div id="keno-splash">
+            <div class="spinner"></div>
+            <div style="font-size: 18px; font-weight: bold; color: var(--primary-color);">LOADING LIVE KENO...</div>
+            <div style="font-size: 12px; color: #aaa; margin-top: 5px;">Connecting to Live Betting Pool</div>
         </div>
-        <div style="margin-bottom: 10px;">የእርስዎ ሂሳብ: ETB <span class="user-balance">0.00</span></div>
-        <div id="aviator-arena">
-            <div id="aviator-plane"><i class="fa-solid fa-plane"></i></div>
-            <div id="aviator-mult">1.00x</div>
-        </div>
-        <div class="control-panel">
-            <input type="number" id="bet-aviator-amount" class="bet-input" placeholder="የውርርድ መጠን (ETB)">
-            <button id="btn-aviator-action" class="action-btn" style="background: var(--aviator-red); color: white;" onclick="runAviatorRound()">BET</button>
-        </div>
-    </div>
 
-    <!-- MINES POPUP -->
-    <div id="popup-mines" class="game-popup">
-        <div class="game-popup-header">
-            <h3>Mines Engine (5x5)</h3>
-            <span class="close-popup" onclick="closePopup('popup-mines')">&times;</span>
+        <!-- Real Game Panel -->
+        <div class="keno-header">
+            <div>
+                <span style="font-size: 18px; font-weight: bold; color: var(--primary-color);">LIVE KENO</span>
+                <div style="font-size: 11px; color: #94a3b8;">Balance: ETB <span class="user-balance">0.00</span></div>
+            </div>
+            <div class="timer-box" id="keno-timer-display">
+                <i class="fa-solid fa-clock"></i> <span id="timer-seconds">60</span>s
+            </div>
+            <span style="font-size: 30px; cursor: pointer;" onclick="closeKenoGame()">&times;</span>
         </div>
-        <div style="margin-bottom: 10px;">የእርስዎ ሂሳብ: ETB <span class="user-balance">0.00</span> | ቀጣይ ማባዣ: <span id="mines-multiplier-view">1.25x</span></div>
-        <div class="mines-grid" id="mines-grid-box"></div>
-        <div class="control-panel">
-            <input type="number" id="bet-mines-amount" class="bet-input" placeholder="የውርርድ መጠን (ETB)">
-            <button id="btn-mines-action" class="action-btn" style="background: #4cd964; color: black;" onclick="runMinesRound()">START GAME</button>
-        </div>
-    </div>
 
-    <!-- GENERIC GAMES POPUP -->
-    <div id="popup-generic" class="game-popup">
-        <div class="game-popup-header">
-            <h3 id="generic-game-title">Game Title</h3>
-            <span class="close-popup" onclick="closePopup('popup-generic')">&times;</span>
-        </div>
-        <div style="margin-bottom: 15px;">የእርስዎ ሂሳብ: ETB <span class="user-balance">0.00</span></div>
-        <div style="height: 150px; background: #1c1d22; border-radius: 10px; display: flex; flex-direction: column; justify-content: center; align-items: center; margin-bottom: 20px;">
-            <div id="generic-status-icon" style="font-size: 40px; color: var(--primary-color); margin-bottom: 10px;"><i class="fa-solid fa-dice"></i></div>
-            <div id="generic-result-text" style="font-size: 22px; font-weight: bold;">ለመጀመር ይወራረዱ</div>
-        </div>
-        <div class="control-panel">
-            <input type="number" id="bet-generic-amount" class="bet-input" placeholder="የውርርድ መጠን (ETB)">
-            <button class="action-btn" style="background: var(--primary-color); color: var(--text-dark);" onclick="runGenericCalculation()">ውርርድ አስምር (PLACE BET)</button>
+        <div class="keno-container">
+            <!-- 1 to 80 Grid Table -->
+            <div class="keno-grid" id="keno-grid-table"></div>
+
+            <!-- Control Box (+ , - , clear, bet) -->
+            <div class="keno-controls">
+                <div class="bet-row">
+                    <div class="stepper">
+                        <button class="btn-step" onclick="adjustBet(-5)">-</button>
+                        <div class="bet-display">ETB <span id="keno-bet-value">5</span></div>
+                        <button class="btn-step" onclick="adjustBet(5)">+</button>
+                    </div>
+                    <button class="btn-clear" onclick="clearSelectedNumbers()">Clear <i class="fa-solid fa-trash"></i></button>
+                </div>
+                <div style="font-size:12px; color:#cbd5e1; margin-bottom:10px;" id="selected-count-msg">የመረጧቸው ቁጥሮች: 0 (እስከ 20 መምረጥ ይችላሉ)</div>
+                <button id="btn-submit-keno" class="btn-action" onclick="placeKenoBet()">ውርርድ አስምር (PLACE BET)</button>
+            </div>
+
+            <!-- Drawn Balls Live Feed -->
+            <h4 style="margin: 10px 0 5px 0; color: var(--primary-color);"><i class="fa-solid fa-circle-dot"></i> Live Drawn Balls (20)</h4>
+            <div class="drawn-balls-box">
+                <div class="balls-wrapper" id="live-drawn-balls-container">
+                    <div style="color: #64748b; font-size:13px; padding-top:10px;">ሰዓቱ ሲያልቅ የቀጥታ እጣዎች እዚህ ይደረደራሉ።</div>
+                </div>
+            </div>
+
+            <!-- Game History Panel -->
+            <h4 style="margin: 15px 0 5px 0; color: #94a3b8;"><i class="fa-solid fa-history"></i> Recent Draws History</h4>
+            <div class="history-box" id="keno-history-list">
+                <div style="color: #64748b; font-size:12px;">ምንም ያለፈ ታሪክ የለም።</div>
+            </div>
         </div>
     </div>
 
@@ -321,17 +301,20 @@
         const SUPABASE_KEY = "sb_publishable_3JXvZ4QYWC-c7wjTPLk3RA_v18uEzJN";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        const tg = window.Telegram?.WebApp;
         let currentUserId = "8525980303"; 
         let currentUsername = "ebla2127";
         let userBalance = 0;
 
-        // Engines state
-        let avTimer, avMult = 1.0, isAvLive = false, avBet = 0;
-        let hiddenMines = [], revealedNodes = 0, minesBet = 0, isMinesLive = false;
-        let activeGenericGame = "";
+        // Keno Game State
+        let selectedNumbers = [];
+        let kenoBetAmount = 5;
+        let countdownTime = 60;
+        let globalTimerInterval = null;
+        let isBetPlacedThisRound = false;
+        let isDrawingState = false;
 
         async function initUser() {
+            const tg = window.Telegram?.WebApp;
             if (tg && tg.initDataUnsafe?.user) {
                 currentUserId = tg.initDataUnsafe.user.id.toString();
                 currentUsername = tg.initDataUnsafe.user.username || "No_Name";
@@ -376,173 +359,200 @@
             document.getElementById('withdraw-form').style.display = type === 'withdraw' ? 'block' : 'none';
         }
 
-        function closePopup(id) { document.getElementById(id).style.display = 'none'; }
-
-        /* ================= 1. AVIATOR LOGIC ================= */
-        function launchAviator() { document.getElementById('popup-aviator').style.display = 'block'; }
-        
-        function runAviatorRound() {
-            if (isAvLive) {
-                isAvLive = false;
-                clearInterval(avTimer);
-                let win = avBet * avMult;
-                syncBalance(userBalance + win);
-                alert(`የተሳካ ስኬት! ETB ${win.toFixed(2)} አሸነፉ (${avMult.toFixed(2)}x)`);
-                clearAviator();
-                return;
-            }
-
-            avBet = parseFloat(document.getElementById('bet-aviator-amount').value);
-            if (!avBet || avBet <= 0 || avBet > userBalance) return alert('ትክክለኛ የብር መጠን ያስገቡ!');
-
-            syncBalance(userBalance - avBet);
-            isAvLive = true;
-            avMult = 1.0;
+        /* ================= LIVE KENO GAME CONTROL ENGINE ================= */
+        function openKenoGame() {
+            document.getElementById('popup-keno').style.display = 'block';
+            document.getElementById('keno-splash').style.display = 'flex';
             
-            document.getElementById('aviator-plane').style.display = 'block';
-            document.getElementById('aviator-plane').style.bottom = '20px';
-            document.getElementById('aviator-plane').style.left = '20px';
+            buildKenoGrid80();
             
-            let btn = document.getElementById('btn-aviator-action');
-            btn.innerText = "CASH OUT";
-            btn.style.background = "#4cd96 green";
-
-            let crashPoint = (Math.random() * 4) + 1.1; 
-
-            avTimer = setInterval(() => {
-                avMult += 0.04;
-                document.getElementById('aviator-mult').innerText = avMult.toFixed(2) + "x";
-                
-                let l = parseInt(document.getElementById('aviator-plane').style.left) + 2;
-                let b = parseInt(document.getElementById('aviator-plane').style.bottom) + 1;
-                if(l < 180) {
-                    document.getElementById('aviator-plane').style.left = l + "px";
-                    document.getElementById('aviator-plane').style.bottom = b + "px";
-                }
-
-                if (avMult >= crashPoint) {
-                    clearInterval(avTimer);
-                    isAvLive = false;
-                    document.getElementById('aviator-mult').innerText = "FLEW AWAY";
-                    alert("አውሮፕላኑ በረረ! ተበልተዋል።");
-                    setTimeout(clearAviator, 1500);
-                }
-            }, 100);
-        }
-
-        function clearAviator() {
-            let btn = document.getElementById('btn-aviator-action');
-            btn.innerText = "BET";
-            btn.style.background = "var(--aviator-red)";
-            document.getElementById('aviator-mult').innerText = "1.00x";
-            document.getElementById('aviator-plane').style.display = 'none';
-        }
-
-        /* ================= 2. MINES LOGIC ================= */
-        function launchMines() {
-            document.getElementById('popup-mines').style.display = 'block';
-            createMinesGrid();
-        }
-
-        function createMinesGrid() {
-            let container = document.getElementById('mines-grid-box');
-            container.innerHTML = '';
-            for(let i=0; i<25; i++) {
-                let node = document.createElement('div');
-                node.className = 'mine-node';
-                node.dataset.index = i;
-                node.onclick = () => selectMineNode(i);
-                container.appendChild(node);
-            }
-        }
-
-        function runMinesRound() {
-            if (isMinesLive) {
-                let mult = 1 + (revealedNodes * 0.30);
-                let win = minesBet * mult;
-                syncBalance(userBalance + win);
-                alert(`ETB ${win.toFixed(2)} ብር ወደ አካውንትዎ ገባ!`);
-                stopMines();
-                return;
-            }
-
-            minesBet = parseFloat(document.getElementById('bet-mines-amount').value);
-            if (!minesBet || minesBet <= 0 || minesBet > userBalance) return alert('ትክክለኛ የብር መጠን ያስገቡ!');
-
-            syncBalance(userBalance - minesBet);
-            isMinesLive = true;
-            revealedNodes = 0;
-
-            hiddenMines = Array(25).fill(false);
-            let deployed = 0;
-            while(deployed < 3) {
-                let spot = Math.floor(Math.random() * 25);
-                if(!hiddenMines[spot]) { hiddenMines[spot] = true; deployed++; }
-            }
-
-            document.getElementById('btn-mines-action').innerText = "CASH OUT";
-            createMinesGrid();
-            refreshMinesMultView();
-        }
-
-        function selectMineNode(idx) {
-            if(!isMinesLive) return;
-            let nodes = document.getElementsByClassName('mine-node');
-            let node = nodes[idx];
-            if(node.classList.contains('safe') || node.classList.contains('boom')) return;
-
-            if(hiddenMines[idx]) {
-                node.classList.add('boom');
-                node.innerHTML = "💣";
-                alert("ቦምብ አገኙ! ተበልተዋል።");
-                stopMines();
-            } else {
-                node.classList.add('safe');
-                node.innerHTML = "💎";
-                revealedNodes++;
-                refreshMinesMultView();
-            }
-        }
-
-        function refreshMinesMultView() {
-            let next = 1 + (revealedNodes * 0.30);
-            document.getElementById('mines-multiplier-view').innerText = next.toFixed(2) + "x";
-        }
-
-        function stopMines() {
-            isMinesLive = false;
-            document.getElementById('btn-mines-action').innerText = "START GAME";
-        }
-
-        /* ================= 3-10. OTHER GENERIC GAMES LOGIC ================= */
-        function launchGenericGame(title) {
-            activeGenericGame = title;
-            document.getElementById('generic-game-title').innerText = title;
-            document.getElementById('generic-result-text').innerText = "ለመጀመር ይወራረዱ";
-            document.getElementById('popup-generic').style.display = 'block';
-        }
-
-        function runGenericCalculation() {
-            let gBet = parseFloat(document.getElementById('bet-generic-amount').value);
-            if (!gBet || gBet <= 0 || gBet > userBalance) return alert('ትክክለኛ የብር መጠን ያስገቡ!');
-
-            syncBalance(userBalance - gBet);
-            document.getElementById('generic-result-text').innerText = "በማሽከርከር ላይ...";
-
+            // Splash Screen ለ 2.5 ሴኮንድ አሳይቶ ይጠፋል
             setTimeout(() => {
-                let randomResult = Math.random();
-                if(randomResult > 0.55) { // 45% Win rate
-                    let winMult = (Math.random() * 1.5 + 1.2); // 1.2x to 2.7x
-                    let finalWin = gBet * winMult;
-                    syncBalance(userBalance + finalWin);
-                    document.getElementById('generic-result-text').innerText = `አሸነፉ! +${winMult.toFixed(2)}x (ETB ${finalWin.toFixed(2)})`;
-                } else {
-                    document.getElementById('generic-result-text').innerText = "የዚህ ዙር አልተሳካም! ይሞክሩ።";
+                document.getElementById('keno-splash').style.display = 'none';
+                startGlobalKenoClock();
+            }, 2500);
+        }
+
+        function closeKenoGame() {
+            document.getElementById('popup-keno').style.display = 'none';
+            if(globalTimerInterval) { clearInterval(globalTimerInterval); globalTimerInterval = null; }
+        }
+
+        function buildKenoGrid80() {
+            let container = document.getElementById('keno-grid-table');
+            container.innerHTML = '';
+            for(let i=1; i<=80; i++) {
+                let cell = document.createElement('div');
+                cell.className = 'keno-num';
+                cell.innerText = i;
+                cell.dataset.num = i;
+                cell.onclick = () => selectKenoNumber(i, cell);
+                container.appendChild(cell);
+            }
+        }
+
+        function selectKenoNumber(num, element) {
+            if(isDrawingState) return; // እጣ እየወጣ ውርርድ አይቻልም
+            if(countdownTime <= 10) return alert("ውርርድ ተዘግቷል! እባክዎ ቀጣዩን ዙር ይጠብቁ።");
+
+            if(selectedNumbers.includes(num)) {
+                selectedNumbers = selectedNumbers.filter(n => n !== num);
+                element.classList.remove('selected');
+            } else {
+                if(selectedNumbers.length >= 20) return alert("ከ 20 በላይ ቁጥሮችን መምረጥ አይቻልም!");
+                selectedNumbers.push(num);
+                element.classList.add('selected');
+            }
+            document.getElementById('selected-count-msg').innerText = `የመረጧቸው ቁጥሮች: ${selectedNumbers.length} (እስከ 20 መምረጥ ይችላሉ)`;
+        }
+
+        function adjustBet(val) {
+            if(isDrawingState) return;
+            kenoBetAmount += val;
+            if(kenoBetAmount < 5) kenoBetAmount = 5; // ከ 5 ብር በታች አይወርድም
+            document.getElementById('keno-bet-value').innerText = kenoBetAmount;
+        }
+
+        function clearSelectedNumbers() {
+            if(isDrawingState) return;
+            selectedNumbers = [];
+            document.querySelectorAll('.keno-num').forEach(el => el.classList.remove('selected'));
+            document.getElementById('selected-count-msg').innerText = "የመረጧቸው ቁጥሮች: 0 (እስከ 20 መምረጥ ይችላሉ)";
+        }
+
+        function placeKenoBet() {
+            if(selectedNumbers.length < 2) return alert("እባክዎ ቢያንስ 2 ቁጥሮችን ይምረጡ!");
+            if(kenoBetAmount > userBalance) return alert("በቂ የላንቲካ ወይም የብር ቀሪ የሎትም!");
+            if(isBetPlacedThisRound) return alert("በዚህ ዙር ላይ አስቀድመው ውርርድ አስምረዋል!");
+
+            syncBalance(userBalance - kenoBetAmount);
+            isBetPlacedThisRound = true;
+            document.getElementById('btn-submit-keno').innerText = "ውርርድ ተመዝግቧል ✓";
+            document.getElementById('btn-submit-keno').disabled = true;
+        }
+
+        // የቀጥታ 1 ደቂቃ ሰዓት ቆጣሪ መቆጣጠሪያ
+        function startGlobalKenoClock() {
+            if(globalTimerInterval) clearInterval(globalTimerInterval);
+            countdownTime = 60;
+            isBetPlacedThisRound = false;
+            isDrawingState = false;
+            selectedNumbers = [];
+            
+            document.getElementById('btn-submit-keno').disabled = false;
+            document.getElementById('btn-submit-keno').innerText = "ውርርድ አስምር (PLACE BET)";
+            document.getElementById('keno-timer-display').style.background = "#ef4444";
+            document.getElementById('live-drawn-balls-container').innerHTML = `<div style="color: #64748b; font-size:13px; padding-top:10px;">ሰዓቱ ሲያልቅ የቀጥታ እጣዎች እዚህ ይደረደራሉ።</div>`;
+            
+            buildKenoGrid80();
+
+            globalTimerInterval = setInterval(() => {
+                countdownTime--;
+                document.getElementById('timer-seconds').innerText = countdownTime;
+
+                if(countdownTime === 10) {
+                    document.getElementById('keno-timer-display').style.background = "#b91c1c";
+                    document.getElementById('btn-submit-keno').innerText = "ውርርድ ተዘግቷል (CLOSED)";
+                    document.getElementById('btn-submit-keno').disabled = true;
+                }
+
+                if(countdownTime <= 0) {
+                    clearInterval(globalTimerInterval);
+                    triggerLiveKenoDraw(); // እጣ ማውጣት መጀመር
                 }
             }, 1000);
         }
 
-        /* ================= MANUAL TRANSACTION SUBMISSIONS ================= */
+        // የ 20 የቀጥታ ቁጥሮች እጣ አወጣጣጥ
+        function triggerLiveKenoDraw() {
+            isDrawingState = true;
+            document.getElementById('btn-submit-keno').innerText = "እጣ እየወጣ ነው (LIVE DRAWING...)";
+            let drawnPool = [];
+            let container = document.getElementById('live-drawn-balls-container');
+            container.innerHTML = ''; // ማጽጃ
+
+            let ballCount = 0;
+            let drawInterval = setInterval(() => {
+                let randNum;
+                do {
+                    randNum = Math.floor(Math.random() * 80) + 1;
+                } while(drawnPool.includes(randNum));
+
+                drawnPool.push(randNum);
+
+                // በሰንጠረዡ ላይ እንዲበራ ማድረግ
+                let gridCell = document.querySelector(`[data-num='${randNum}']`);
+                if(gridCell) gridCell.classList.add('drawn');
+
+                // የታችኛው ክብ ኳስ አኒሜሽን መደርደሪያ
+                let ball = document.createElement('div');
+                ball.className = 'ball';
+                ball.innerText = randNum;
+                container.appendChild(ball);
+
+                ballCount++;
+                if(ballCount >= 20) {
+                    clearInterval(drawInterval);
+                    calculateKenoPayouts(drawnPool); // የአሸናፊነት ስሌት መጀመር
+                }
+            }, 800); // በእያንዳንዱ 0.8 ሴኮንድ አንድ ኳስ ይወጣል
+        }
+
+        // የአሸናፊነት ስራ ስሌት ሞተር (Payout Engine)
+        function calculateKenoPayouts(drawnNumbers) {
+            let matches = selectedNumbers.filter(n => drawnNumbers.includes(n)).length;
+            let winAmount = 0;
+
+            if(isBetPlacedThisRound && selectedNumbers.length > 0) {
+                // መሠረታዊ የስራ ሂሳብ ቀመር (Keno Professional Payout Math)
+                if(matches === 7 || matches === 8) {
+                    winAmount = kenoBetAmount; // መደቡ ይመለሳል
+                } else if(matches === 9) {
+                    winAmount = kenoBetAmount * 2; // መደቡ እጥፍ ይሆናል
+                } else if(matches >= 10 && matches < 20) {
+                    winAmount = kenoBetAmount * (matches - 7); // ማባዣው ያድጋል
+                } else if(matches === 20) {
+                    // 10 ብር መድቦ 500 ብር (ያም ማለት 50 እጥፍ ጃክፖት!)
+                    winAmount = kenoBetAmount * 50; 
+                }
+
+                if(winAmount > 0) {
+                    syncBalance(userBalance + winAmount);
+                    alert(`እንኳን ደስ አሎት! ${matches} ቁጥሮች ገጥመውልዎ ETB ${winAmount.toFixed(2)} አሸንፈዋል።`);
+                } else {
+                    alert(`የዚህ ዙር እጣ ተጠናቋል። የገጠሙት ቁጥሮች ብዛት: ${matches}። በሚቀጥለው ይሞክሩ!`);
+                }
+            }
+
+            // የታሪክ ማሳያ ሰሌዳ ላይ መመዝገብ
+            saveToHistoryList(drawnNumbers);
+
+            // ከ 4 ሴኮንድ በኋላ ቀጣዩን አዲስ ዙር በራስ-ሰር መጀመር
+            setTimeout(() => {
+                startGlobalKenoClock();
+            }, 4000);
+        }
+
+        function saveToHistoryList(draws) {
+            let histBox = document.getElementById('keno-history-list');
+            if(histBox.innerHTML.includes("ምንም ያለፈ ታሪክ የለም")) histBox.innerHTML = '';
+
+            let item = document.createElement('div');
+            item.className = 'history-item';
+            
+            let timeStamp = document.createElement('strong');
+            timeStamp.innerText = "DRAW: ";
+            timeStamp.style.color = "var(--primary-color)";
+            item.appendChild(timeStamp);
+
+            // የመጀመሪያዎቹን 5 ቁጥሮች ለታሪክ ማሳያነት ማሳጠር
+            let numbersText = document.createElement('span');
+            numbersText.innerText = draws.slice(0, 8).join(', ') + "...";
+            item.appendChild(numbersText);
+
+            histBox.insertBefore(item, histBox.firstChild);
+        }
+
         async function submitDeposit() {
             let amt = parseFloat(document.getElementById('dep-amount').value);
             let tx = document.getElementById('dep-txid').value;
