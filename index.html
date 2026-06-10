@@ -471,11 +471,634 @@
             setTimeout(() => {
                 alert("ግብይቱ እየተፈለገ ነው! አስተዳዳሪው ሲያረጋግጠው ይጨመርልዎታል።");
                 closeModal('modal-dep-step2');
+<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arada Bet - Keno & Wallet</title>
+    <!-- Telegram & Supabase SDKs -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Google Font & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-color: #fcf6e8; 
+            --card-color: #f5ebd2; 
+            --primary-color: #f1b82a; 
+            --text-dark: #2c2512;
+            --text-muted: #7d735c;
+            --border-color: #e6dac0;
+        }
+
+        body {
+            font-family: 'Poppins', Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            margin: 0; padding: 0;
+            padding-bottom: 80px;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* Top Header Area */
+        .header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 20px; background-color: var(--bg-color);
+        }
+        .logo { font-size: 26px; font-weight: 700; color: var(--text-dark); letter-spacing: -0.5px; }
+        .top-right-controls { display: flex; align-items: center; gap: 8px; }
+        .balance-hide-btn { background: #e9dec4; border: none; padding: 8px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+        .btn-plus-top { background: var(--primary-color); border: none; width: 36px; height: 36px; border-radius: 6px; font-size: 20px; font-weight: bold; cursor: pointer; }
+
+        /* Navigation Content Switching */
+        .tab-content { display: none; padding: 15px; animation: fadeIn 0.2s ease-in-out; }
+        .tab-content.active { display: block; }
+        .section-subtitle { font-size: 11px; color: var(--primary-color); text-transform: uppercase; font-weight: 700; margin-bottom: 2px; letter-spacing: 0.5px; }
+        .section-title { font-size: 22px; font-weight: 700; margin: 0 0 15px 0; }
+
+        /* ================= KENO GAME STYLES ================= */
+        .keno-container { background: var(--card-color); border-radius: 12px; padding: 15px; border: 1px solid var(--border-color); margin-bottom: 15px; }
+        .keno-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; margin: 15px 0; }
+        .keno-num { 
+            background: #fff; border: 1px solid var(--border-color); border-radius: 6px; 
+            aspect-ratio: 1; display: flex; align-items: center; justify-content: center; 
+            font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.15s;
+        }
+        .keno-num.selected { background: var(--text-dark); color: #fff; border-color: var(--text-dark); }
+        .keno-num.hit { background: #10b981 !important; color: #fff !important; border-color: #10b981 !important; }
+        .keno-num.miss { background: #ef4444 !important; color: #fff !important; border-color: #ef4444 !important; }
+        
+        .bet-control-box { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+        .bet-input-row { display: flex; gap: 10px; align-items: center; }
+        .bet-input-row input { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 16px; font-weight: 600; outline: none; }
+        .btn-game-action { background: var(--primary-color); border: none; padding: 12px 24px; font-size: 16px; font-weight: 700; border-radius: 8px; cursor: pointer; width: 100%; text-transform: uppercase; }
+        .btn-game-action:disabled { background: #e0d5ba; color: #9c927a; cursor: not-allowed; }
+        
+        .game-status-text { font-size: 14px; font-weight: 600; text-align: center; margin: 10px 0; min-height: 20px; }
+        .odds-table { display: flex; gap: 4px; overflow-x: auto; padding: 5px 0; margin-bottom: 10px; }
+        .odds-item { background: #fff; padding: 6px 10px; border-radius: 4px; font-size: 11px; text-align: center; min-width: 55px; border: 1px solid var(--border-color); }
+        .odds-item.active { background: var(--primary-color); font-weight: 700; }
+
+        /* ================= WALLET STYLES ================= */
+        .wallet-actions-row { display: flex; gap: 12px; margin-bottom: 15px; }
+        .btn-wallet-action {
+            flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 14px; font-size: 16px; font-weight: 600; border-radius: 8px; border: none; cursor: pointer;
+        }
+        .btn-wallet-action.dep { background-color: var(--primary-color); color: var(--text-dark); }
+        .btn-wallet-action.wit { background-color: #fff; color: var(--text-dark); border: 1px solid #ccc; }
+
+        .main-balance-card {
+            background-color: var(--card-color); padding: 20px; border-radius: 8px;
+            position: relative; margin-bottom: 12px; border: 1px solid var(--border-color);
+        }
+        .mb-lbl { font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
+        .mb-amt { font-size: 28px; font-weight: 700; margin-top: 5px; }
+        .mb-icon { position: absolute; right: 20px; top: 55px; font-size: 24px; color: var(--primary-color); }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); background: var(--card-color); border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 12px; overflow: hidden; }
+        .stat-item { padding: 12px; text-align: left; border-right: 1px solid var(--border-color); }
+        .stat-item:last-child { border-right: none; }
+        .stat-lbl { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+        .stat-val { font-size: 16px; font-weight: 700; margin-top: 4px; }
+
+        .quick-note-box { background-color: var(--card-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; margin-bottom: 15px; }
+        .qn-title { font-size: 13px; font-weight: 700; margin-bottom: 5px; }
+        .qn-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+
+        .trans-history-bar { background-color: var(--card-color); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px; display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .th-title { font-size: 14px; font-weight: 700; }
+        .th-desc { font-size: 12px; color: var(--text-muted); }
+
+        /* Bottom Tab Navigation Bar */
+        .nav-bar {
+            position: fixed; bottom: 0; left: 0; right: 0; height: 65px;
+            background-color: #fff; display: flex; justify-content: space-around; align-items: center;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 1000;
+        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 11px; cursor: pointer; width: 20%; font-weight: 500; }
+        .nav-item i { font-size: 20px; margin-bottom: 4px; color: #a1967d; }
+        .nav-item.active { color: #d49a17; }
+        .nav-item.active i { color: #d49a17; }
+
+        /* ================= MODAL DIALOGS SYSTEM ================= */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.4); z-index: 5000; justify-content: center; align-items: flex-end;
+        }
+        .modal-sheet {
+            background: #fbf5e6; width: 100%; max-width: 500px; border-radius: 24px 24px 0 0;
+            box-sizing: border-box; padding: 20px; animation: slideUp 0.25s ease-out;
+            border-top: 1px solid var(--border-color);
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-size: 16px; font-weight: bold; font-style: italic; }
+        .modal-lbl { font-size: 11px; color: #8e8266; font-weight: 700; text-transform: uppercase; margin-bottom: 6px; display: block; }
+        .modal-balance-text { font-size: 12px; color: var(--text-dark); font-weight: 500; }
+        .modal-limits { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; font-weight: 500; }
+
+        .amt-input-wrapper { background: #eedeb9; border-radius: 8px; padding: 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .amt-input-wrapper input { background: transparent; border: none; font-size: 22px; font-weight: 700; text-align: center; width: 80%; outline: none; font-style: italic; }
+        .amt-input-wrapper span { font-size: 14px; font-weight: 600; color: var(--text-muted); }
+
+        .phone-input-box { width: 100%; background: #eedeb9; border: none; padding: 14px; font-size: 15px; font-weight: 600; border-radius: 8px; box-sizing: border-box; outline: none; margin-bottom: 10px; }
+        .info-sub-text { font-size: 11px; color: var(--text-muted); line-height: 1.4; margin-bottom: 15px; }
+
+        .quick-amt-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 15px; }
+        .btn-quick-chip { background: #eedeb9; border: none; padding: 8px 0; font-size: 12px; font-weight: 700; font-style: italic; border-radius: 6px; cursor: pointer; }
+
+        .verif-card { background: #eedeb9; padding: 12px; border-radius: 8px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px; }
+        .verif-row { display: flex; justify-content: space-between; align-items: center; }
+        .verif-row div:first-child { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+        .verif-row div:last-child { font-size: 14px; font-weight: 700; font-style: italic; }
+
+        .tx-textarea { width: 100%; height: 75px; background: #eedeb9; border: none; padding: 12px; font-size: 13px; font-weight: 500; border-radius: 8px; box-sizing: border-box; outline: none; resize: none; margin-bottom: 15px; }
+
+        .btn-modal-confirm {
+            width: 100%; padding: 15px; background: var(--primary-color); border: none;
+            border-radius: 12px; font-size: 15px; font-weight: 700; text-transform: uppercase;
+            cursor: pointer; display: flex; justify-content: center; align-items: center; min-height: 50px;
+        }
+        .btn-modal-confirm:disabled { background: #e0d5ba; color: #9c927a; cursor: not-allowed; }
+
+        .search-loader {
+            width: 22px; height: 22px; border: 3px solid rgba(0,0,0,0.1);
+            border-top: 3px solid var(--text-dark); border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <!-- Main Header -->
+    <div class="header">
+        <div class="logo">Arada Bet</div>
+        <div class="top-right-controls">
+            <button class="balance-hide-btn"><span style="letter-spacing:-1px;">•••••</span> <i class="fa-regular fa-eye"></i></button>
+            <button class="btn-plus-top" onclick="switchTab('wallet')">+</button>
+        </div>
+    </div>
+
+    <!-- 1. SPORTS TAB CONTENT -->
+    <div id="sports" class="tab-content active">
+        <div class="main-balance-card">
+            <div class="mb-lbl">Balance</div>
+            <div class="mb-amt">ETB <span class="user-balance">18.00</span></div>
+            <button style="position:absolute; right:15px; top:20px; background:var(--primary-color); border:none; padding:8px 14px; border-radius:6px; font-weight:600;" onclick="switchTab('wallet')">Deposit</button>
+        </div>
+        <h3 style="font-size:18px; margin-top:20px;">Live Sports Betting</h3>
+        <p style="color: var(--text-muted); font-size:13px;">በቅርቡ የሚለቀቅ... በስፖርት ጨዋታዎች ላይ መወራረድ በቅርቡ ይጀምራል።</p>
+    </div>
+
+    <!-- 2. GAMES (KENO) TAB CONTENT (RESTORED BACK) -->
+    <div id="games" class="tab-content">
+        <div class="main-balance-card">
+            <div class="mb-lbl">Balance</div>
+            <div class="mb-amt">ETB <span class="user-balance">18.00</span></div>
+        </div>
+
+        <div class="section-subtitle">Traditional & Fast Games</div>
+        <div class="section-title">Keno Multiplier</div>
+
+        <div class="keno-container">
+            <!-- Odds Payout Display Grid -->
+            <div class="odds-table" id="odds-payouts-row">
+                <!-- Will auto generate based on chosen number of picks -->
+                <div class="odds-item">Select numbers</div>
+            </div>
+
+            <!-- Keno 1 to 40 Grid Board -->
+            <div class="keno-grid" id="keno-board-grid"></div>
+
+            <div class="game-status-text" id="game-status-alert">ቁጥሮችን ይምረጡ (ከ 1 እስከ 10 ቁጥር መምረጥ ይችላሉ)</div>
+
+            <!-- Game Form Controls -->
+            <div class="bet-control-box">
+                <div class="bet-input-row">
+                    <input type="number" id="game-bet-amount" value="10" min="5" placeholder="የውርርድ መጠን">
+                    <button class="btn-game-action" style="width:auto; background:#fff; border:1px solid #ccc;" onclick="clearKenoSelection()">Clear</button>
+                </div>
+                <button class="btn-game-action" id="btn-play-keno" onclick="startKenoDraw()" disabled>Play Keno</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. REFERRAL TAB CONTENT -->
+    <div id="invite" class="tab-content">
+        <div class="section-subtitle">Referral Program</div>
+        <div class="section-title">Invite & earn</div>
+        <div class="quick-note-box" style="text-align:center; padding:30px 15px;">
+            <i class="fa-solid fa-gift" style="font-size:36px; color:var(--primary-color); margin-bottom:12px;"></i>
+            <div class="qn-title" style="font-size:18px;">REFER&nbsp;&amp;&nbsp;EARN</div>
+            <div class="qn-desc">Invite friends and earn 5% from their deposits.</div>
+        </div>
+        <button style="width:100%; padding:15px; background:var(--primary-color); border:none; border-radius:8px; font-weight:600; font-size:15px;"><i class="fa-solid fa-share-nodes"></i> Invite a friend</button>
+    </div>
+
+    <!-- 4. WALLET TAB CONTENT (EXACT MATCH TO THE SCREENSHOTS) -->
+    <div id="wallet" class="tab-content">
+        <div class="section-subtitle">Account Funds</div>
+        <div class="section-title">Wallet</div>
+
+        <div class="wallet-actions-row">
+            <button class="btn-wallet-action dep" onclick="openDepositModal()"><i class="fa-solid fa-plus"></i> Deposit</button>
+            <button class="btn-wallet-action wit" onclick="openWithdrawModal()"><i class="fa-solid fa-minus"></i> Withdraw</button>
+        </div>
+
+        <div class="main-balance-card">
+            <div class="mb-lbl">Main Balance</div>
+            <div class="mb-amt">ETB <span class="user-balance">18.00</span></div>
+            <i class="fa-solid fa-wallet mb-icon"></i>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-lbl">Total</div>
+                <div class="stat-val" id="stat-total-cnt">6</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-lbl">Pending</div>
+                <div class="stat-val" style="color:#d49a17;" id="stat-pending-cnt">2</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-lbl">Done</div>
+                <div class="stat-val" style="color:#10b981;" id="stat-done-cnt">1</div>
+            </div>
+        </div>
+
+        <div class="quick-note-box">
+            <div class="qn-title">Quick note</div>
+            <div class="qn-desc">Pending deposits can be opened from the transaction list to submit proof or transaction ID.</div>
+        </div>
+
+        <div class="trans-history-bar">
+            <i class="fa-solid fa-clock-rotate-left" style="font-size:20px; color:#d49a17;"></i>
+            <div>
+                <div class="th-title">TRANSACTIONS</div>
+                <div class="th-desc">Deposit and withdrawal history</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. PROFILE TAB CONTENT -->
+    <div id="profile" class="tab-content">
+        <div class="section-subtitle">Account Center</div>
+        <div class="section-title">Profile</div>
+        <div class="quick-note-box" style="display:flex; align-items:center; gap:15px;">
+            <div style="width:45px; height:45px; background:#4cd964; border-radius:6px; color:white; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:20px;">E</div>
+            <div>
+                <div style="font-weight:700; font-size:16px;">@ebla2127</div>
+                <div style="font-size:11px; color:var(--text-muted);">Member ID: 8525980303</div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ==================== WINDOW POPUP MODALS SYSTEM ==================== -->
+
+    <!-- [MODAL 1]: DEPOSIT STEP 1 -->
+    <div class="modal-overlay" id="modal-dep-step1" onclick="closeAllModals(event)">
+        <div class="modal-sheet" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <span onclick="closeModal('modal-dep-step1')"><i class="fa-solid fa-chevron-left"></i></span>
+                <span>Deposit Funds</span>
+                <span onclick="closeModal('modal-dep-step1')">&times;</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                <span class="modal-lbl">Enter Amount</span>
+                <span class="modal-balance-text">Balance: <span class="user-balance">18</span> ETB</span>
+            </div>
+            <div class="amt-input-wrapper">
+                <input type="number" id="dep-amt-input" value="0" oninput="validateDepAmount()">
+                <span>ETB</span>
+            </div>
+            <div class="quick-amt-grid">
+                <button class="btn-quick-chip" onclick="addDepAmount(30)">+30</button>
+                <button class="btn-quick-chip" onclick="addDepAmount(50)">+50</button>
+                <button class="btn-quick-chip" onclick="addDepAmount(100)">+100</button>
+                <button class="btn-quick-chip" onclick="addDepAmount(500)">+500</button>
+                <button class="btn-quick-chip" onclick="addDepAmount(1000)">+1000</button>
+            </div>
+            <button class="btn-modal-confirm" id="btn-dep-confirm" onclick="goToDepositStep2()" disabled>Confirm Deposit</button>
+        </div>
+    </div>
+
+    <!-- [MODAL 2]: DEPOSIT FINAL STEP (VERIFICATION FORM) -->
+    <div class="modal-overlay" id="modal-dep-step2" onclick="closeAllModals(event)">
+        <div class="modal-sheet" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <span onclick="backToDepStep1()"><i class="fa-solid fa-chevron-left"></i></span>
+                <span>Apply Verification</span>
+                <span onclick="closeModal('modal-dep-step2')">&times;</span>
+            </div>
+            <span class="modal-lbl" style="color:#d49a17;">Instructions</span>
+            <div class="verif-card">
+                <div class="verif-row">
+                    <div>Account Name</div>
+                    <div>Alemitu Gerito Lino</div>
+                </div>
+                <div class="verif-row">
+                    <div>Account Number</div>
+                    <div style="display:flex; align-items:center; gap:6px;">0976765611 <i class="fa-regular fa-credit-card" style="color:#8e8266;"></i></div>
+                </div>
+            </div>
+            <span class="modal-lbl">Paste Telebirr SMS or Trans. ID</span>
+            <textarea class="tx-textarea" id="dep-txid-input" placeholder="Paste the SMS or Transaction ID here..." oninput="validateDepTx()"></textarea>
+            <button class="btn-modal-confirm" id="btn-dep-submit" onclick="executeDepositSearchAction()" disabled>Verify & Add Balance</button>
+        </div>
+    </div>
+
+    <!-- [MODAL 3]: WITHDRAWAL POPUP -->
+    <div class="modal-overlay" id="modal-withdraw" onclick="closeAllModals(event)">
+        <div class="modal-sheet" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <span onclick="closeModal('modal-withdraw')"><i class="fa-solid fa-chevron-left"></i></span>
+                <span>Withdraw Funds</span>
+                <span onclick="closeModal('modal-withdraw')">&times;</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                <span class="modal-lbl">Enter Amount</span>
+                <span class="modal-balance-text">Balance: <span class="user-balance">18</span> ETB</span>
+            </div>
+            <div class="modal-limits">Min 50 ETB · Max 10000 ETB</div>
+            <div class="amt-input-wrapper">
+                <input type="number" id="wit-amt-input" value="0" oninput="validateWitForm()">
+                <span>ETB</span>
+            </div>
+            <div class="quick-amt-grid">
+                <button class="btn-quick-chip" onclick="addWitAmount(50)">+50</button>
+                <button class="btn-quick-chip" onclick="addWitAmount(100)">+100</button>
+                <button class="btn-quick-chip" onclick="addWitAmount(200)">+200</button>
+                <button class="btn-quick-chip" onclick="addWitAmount(500)">+500</button>
+                <button class="btn-quick-chip" onclick="addWitAmount(1000)">+1000</button>
+            </div>
+            <span class="modal-lbl">Withdrawal Account Phone</span>
+            <input type="text" class="phone-input-box" id="wit-phone-input" placeholder="09XXXXXXXX" oninput="validateWitForm()">
+            <div class="info-sub-text" id="wit-error-msg" style="color:red; display:none;">Insufficient balance</div>
+            <div class="info-sub-text" id="wit-normal-msg">No withdrawal account set yet. Enter one now and it will be saved for next time (or set it in Profile &gt; Settings).</div>
+            <button class="btn-modal-confirm" id="btn-wit-submit" onclick="executeWithdrawSearchAction()" disabled>Confirm Withdraw</button>
+        </div>
+    </div>
+
+
+    <!-- Bottom Navigation Tabs Menu -->
+    <div class="nav-bar">
+        <div class="nav-item active" onclick="switchTab('sports', this)"><i class="fa-solid fa-building-columns"></i>Sports</div>
+        <div class="nav-item" onclick="switchTab('games', this)"><i class="fa-solid fa-gamepad"></i>Games</div>
+        <div class="nav-item" onclick="switchTab('invite', this)"><i class="fa-solid fa-gift"></i>Invite</div>
+        <div class="nav-item" onclick="switchTab('wallet', this)"><i class="fa-solid fa-wallet"></i>Wallet</div>
+        <div class="nav-item" onclick="switchTab('profile', this)"><i class="fa-solid fa-user"></i>Profile</div>
+    </div>
+
+
+    <script>
+        // Supabase Parameters
+        const SUPABASE_URL = "https://pfmpsnpiafhzeunbpemm.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_3JXvZ4QYWC-c7wjTPLk3RA_v18uEzJN";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let currentUserId = "8525980303"; 
+        let userBalance = 18.00;
+        let selectedKenoNumbers = [];
+
+        // Keno Multiplier Config Matrix
+        const KENO_PAYOUT_ODDS = {
+            1: [0, 2.5],
+            2: [0, 1.2, 5.0],
+            3: [0, 0, 2.5, 12.0],
+            4: [0, 0, 1.5, 5.0, 25.0],
+            5: [0, 0, 0, 3.0, 15.0, 75.0],
+            6: [0, 0, 0, 1.5, 6.0, 30.0, 150.0],
+            7: [0, 0, 0, 1.0, 3.0, 15.0, 80.0, 400.0],
+            8: [0, 0, 0, 0, 2.5, 10.0, 50.0, 200.0, 800.0],
+            9: [0, 0, 0, 0, 2.0, 6.0, 25.0, 100.0, 400.0, 1500.0],
+            10: [0, 0, 0, 0, 1.5, 4.0, 15.0, 60.0, 200.0, 800.0, 3000.0]
+        };
+
+        // Initialize Core System Hook
+        function initApp() {
+            const tg = window.Telegram?.WebApp;
+            if (tg && tg.initDataUnsafe?.user) {
+                currentUserId = tg.initDataUnsafe.user.id.toString();
+                tg.expand();
+            }
+            updateBalanceUI(userBalance);
+            buildKenoBoard();
+            loadTransactionCounts();
+        }
+
+        function updateBalanceUI(bal) {
+            userBalance = bal;
+            document.querySelectorAll('.user-balance').forEach(el => el.innerText = bal.toFixed(2));
+        }
+
+        async function loadTransactionCounts() {
+            try {
+                const { count: total } = await supabaseClient.from('transactions').select('*', { count: 'exact', head: true }).eq('telegram_id', currentUserId);
+                const { count: pending } = await supabaseClient.from('transactions').select('*', { count: 'exact', head: true }).eq('telegram_id', currentUserId).eq('status', 'pending');
+                const { count: done } = await supabaseClient.from('transactions').select('*', { count: 'exact', head: true }).eq('telegram_id', currentUserId).eq('status', 'approved');
+                
+                if(total !== null) document.getElementById('stat-total-cnt').innerText = total;
+                if(pending !== null) document.getElementById('stat-pending-cnt').innerText = pending;
+                if(done !== null) document.getElementById('stat-done-cnt').innerText = done;
+            } catch (e) { console.log(e); }
+        }
+
+        function switchTab(tabId, element) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            if (element) element.classList.add('active');
+        }
+
+        /* ================= KENO GAME CONTROLLER LOGIC ================= */
+        function buildKenoBoard() {
+            const board = document.getElementById('keno-board-grid');
+            board.innerHTML = "";
+            for (let i = 1; i <= 40; i++) {
+                let cell = document.createElement('div');
+                cell.className = 'keno-num';
+                cell.innerText = i;
+                cell.dataset.num = i;
+                cell.onclick = () => toggleKenoNumber(i, cell);
+                board.appendChild(cell);
+            }
+        }
+
+        function toggleKenoNumber(num, cellElement) {
+            if (selectedKenoNumbers.includes(num)) {
+                selectedKenoNumbers = selectedKenoNumbers.filter(n => n !== num);
+                cellElement.classList.remove('selected');
+            } else {
+                if (selectedKenoNumbers.length >= 10) {
+                    alert("ከ 10 በላይ ቁጥሮችን መምረጥ አይቻልም!");
+                    return;
+                }
+                selectedKenoNumbers.push(num);
+                cellElement.classList.add('selected');
+            }
+            updateKenoOddsRow();
+        }
+
+        function updateKenoOddsRow() {
+            const oddsRow = document.getElementById('odds-payouts-row');
+            const playBtn = document.getElementById('btn-play-keno');
+            const len = selectedKenoNumbers.length;
+
+            if (len === 0) {
+                oddsRow.innerHTML = '<div class="odds-item">Select numbers</div>';
+                playBtn.disabled = true;
+                return;
+            }
+
+            playBtn.disabled = false;
+            oddsRow.innerHTML = "";
+            const payouts = KENO_PAYOUT_ODDS[len];
+            payouts.forEach((mult, hits) => {
+                if (mult > 0) {
+                    oddsRow.innerHTML += `<div class="odds-item" id="odds-hit-${hits}">${hits} Hits<br><b>x${mult}</b></div>`;
+                }
+            });
+        }
+
+        function clearKenoSelection() {
+            selectedKenoNumbers = [];
+            document.querySelectorAll('.keno-num').forEach(el => {
+                el.className = 'keno-num';
+            });
+            updateKenoOddsRow();
+            document.getElementById('game-status-alert').innerText = "ቁጥሮችን ይምረጡ (ከ 1 እስከ 10 ቁጥር መምረጥ ይችላሉ)";
+        }
+
+        function startKenoDraw() {
+            let betAmt = parseFloat(document.getElementById('game-bet-amount').value) || 0;
+            if (betAmt > userBalance) {
+                alert("ይቅርታ፣ በቂ ባላንስ የለዎትም!");
+                return;
+            }
+            if (betAmt < 5) {
+                alert("አነስተኛ ውርርድ 5 ETB ነው!");
+                return;
+            }
+
+            // Deduct play bet amount
+            updateBalanceUI(userBalance - betAmt);
+            document.getElementById('btn-play-keno').disabled = true;
+
+            // Generate 10 Random House Balls (out of 40)
+            let houseDraw = [];
+            while (houseDraw.length < 10) {
+                let rand = Math.floor(Math.random() * 40) + 1;
+                if (!houseDraw.includes(rand)) houseDraw.push(rand);
+            }
+
+            // UI Reveal Cycle Animate
+            let hitsCount = 0;
+            document.querySelectorAll('.keno-num').forEach(cell => {
+                let n = parseInt(cell.dataset.num);
+                let isPicked = selectedKenoNumbers.includes(n);
+                let isDrawn = houseDraw.includes(n);
+
+                if (isDrawn && isPicked) {
+                    cell.className = 'keno-num hit';
+                    hitsCount++;
+                } else if (isDrawn) {
+                    cell.className = 'keno-num miss';
+                }
+            });
+
+            // Calculate Win Multiplying Ratio
+            let oddsArr = KENO_PAYOUT_ODDS[selectedKenoNumbers.length];
+            let winMultiplier = oddsArr[hitsCount] || 0;
+            let totalPayout = betAmt * winMultiplier;
+
+            if (totalPayout > 0) {
+                updateBalanceUI(userBalance + totalPayout);
+                document.getElementById('game-status-alert').innerHTML = `<span style="color:#10b981;">🎉 እንኳን ደስ አለዎት! ${hitsCount} ቁጥሮች ተገጥመው ETB ${totalPayout.toFixed(2)} አሸንፈዋል!</span>`;
+                // Highlight active odds item
+                let activeOddCell = document.getElementById(`odds-hit-${hitsCount}`);
+                if(activeOddCell) activeOddCell.classList.add('active');
+            } else {
+                document.getElementById('game-status-alert').innerHTML = `<span style="color:#ef4444;">❌ አልተሳካም! ${hitsCount} ቁጥሮች ብቻ ነው የተገጠሙት። እንደገና ይሞክሩ!</span>`;
+            }
+
+            setTimeout(() => {
+                document.getElementById('btn-play-keno').disabled = false;
+            }, 1000);
+        }
+
+        /* ================= WALLET MODAL HANDLERS ================= */
+        function openDepositModal() {
+            document.getElementById('dep-amt-input').value = "0";
+            document.getElementById('btn-dep-confirm').disabled = true;
+            document.getElementById('modal-dep-step1').style.display = 'flex';
+        }
+
+        function openWithdrawModal() {
+            document.getElementById('wit-amt-input').value = "0";
+            document.getElementById('wit-phone-input').value = "";
+            document.getElementById('btn-wit-submit').disabled = true;
+            document.getElementById('wit-error-msg').style.display = 'none';
+            document.getElementById('modal-withdraw').style.display = 'flex';
+        }
+
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function closeAllModals(e) { if(e.target.classList.contains('modal-overlay')) e.target.style.display = 'none'; }
+
+        function addDepAmount(val) {
+            let current = parseFloat(document.getElementById('dep-amt-input').value) || 0;
+            document.getElementById('dep-amt-input').value = current + val;
+            validateDepAmount();
+        }
+        function validateDepAmount() {
+            let amt = parseFloat(document.getElementById('dep-amt-input').value) || 0;
+            document.getElementById('btn-dep-confirm').disabled = (amt <= 0);
+        }
+        function goToDepositStep2() {
+            closeModal('modal-dep-step1');
+            document.getElementById('dep-txid-input').value = "";
+            document.getElementById('btn-dep-submit').disabled = true;
+            document.getElementById('modal-dep-step2').style.display = 'flex';
+        }
+        function backToDepStep1() {
+            closeModal('modal-dep-step2');
+            document.getElementById('modal-dep-step1').style.display = 'flex';
+        }
+        function validateDepTx() {
+            let tx = document.getElementById('dep-txid-input').value.trim();
+            document.getElementById('btn-dep-submit').disabled = (tx.length < 5);
+        }
+
+        async function executeDepositSearchAction() {
+            let submitBtn = document.getElementById('btn-dep-submit');
+            let amt = parseFloat(document.getElementById('dep-amt-input').value);
+            let txData = document.getElementById('dep-txid-input').value;
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<div class="search-loader"></div>`;
+
+            await supabaseClient.from('transactions').insert({
+                telegram_id: currentUserId,
+                type: 'deposit',
+                amount: amt,
+                tx_id_or_phone: txData,
+                status: 'pending'
+            });
+
+            setTimeout(() => {
+                alert("ግብይቱ እየተፈለገ ነው! አስተዳዳሪው ሲያረጋግጠው ይጨመርልዎታል።");
+                closeModal('modal-dep-step2');
                 loadTransactionCounts();
             }, 2000);
         }
 
-        /* WITHDRAW STEP ENGINE */
         function addWitAmount(val) {
             let current = parseFloat(document.getElementById('wit-amt-input').value) || 0;
             document.getElementById('wit-amt-input').value = current + val;
@@ -496,22 +1119,18 @@
             }
         }
 
-        // CONFIRM SEARCH ENGINE ACTION FOR WITHDRAWAL
         async function executeWithdrawSearchAction() {
             let submitBtn = document.getElementById('btn-wit-submit');
             let amt = parseFloat(document.getElementById('wit-amt-input').value);
             let phoneNum = document.getElementById('wit-phone-input').value;
 
-            // ቁልፉን ወደ መፈለጊያ አኒሜሽን መቀየር (Search/Loading Effect)
             submitBtn.disabled = true;
             submitBtn.innerHTML = `<div class="search-loader"></div>`;
 
-            // Withdrawal ህግ: ወዲያውኑ ከባላንስ ላይ መቀነስ!
             let newBalance = userBalance - amt;
             updateBalanceUI(newBalance);
             await supabaseClient.from('users').update({ balance: newBalance }).eq('telegram_id', currentUserId);
 
-            // ጥያቄውን ዴታቤዝ ውስጥ ማስገባት
             await supabaseClient.from('transactions').insert({
                 telegram_id: currentUserId,
                 type: 'withdrawal',
@@ -520,7 +1139,6 @@
                 status: 'pending'
             });
 
-            // አኒሜሽኑ ለ 2 ሰከንድ እንዲታይ ማድረግ
             setTimeout(() => {
                 alert(`የማውጫ ጥያቄዎ ቀርቧል። ETB ${amt} ከባላንስዎ ላይ ተቀንሷል።`);
                 closeModal('modal-withdraw');
@@ -528,8 +1146,8 @@
             }, 2000);
         }
 
-        // Run On Start
-        initAccount();
+        // Run On Boot
+        window.onload = initApp;
     </script>
 </body>
 </html>
