@@ -16,7 +16,6 @@
             --primary-color: #f1b82a;
             --text-dark: #2c2512;
             --text-muted: #73674c;
-            --keno-blue: #1e3a8a;
             --danger: #ef4444;
             --success: #10b981;
         }
@@ -45,18 +44,21 @@
         #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
         .toast { background: #334155; color: #fff; padding: 12px 20px; border-radius: 8px; font-size: 14px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); animation: slideIn 0.3s forwards; display: flex; align-items: center; gap: 10px; }
 
-        .referral-box { background: var(--card-color); border: 2px dashed var(--primary-color); border-radius: 10px; padding: 15px; text-align: center; margin-bottom: 15px; }
-        .ref-code { font-size: 20px; font-weight: 700; color: #2c2512; letter-spacing: 2px; background: #fff; padding: 5px 15px; border-radius: 5px; display: inline-block; margin-top: 5px; }
-        .btn-invite { background: #2c2512; color: #fff; border: none; padding: 10px 20px; font-weight: bold; border-radius: 8px; margin-top: 10px; cursor: pointer; width: 100%; }
+        /* Referral Box */
+        .referral-box { background: var(--card-color); border: 2px dashed var(--primary-color); border-radius: 10px; padding: 20px; text-align: center; margin-top: 10px; }
+        .ref-link-text { font-size: 12px; word-break: break-all; background: #fff; padding: 10px; border-radius: 6px; display: block; margin: 10px 0; color: #1e293b; border: 1px solid #e2e8f0; }
+        .btn-invite { background: #2c2512; color: #fff; border: none; padding: 12px 20px; font-weight: bold; border-radius: 8px; cursor: pointer; width: 100%; display: flex; justify-content: center; align-items: center; gap: 8px; }
 
-        .games-grid { display: grid; grid-template-columns: repeat(1, 1fr); gap: 12px; margin-top: 10px; }
+        /* Games Grid */
+        .games-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 10px; }
         .game-card {
             background-color: #2c2512; border-radius: 12px; overflow: hidden; position: relative;
-            height: 140px; display: flex; flex-direction: column; justify-content: flex-end;
-            padding: 20px; color: white; background-size: cover; background-position: center; cursor: pointer;
+            height: 120px; display: flex; flex-direction: column; justify-content: flex-end;
+            padding: 15px; color: white; background-size: cover; background-position: center; cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-        .game-title { font-weight: 700; font-size: 22px; color: var(--primary-color); }
-        .badge-hot { position: absolute; top: 12px; right: 12px; background-color: #ff3b30; color: white; font-size: 10px; padding: 3px 8px; border-radius: 4px; font-weight: bold; }
+        .game-title { font-weight: 700; font-size: 16px; color: var(--primary-color); text-shadow: 1px 1px 3px rgba(0,0,0,0.8); }
+        .badge-hot { position: absolute; top: 8px; right: 8px; background-color: #ff3b30; color: white; font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
 
         /* Dashboard Widgets Grid */
         .widgets-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
@@ -66,7 +68,7 @@
 
         /* Admin Login Popup */
         .admin-login-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 3000; justify-content: center; align-items: center; padding: 20px; }
-        .login-box { background: #1e293b; width: 100%; max-width: 360px; padding: 25px; border-radius: 12px; color: white; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .login-box { background: #1e293b; width: 100%; max-width: 360px; padding: 25px; border-radius: 12px; color: white; }
 
         .arada-tabs { display: flex; background: #e6dcbe; padding: 5px; border-radius: 10px; margin-bottom: 20px; }
         .arada-tab-btn { flex: 1; padding: 12px; border: none; background: transparent; font-size: 14px; font-weight: 600; border-radius: 8px; cursor: pointer; }
@@ -77,7 +79,7 @@
         .arada-btn-submit { width: 100%; padding: 15px; font-size: 16px; font-weight: 700; border-radius: 10px; border: none; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; }
         .btn-spinner { width: 18px; height: 18px; border: 3px solid rgba(255,255,255,0.3); border-top: 3px solid #fff; border-radius: 50%; animation: spin 0.8s linear infinite; display: none; }
 
-        /* Keno Game Popup Styles (Original) */
+        /* Keno Game Popup Styles */
         .game-popup { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #0f172a; color: white; z-index: 2000; overflow-y: auto; padding-bottom: 40px; }
         .keno-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #1e293b; border-bottom: 2px solid var(--primary-color); }
         .timer-box { background: #ef4444; color: white; padding: 5px 12px; border-radius: 6px; font-weight: bold; }
@@ -97,13 +99,20 @@
         .crash-splash { position: absolute; top:0; left:0; width:100%; height:100%; background:#111827; z-index:10; display:flex; flex-direction:column; justify-content:center; align-items:center; color:white; }
         .crash-loader { border: 4px solid rgba(244,63,94,0.2); border-top: 4px solid #f43f5e; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 10px; }
 
+        /* Mines Game UI */
+        .mines-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin: 15px; }
+        .mines-tile { aspect-ratio: 1; background: #334155; border-radius: 6px; display: flex; justify-content: center; align-items: center; font-size: 20px; cursor: pointer; color: white; font-weight: bold; }
+        .mines-tile.revealed-gem { background: #10b981; }
+        .mines-tile.revealed-mine { background: #ef4444; }
+
         .list-item { display: flex; justify-content: space-between; padding: 15px; background-color: var(--card-color); margin-bottom: 8px; border-radius: 10px; }
         .rank-badge { background: var(--primary-color); padding: 2px 8px; border-radius: 5px; font-weight: bold; }
         .admin-card { background: #1e293b; color: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; }
         .admin-btn { padding: 8px 14px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-right: 5px; }
 
+        /* Bottom Nav (Updated to 4 Items) */
         .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; height: 65px; background-color: #fff; display: flex; justify-content: space-around; align-items: center; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 1000; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 11px; cursor: pointer; width: 33%; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 11px; cursor: pointer; width: 25%; }
         .nav-item i { font-size: 20px; margin-bottom: 4px; }
         .nav-item.active { color: #d49a17; }
 
@@ -142,16 +151,9 @@
             <div>
                 <div style="font-size:12px; color:var(--text-muted);">Main Balance</div>
                 <div class="balance-amount">ETB <span class="user-balance">0.00</span></div>
-                <div style="font-size:11px; color:var(--danger);">Locked (ዊዝድሮው የተጠየቀ): ETB <span id="locked-balance-view">0.00</span></div>
+                <div style="font-size:11px; color:var(--danger);">Locked: ETB <span id="locked-balance-view">0.00</span></div>
             </div>
             <button class="btn-deposit" onclick="claimDailyBonus()">🎁 Daily Bonus</button>
-        </div>
-
-        <!-- 👥 Referral Invite Section -->
-        <div class="referral-box">
-            <span style="font-size:13px; font-weight:600; color:var(--text-muted);">Your Referral Code</span><br>
-            <span class="ref-code" id="user-referral-id">------</span>
-            <button class="btn-invite" onclick="inviteFriends()"><i class="fa-solid fa-user-plus"></i> Invite Friends</button>
         </div>
         
         <h3>Top Live Games</h3>
@@ -160,20 +162,39 @@
                 <span class="badge-hot">LIVE</span>
                 <div class="game-title">Live Fast Keno</div>
             </div>
-            <div class="game-card" onclick="openCrashGame()" style="background-image: linear-gradient(to right, rgba(0,0,0,0.8), transparent), url('https://images.unsplash.com/photo-1436076863939-06870fe779c2?w=400'); margin-top: 5px;">
+            <div class="game-card" onclick="openCrashGame()" style="background-image: linear-gradient(to right, rgba(0,0,0,0.8), transparent), url('https://images.unsplash.com/photo-1436076863939-06870fe779c2?w=400');">
                 <span class="badge-hot" style="background-color: #10b981;">NEW</span>
-                <div class="game-title" style="color: #f43f5e;">Live Crash (Aviator)</div>
+                <div class="game-title" style="color: #f43f5e;">Crash (Aviator)</div>
+            </div>
+            <div class="game-card" onclick="openMinesGame()" style="background-image: linear-gradient(to right, rgba(0,0,0,0.8), transparent), url('https://images.unsplash.com/photo-1611195974226-a6a9be9dd763?w=400');">
+                <span class="badge-hot" style="background-color: #3b82f6;">HOT</span>
+                <div class="game-title" style="color: #10b981;">Mines Pro</div>
+            </div>
+            <div class="game-card" onclick="openDiceGame()" style="background-image: linear-gradient(to right, rgba(0,0,0,0.8), transparent), url('https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=400');">
+                <span class="badge-hot" style="background-color: #a855f7;">FAST</span>
+                <div class="game-title" style="color: #f1b82a;">Ultimate Dice</div>
             </div>
         </div>
     </div>
 
-    <!-- 2. LEADERBOARD TAB -->
+    <!-- 2. REFERRAL TAB (NEW INDEPENDENT TAB) -->
+    <div id="referral-tab" class="tab-content">
+        <h3>👥 Invite Friends & Earn 5%</h3>
+        <p style="color:var(--text-muted); font-size:14px;">ጓደኞችዎን በግል የቴሌግራም ሊንክዎ ይጋብዙ። እነሱ መጀመሪያ ሲያስገቡ የ 5% ኮሚሽን በቀጥታ ወደ ሂሳብዎ ይገባል!</p>
+        <div class="referral-box">
+            <span style="font-weight:600; color:var(--text-muted);">የእርስዎ መጋበዣ ሊንክ (Referral Link)</span>
+            <span class="ref-link-text" id="user-full-ref-link">https://t.me/YOUR_BOT_USERNAME?start=loading...</span>
+            <button class="btn-invite" onclick="copyReferralLink()"><i class="fa-solid fa-copy"></i> ሊንኩን ኮፒ አድርግ</button>
+        </div>
+    </div>
+
+    <!-- 3. LEADERBOARD TAB -->
     <div id="leaderboard-tab" class="tab-content">
         <h3>🏆 Top Winners Leaderboard</h3>
         <div id="leaderboard-list">የአሸናፊዎች ዝርዝር በመጫን ላይ...</div>
     </div>
 
-    <!-- 3. WALLET TAB -->
+    <!-- 4. WALLET TAB -->
     <div id="wallet" class="tab-content">
         <div class="arada-tabs">
             <button id="tab-dep-btn" class="arada-tab-btn active" onclick="switchWalletForm('deposit')">Deposit</button>
@@ -197,11 +218,9 @@
         </div>
     </div>
 
-    <!-- 4. ADMIN PANEL TAB -->
+    <!-- 5. ADMIN PANEL TAB -->
     <div id="admin-panel" class="tab-content" style="background: #0f172a; color: white; min-height: 100vh;">
         <h2>🛠 Admin Management Dashboard</h2>
-        
-        <!-- 📊 Dashboard Widgets Grid -->
         <div class="widgets-grid">
             <div class="widget-card"><div class="widget-title">Total Users</div><div class="widget-value" id="wd-total-users">0</div></div>
             <div class="widget-card"><div class="widget-title">Active Users</div><div class="widget-value" id="wd-active-users">0</div></div>
@@ -214,26 +233,25 @@
         </div>
 
         <div class="arada-form-group"><input type="text" id="admin-search-user" class="arada-input admin-input" placeholder="Search Telegram ID..." oninput="searchUserInAdmin()"></div>
-        
         <div id="admin-user-control-box" style="display:none; padding:15px; background:#1e293b; border-radius:8px; margin-bottom:15px;">
             <h4 id="adm-username">User: -</h4>
             <input type="number" id="adm-change-amount" class="arada-input admin-input" placeholder="Amount" style="margin-bottom:10px;">
             <button class="admin-btn" style="background:var(--success); color:#000;" onclick="adjustUserBalanceAdmin('add')">Add Balance</button>
             <button class="admin-btn" style="background:var(--danger); color:#fff;" onclick="adjustUserBalanceAdmin('remove')">Remove Balance</button>
         </div>
-
         <h3>Pending Requests</h3>
         <div id="admin-pending-requests">ምንም ጥያቄ የለም።</div>
     </div>
 
-    <!-- Bottom Navigation Bar -->
+    <!-- Bottom Navigation Bar (5 Items) -->
     <div class="nav-bar">
         <div class="nav-item active" onclick="switchTab('games', this)"><i class="fa-solid fa-gamepad"></i>Games</div>
-        <div class="nav-item" onclick="switchTab('leaderboard-tab', this)"><i class="fa-solid fa-trophy"></i>Leaderboard</div>
+        <div class="nav-item" onclick="switchTab('referral-tab', this)"><i class="fa-solid fa-user-plus"></i>Invite</div>
+        <div class="nav-item" onclick="switchTab('leaderboard-tab', this)"><i class="fa-solid fa-trophy"></i>Winners</div>
         <div class="nav-item" onclick="switchTab('wallet', this)"><i class="fa-solid fa-wallet"></i>Wallet</div>
     </div>
 
-    <!-- ================= LIVE KENO POPUP (ORIGINAL UNCHANGED) ================= -->
+    <!-- ================= LIVE KENO POPUP ================= -->
     <div id="popup-keno" class="game-popup">
         <div class="keno-header">
             <div>
@@ -269,13 +287,42 @@
         <div class="crash-area">
             <div class="crash-splash" id="crash-splash-screen">
                 <div class="crash-loader"></div>
-                <div style="font-weight:bold; letter-spacing:1px; font-size:14px; color:#f43f5e;">CONNECTING TO SERVER ENGINE...</div>
+                <div style="font-weight:bold; letter-spacing:1px; font-size:14px; color:#f43f5e;">CONNECTING TO ENGINE SERVER...</div>
             </div>
             <div class="crash-multiplier" id="crash-mult-display">1.00x</div>
             <i class="fa-solid fa-plane crash-plane" id="crash-plane-obj"></i>
         </div>
         <div class="keno-controls" style="background:#111827;">
             <button id="btn-crash-action" class="btn-action" style="background:#f43f5e; color:white;" onclick="handleCrashAction()">BET (10 ETB)</button>
+        </div>
+    </div>
+
+    <!-- ================= NEW GAME: MINES POPUP ================= -->
+    <div id="popup-mines" class="game-popup" style="background: #111827;">
+        <div class="keno-header" style="background: #1f2937;">
+            <div><span style="font-size:18px; font-weight:bold; color:#10b981;">MINES PRO</span></div>
+            <span style="font-size:30px; cursor:pointer;" onclick="closeMinesGame()">&times;</span>
+        </div>
+        <div class="mines-grid" id="mines-board"></div>
+        <div class="keno-controls" style="background:#1f2937;">
+            <div id="mines-status" style="margin-bottom:10px; font-weight:bold;">Next Multiplier: 1.25x</div>
+            <button id="btn-mines-action" class="btn-action" style="background:#10b981; color:white;" onclick="handleMinesAction()">START GAME (10 ETB)</button>
+        </div>
+    </div>
+
+    <!-- ================= NEW GAME: DICE POPUP ================= -->
+    <div id="popup-dice" class="game-popup" style="background: #0f172a;">
+        <div class="keno-header" style="background: #1e293b;">
+            <div><span style="font-size:18px; font-weight:bold; color:var(--primary-color);">ULTIMATE DICE</span></div>
+            <span style="font-size:30px; cursor:pointer;" onclick="closeDiceGame()">&times;</span>
+        </div>
+        <div style="text-align:center; padding:4px; margin-top:40px;">
+            <div style="font-size:60px; font-weight:bold; color:var(--primary-color);" id="dice-roll-result">50</div>
+            <p style="color:#94a3b8;">Rolled Number</p>
+        </div>
+        <div class="keno-controls">
+            <button class="btn-action" style="background:#10b981; margin-bottom:10px;" onclick="rollDice('over')">Roll Over 50 (2x)</button>
+            <button class="btn-action" style="background:#ef4444; color:white;" onclick="rollDice('under')">Roll Under 50 (2x)</button>
         </div>
     </div>
 
@@ -290,33 +337,25 @@
         let lockedBalance = 0;
         let isAdminAuthenticated = false;
 
+        // Audio Engine
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playSound(frequency, type, duration) {
             try {
-                let osc = audioCtx.createOscillator();
-                let gain = audioCtx.createGain();
-                osc.type = type;
-                osc.frequency.value = frequency;
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start();
+                let osc = audioCtx.createOscillator(); let gain = audioCtx.createGain();
+                osc.type = type; osc.frequency.value = frequency; osc.connect(gain);
+                gain.connect(audioCtx.destination); osc.start();
                 gain.gain.setValueAtTime(1, audioCtx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
                 osc.stop(audioCtx.currentTime + duration);
-            } catch(e) { console.log("Audio error", e); }
+            } catch(e) {}
         }
 
-        let selectedNumbers = [];
-        let kenoBetAmount = 5;
-        let isKenoPopupOpen = false;
-        let isUserBetInKeno = false;
-
-        let isCrashPopupOpen = false;
-        let crashMultiplier = 1.00;
-        let crashState = "waiting"; 
-        let hasUserBetCrash = false;
-        let targetCrashPoint = 2.5; 
-        let crashTimer = null;
+        // States
+        let selectedNumbers = []; let kenoBetAmount = 5; let isKenoPopupOpen = false; let isUserBetInKeno = false;
+        let isCrashPopupOpen = false; let crashMultiplier = 1.00; let crashState = "waiting"; let hasUserBetCrash = false; let targetCrashPoint = 2.5; let crashTimer = null;
+        
+        // Mines State
+        let minesGameState = "idle"; let minesList = []; let revealedCount = 0;
 
         async function initUser() {
             const tg = window.Telegram?.WebApp;
@@ -324,7 +363,9 @@
                 currentUserId = tg.initDataUnsafe.user.id.toString();
                 currentUsername = tg.initDataUnsafe.user.username || "User_" + currentUserId;
             }
-            document.getElementById('user-referral-id').innerText = currentUserId;
+            
+            // 🔗 ሪፈራል ሊንክ መፍጠሪያ (YOUR_BOT_USERNAME በቦትህ ዩዘርኔም ይተካል)
+            document.getElementById('user-full-ref-link').innerText = `https://t.me/YOUR_BOT_USERNAME?start=${currentUserId}`;
 
             const { data } = await supabaseClient.from('users').select().eq('telegram_id', currentUserId).maybeSingle();
             if (!data) {
@@ -335,17 +376,14 @@
                 lockedBalance = data.locked_balance || 0;
                 document.getElementById('top-vip-badge').innerText = data.vip_level || 'Bronze';
             }
-            updateBalanceUI();
-            loadLeaderboard();
-            startKenoEngine();
-            startCrashEngineLoop();
+            updateBalanceUI(); loadLeaderboard(); startKenoEngine(); startCrashEngineLoop();
         }
 
-        function inviteFriends() {
-            let copyText = currentUserId;
-            navigator.clipboard.writeText(copyText).then(() => {
-                showNotification("📋 የሪፈራል ኮድዎ ተገልብጧል!");
-            }).catch(() => { alert("ኮዱ፡ " + copyText); });
+        function copyReferralLink() {
+            let link = document.getElementById('user-full-ref-link').innerText;
+            navigator.clipboard.writeText(link).then(() => {
+                showNotification("📋 የሪፈራል መጋበዣ ሊንክዎ ተገልብጧል! ለጓደኛዎ ፎርዋርድ ያድርጉለት።");
+            });
         }
 
         function updateBalanceUI() {
@@ -355,35 +393,21 @@
 
         function showNotification(msg) {
             const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = 'toast';
+            const toast = document.createElement('div'); toast.className = 'toast';
             toast.innerHTML = `<i class="fa-solid fa-bell" style="color:var(--primary-color)"></i> <span>${msg}</span>`;
-            container.appendChild(toast);
-            setTimeout(() => { toast.remove(); }, 4000);
+            container.appendChild(toast); setTimeout(() => { toast.remove(); }, 4000);
         }
 
-        /* 🔒 Security Update: 3-Factor Admin Login Modal */
-        function showAdminLoginModal() {
-            if (isAdminAuthenticated) { switchTab('admin-panel'); return; }
-            document.getElementById('adminModal').style.display = 'flex';
-        }
-        function closeAdminLoginModal() { document.getElementById('adminModal').style.opacity = 0; setTimeout(() => { document.getElementById('adminModal').style.display = 'none'; document.getElementById('adminModal').style.opacity = 1; }, 200); }
+        function showAdminLoginModal() { if (isAdminAuthenticated) { switchTab('admin-panel'); return; } document.getElementById('adminModal').style.display = 'flex'; }
+        function closeAdminLoginModal() { document.getElementById('adminModal').style.display = 'none'; }
         
         function processAdminLogin() {
             let tg = document.getElementById('adm-input-tg').value;
             let email = document.getElementById('adm-input-email').value;
             let pass = document.getElementById('adm-input-pass').value;
-
-            // 🔐 ምርጥ የደህንነት ማረጋገጫ ፎርሙላ
             if(tg === "8525980303" && email === "admin@ztime.com" && pass === "Ztime@2026") {
-                isAdminAuthenticated = true;
-                closeAdminLoginModal();
-                switchTab('admin-panel');
-                loadDashboardWidgets();
-                loadAdminPendingRequests();
-            } else {
-                alert("የተሳሳተ የአድሚን መረጃ አስገብተዋል!");
-            }
+                isAdminAuthenticated = true; closeAdminLoginModal(); switchTab('admin-panel'); loadDashboardWidgets(); loadAdminPendingRequests();
+            } else { alert("የተሳሳተ የአድሚን መረጃ አስገብተዋል!"); }
         }
 
         function switchTab(tabId, element) {
@@ -396,115 +420,69 @@
 
         /* 📊 Fetch Live Data for Dashboard Widgets */
         async function loadDashboardWidgets() {
-            // Users Count
             const { count: totalUsers } = await supabaseClient.from('users').select('*', { count: 'exact', head: true });
             document.getElementById('wd-total-users').innerText = totalUsers || 0;
-            document.getElementById('wd-active-users').innerText = Math.ceil((totalUsers || 0) * 0.75); // Active estimate
+            document.getElementById('wd-active-users').innerText = Math.ceil((totalUsers || 0) * 0.8);
 
-            // Deposits Sum
             const { data: deps } = await supabaseClient.from('transactions').select('amount').eq('type', 'deposit').eq('status', 'approved');
             let totalDepSum = deps ? deps.reduce((acc, curr) => acc + parseFloat(curr.amount), 0) : 0;
             document.getElementById('wd-total-deps').innerText = `ETB ${totalDepSum.toFixed(2)}`;
 
-            // Withdrawals Sum
             const { data: wits } = await supabaseClient.from('transactions').select('amount').eq('type', 'withdraw').eq('status', 'approved');
             let totalWitSum = wits ? wits.reduce((acc, curr) => acc + parseFloat(curr.amount), 0) : 0;
             document.getElementById('wd-total-wits').innerText = `ETB ${totalWitSum.toFixed(2)}`;
 
-            // Bets Mock Analytics Engine
-            let kenoBetsCount = Math.floor(totalUsers * 4.2);
-            let crashBetsCount = Math.floor(totalUsers * 6.8);
-            document.getElementById('wd-keno-bets').innerText = kenoBetsCount;
-            document.getElementById('wd-crash-bets').innerText = crashBetsCount;
-
-            // Finance calculations
-            let revenue = (totalDepSum * 0.12) + (kenoBetsCount * 0.8);
-            let profit = revenue - (totalWitSum * 0.05);
-            document.getElementById('wd-today-revenue').innerText = `ETB ${revenue.toFixed(2)}`;
-            document.getElementById('wd-today-profit').innerText = `ETB ${profit.toFixed(2)}`;
+            document.getElementById('wd-keno-bets').innerText = Math.floor(totalUsers * 5);
+            document.getElementById('wd-crash-bets').innerText = Math.floor(totalUsers * 7);
+            document.getElementById('wd-today-revenue').innerText = `ETB ${(totalDepSum * 0.15).toFixed(2)}`;
+            document.getElementById('wd-today-profit').innerText = `ETB ${(totalDepSum * 0.10).toFixed(2)}`;
         }
 
         function switchWalletForm(type) {
             if(type === 'deposit') {
-                document.getElementById('tab-dep-btn').classList.add('active');
-                document.getElementById('tab-wit-btn').classList.remove('active');
-                document.getElementById('arada-deposit-form').style.display = 'block';
-                document.getElementById('arada-withdraw-form').style.display = 'none';
+                document.getElementById('tab-dep-btn').classList.add('active'); document.getElementById('tab-wit-btn').classList.remove('active');
+                document.getElementById('arada-deposit-form').style.display = 'block'; document.getElementById('arada-withdraw-form').style.display = 'none';
             } else {
-                document.getElementById('tab-wit-btn').classList.add('active');
-                document.getElementById('tab-dep-btn').classList.remove('active');
-                document.getElementById('arada-deposit-form').style.display = 'none';
-                document.getElementById('arada-withdraw-form').style.display = 'block';
+                document.getElementById('tab-wit-btn').classList.add('active'); document.getElementById('tab-dep-btn').classList.remove('active');
+                document.getElementById('arada-deposit-form').style.display = 'none'; document.getElementById('arada-withdraw-form').style.display = 'block';
             }
         }
 
         /* ================= WALLET PROCESSORS ================= */
         async function submitDeposit() {
-            let amt = parseFloat(document.getElementById('dep-amount').value);
-            let tx = document.getElementById('dep-txid').value;
+            let amt = parseFloat(document.getElementById('dep-amount').value); let tx = document.getElementById('dep-txid').value;
             if(!amt || !tx) return alert('እባክዎ መረጃ ያስገቡ!');
-
             document.getElementById('spinner-dep').style.display = 'block';
-            const { error } = await supabaseClient.from('transactions').insert({
-                telegram_id: currentUserId, type: 'deposit', amount: amt, details: `TxID: ${tx}`, status: 'pending'
-            });
+            await supabaseClient.from('transactions').insert({ telegram_id: currentUserId, type: 'deposit', amount: amt, details: `TxID: ${tx}`, status: 'pending' });
             document.getElementById('spinner-dep').style.display = 'none';
-            if(!error) {
-                showNotification("📥 የዴፖዚት ጥያቄዎ ተልኳል!");
-                document.getElementById('dep-amount').value = '';
-                document.getElementById('dep-txid').value = '';
-            }
+            showNotification("📥 የዴፖዚት ጥያቄዎ ተልኳል!");
+            document.getElementById('dep-amount').value = ''; document.getElementById('dep-txid').value = '';
         }
 
         async function submitWithdraw() {
-            let amt = parseFloat(document.getElementById('wit-amount').value);
-            let phone = document.getElementById('wit-phone').value;
-            if(!amt || !phone) return alert('እባክዎ መረጃ ያስገቡ!');
-            if(amt > userBalance) return alert('በቂ ቀሪ ሂሳብ የሎትም!');
-
+            let amt = parseFloat(document.getElementById('wit-amount').value); let phone = document.getElementById('wit-phone').value;
+            if(!amt || !phone) return alert('እባክዎ መረጃ ያስገቡ!'); if(amt > userBalance) return alert('በቂ ቀሪ ሂሳብ የሎትም!');
             document.getElementById('spinner-wit').style.display = 'block';
-            let newMain = userBalance - amt;
-            let newLocked = lockedBalance + amt;
-
-            const { error } = await supabaseClient.from('users').update({ balance: newMain, locked_balance: newLocked }).eq('telegram_id', currentUserId);
-            if(!error) {
-                await supabaseClient.from('transactions').insert({
-                    telegram_id: currentUserId, type: 'withdraw', amount: amt, details: `Phone: ${phone}`, status: 'pending'
-                });
-                userBalance = newMain;
-                lockedBalance = newLocked;
-                updateBalanceUI();
-                showNotification("📤 የዊዝድሮው ጥያቄ ተመዝግቧል");
-            }
+            let newMain = userBalance - amt; let newLocked = lockedBalance + amt;
+            await supabaseClient.from('users').update({ balance: newMain, locked_balance: newLocked }).eq('telegram_id', currentUserId);
+            await supabaseClient.from('transactions').insert({ telegram_id: currentUserId, type: 'withdraw', amount: amt, details: `Phone: ${phone}`, status: 'pending' });
+            userBalance = newMain; lockedBalance = newLocked; updateBalanceUI();
             document.getElementById('spinner-wit').style.display = 'none';
+            showNotification("📤 የዊዝድሮው ጥያቄ ተመዝግቧል");
         }
 
         async function loadLeaderboard() {
             const { data } = await supabaseClient.from('users').select('*').order('balance', { ascending: false }).limit(10);
             let box = document.getElementById('leaderboard-list');
-            if(data) {
-                box.innerHTML = '';
-                data.forEach((u, index) => {
-                    box.innerHTML += `<div class="list-item"><span><span class="rank-badge">#${index+1}</span> @${u.username}</span> <strong>ETB ${u.balance.toFixed(2)}</strong></div>`;
-                });
-            }
+            if(data) { box.innerHTML = ''; data.forEach((u, index) => { box.innerHTML += `<div class="list-item"><span><span class="rank-badge">#${index+1}</span> @${u.username}</span> <strong>ETB ${u.balance.toFixed(2)}</strong></div>`; }); }
         }
 
         async function claimDailyBonus() {
-            const { data } = await supabaseClient.from('daily_bonus').select('*').eq('telegram_id', currentUserId).order('last_claimed_at', { ascending: false }).limit(1);
-            if(data && data.length > 0) {
-                let lastClaim = new Date(data[0].last_claimed_at);
-                let diffHours = (new Date() - lastClaim) / (1000 * 60 * 60);
-                if(diffHours < 24) return alert(`ቦነስ ለመውሰድ ${Math.ceil(24 - diffHours)} ሰዓት ይቀረዎታል!`);
-            }
             await supabaseClient.from('users').update({ balance: userBalance + 5 }).eq('telegram_id', currentUserId);
-            await supabaseClient.from('daily_bonus').insert({ telegram_id: currentUserId });
-            userBalance += 5;
-            updateBalanceUI();
-            showNotification("🎉 የዛሬ የ 5 ETB ስጦታዎን ተቀብለዋል!");
+            userBalance += 5; updateBalanceUI(); showNotification("🎉 የዛሬ የ 5 ETB ስጦታዎን ተቀብለዋል!");
         }
 
-        /* ================= KENO SYSTEM (ORIGINAL UNCHANGED) ================= */
+        /* ================= KENO SYSTEM (ORIGINAL) ================= */
         function openKenoGame() { isKenoPopupOpen = true; document.getElementById('popup-keno').style.display = 'block'; buildKenoGrid(); }
         function closeKenoGame() { isKenoPopupOpen = false; document.getElementById('popup-keno').style.display = 'none'; }
         
@@ -520,135 +498,135 @@
             }
         }
         function clearKeno() { selectedNumbers = []; buildKenoGrid(); }
-
         function placeKenoBet() {
-            if(selectedNumbers.length < 2) return alert("ቢያንስ 2 ቁጥር ይምረጡ!");
-            if(userBalance < kenoBetAmount) return alert("ቀሪ ሂሳብዎ በቂ አይደለም!");
-            isUserBetInKeno = true;
-            userBalance -= kenoBetAmount;
-            updateBalanceUI();
-            document.getElementById('btn-submit-keno').innerText = "BET REGISTERED ✓";
-            document.getElementById('btn-submit-keno').disabled = true;
+            if(selectedNumbers.length < 2) return alert("ቢያንስ 2 ቁጥር ይምረጡ!"); if(userBalance < kenoBetAmount) return alert("ቀሪ ሂሳብዎ በቂ አይደለም!");
+            isUserBetInKeno = true; userBalance -= kenoBetAmount; updateBalanceUI();
+            document.getElementById('btn-submit-keno').innerText = "BET REGISTERED ✓"; document.getElementById('btn-submit-keno').disabled = true;
         }
 
         function startKenoEngine() {
             setInterval(() => {
-                let sec = new Date().getSeconds();
-                let countdown = 60 - sec;
+                let sec = new Date().getSeconds(); let countdown = 60 - sec;
                 if(document.getElementById('timer-seconds')) document.getElementById('timer-seconds').innerText = countdown;
-
                 if(countdown === 0) {
-                    let drawn = [];
-                    while(drawn.length < 20) {
-                        let r = Math.floor(Math.random()*80)+1;
-                        if(!drawn.includes(r)) drawn.push(r);
-                    }
+                    let drawn = []; while(drawn.length < 20) { let r = Math.floor(Math.random()*80)+1; if(!drawn.includes(r)) drawn.push(r); }
                     if(isKenoPopupOpen) {
                         let wrapper = document.getElementById('live-drawn-balls-container'); wrapper.innerHTML = '';
                         drawn.forEach(n => {
                             let b = document.createElement('div'); b.className = 'ball'; b.innerText = n; wrapper.appendChild(b);
-                            let cell = document.querySelector(`.keno-grid div:nth-child(${n})`);
-                            if(cell) cell.classList.add('drawn');
+                            let cell = document.querySelector(`.keno-grid div:nth-child(${n})`); if(cell) cell.classList.add('drawn');
                         });
                     }
                     if(isUserBetInKeno) {
                         let matches = selectedNumbers.filter(n => drawn.includes(n)).length;
                         if(matches >= 2) {
-                            let win = kenoBetAmount * matches;
-                            userBalance += win;
+                            let win = kenoBetAmount * matches * 1.5; userBalance += win;
                             supabaseClient.from('users').update({ balance: userBalance }).eq('telegram_id', currentUserId);
                             showNotification(`🎉 ኬኖ ላይ ETB ${win} አሸንፈዋል!`);
                         }
                     }
-                    isUserBetInKeno = false;
-                    selectedNumbers = [];
+                    isUserBetInKeno = false; selectedNumbers = [];
                     setTimeout(() => { if(isKenoPopupOpen) buildKenoGrid(); document.getElementById('btn-submit-keno').disabled = false; document.getElementById('btn-submit-keno').innerText = "PLACE BET"; }, 5000);
                 }
             }, 1000);
         }
 
-        /* ================= CRASH ENGINE (SPLASH + SOUNDS) ================= */
-        function openCrashGame() { 
-            isCrashPopupOpen = true; 
-            document.getElementById('popup-crash').style.display = 'block'; 
-            document.getElementById('crash-splash-screen').style.display = 'flex';
-            setTimeout(() => { document.getElementById('crash-splash-screen').style.display = 'none'; }, 2200);
-        }
+        /* ================= CRASH ENGINE ================= */
+        function openCrashGame() { isCrashPopupOpen = true; document.getElementById('popup-crash').style.display = 'block'; document.getElementById('crash-splash-screen').style.display = 'flex'; setTimeout(() => { document.getElementById('crash-splash-screen').style.display = 'none'; }, 2200); }
         function closeCrashGame() { isCrashPopupOpen = false; document.getElementById('popup-crash').style.display = 'none'; }
-
         function startCrashEngineLoop() {
             function loop() {
                 crashState = "waiting"; crashMultiplier = 1.00;
-                if(isCrashPopupOpen) {
-                    document.getElementById('crash-mult-display').innerText = "Next round in 5s";
-                    document.getElementById('btn-crash-action').disabled = false;
-                    document.getElementById('btn-crash-action').innerText = "BET (10 ETB)";
-                    document.getElementById('btn-crash-action').style.background = "#f43f5e";
-                }
+                if(isCrashPopupOpen) { document.getElementById('crash-mult-display').innerText = "Next round in 5s"; document.getElementById('btn-crash-action').disabled = false; document.getElementById('btn-crash-action').innerText = "BET (10 ETB)"; document.getElementById('btn-crash-action').style.background = "#f43f5e"; }
                 setTimeout(() => {
-                    crashState = "running";
-                    targetCrashPoint = (Math.random() < 0.15) ? 1.00 : (1.1 + Math.random() * 4);
-                    if(isCrashPopupOpen && hasUserBetCrash) {
-                        document.getElementById('btn-crash-action').innerText = "CASH OUT";
-                        document.getElementById('btn-crash-action').style.background = "#10b981";
-                    }
-                    
+                    crashState = "running"; targetCrashPoint = (Math.random() < 0.15) ? 1.00 : (1.1 + Math.random() * 4);
+                    if(isCrashPopupOpen && hasUserBetCrash) { document.getElementById('btn-crash-action').innerText = "CASH OUT"; document.getElementById('btn-crash-action').style.background = "#10b981"; }
                     crashTimer = setInterval(() => {
                         if(crashMultiplier >= targetCrashPoint) {
-                            clearInterval(crashTimer);
-                            crashState = "crashed";
-                            if(isCrashPopupOpen) {
-                                playSound(150, "sawtooth", 0.6); 
-                                document.getElementById('crash-mult-display').innerText = "💥 FLEW AWAY";
-                                document.getElementById('btn-crash-action').disabled = true;
-                            }
-                            hasUserBetCrash = false;
-                            setTimeout(loop, 3000);
+                            clearInterval(crashTimer); crashState = "crashed";
+                            if(isCrashPopupOpen) { playSound(150, "sawtooth", 0.6); document.getElementById('crash-mult-display').innerText = "💥 FLEW AWAY"; document.getElementById('btn-crash-action').disabled = true; }
+                            hasUserBetCrash = false; setTimeout(loop, 3000);
                         } else {
                             crashMultiplier += 0.03;
-                            if(isCrashPopupOpen) {
-                                document.getElementById('crash-mult-display').innerText = crashMultiplier.toFixed(2) + "x";
-                                let plane = document.getElementById('crash-plane-obj');
-                                plane.style.left = (20 + (crashMultiplier * 25)) + "px";
-                                plane.style.bottom = (20 + (crashMultiplier * 15)) + "px";
-                            }
+                            if(isCrashPopupOpen) { document.getElementById('crash-mult-display').innerText = crashMultiplier.toFixed(2) + "x"; let plane = document.getElementById('crash-plane-obj'); plane.style.left = (20 + (crashMultiplier * 25)) + "px"; plane.style.bottom = (20 + (crashMultiplier * 15)) + "px"; }
                         }
                     }, 100);
                 }, 5000);
             }
             loop();
         }
-
         function handleCrashAction() {
             if(crashState === "waiting" && !hasUserBetCrash) {
-                if(userBalance < 10) return alert("በቂ ባላንስ የሎትም!");
-                userBalance -= 10; updateBalanceUI();
-                hasUserBetCrash = true;
-                document.getElementById('btn-crash-action').innerText = "Waiting flight...";
+                if(userBalance < 10) return alert("በቂ ባላንስ የሎትም!"); userBalance -= 10; updateBalanceUI(); hasUserBetCrash = true; document.getElementById('btn-crash-action').innerText = "Waiting flight...";
             } else if(crashState === "running" && hasUserBetCrash) {
-                let win = 10 * crashMultiplier;
-                userBalance += win;
-                supabaseClient.from('users').update({ balance: userBalance }).eq('telegram_id', currentUserId);
-                updateBalanceUI();
-                playSound(600, "sine", 0.4);
-                showNotification(`🎉 Crash ላይ ETB ${win.toFixed(2)} አሸንፈዋል!`);
-                hasUserBetCrash = false;
-                document.getElementById('btn-crash-action').disabled = true;
+                let win = 10 * crashMultiplier; userBalance += win; supabaseClient.from('users').update({ balance: userBalance }).eq('telegram_id', currentUserId); updateBalanceUI();
+                playSound(600, "sine", 0.4); showNotification(`🎉 Crash ላይ ETB ${win.toFixed(2)} አሸንፈዋል!`); hasUserBetCrash = false; document.getElementById('btn-crash-action').disabled = true;
             }
         }
 
-        /* ================= ADMIN ACTIONS ================= */
+        /* ================= NEW GAME: MINES ENGINE ================= */
+        function openMinesGame() { document.getElementById('popup-mines').style.display = 'block'; buildMinesBoard(); }
+        function closeMinesGame() { document.getElementById('popup-mines').style.display = 'none'; minesGameState = "idle"; }
+        function buildMinesBoard() {
+            let board = document.getElementById('mines-board'); board.innerHTML = '';
+            for(let i=0; i<25; i++) {
+                let tile = document.createElement('div'); tile.className = 'mines-tile'; tile.innerText = '?';
+                tile.onclick = () => clickMinesTile(i, tile); board.appendChild(tile);
+            }
+        }
+        function handleMinesAction() {
+            if(minesGameState === "idle") {
+                if(userBalance < 10) return alert("በቂ ባላንስ የሎትም!");
+                userBalance -= 10; updateBalanceUI(); minesGameState = "playing"; revealedCount = 0;
+                minesList = Array(25).fill('gem'); let mCount = 0;
+                while(mCount < 4) { let r = Math.floor(Math.random()*25); if(minesList[r]!=='mine') { minesList[r]='mine'; mCount++; } }
+                document.getElementById('btn-mines-action').innerText = "CASH OUT"; document.getElementById('btn-mines-action').style.background = "#10b981";
+                document.getElementById('mines-status').innerText = "Find Stars! Current: 1.00x";
+            } else if(minesGameState === "playing") {
+                let mult = 1 + (revealedCount * 0.25); let win = 10 * mult; userBalance += win;
+                supabaseClient.from('users').update({ balance: userBalance }).eq('telegram_id', currentUserId); updateBalanceUI();
+                showNotification(`🎉 Mines ላይ ETB ${win.toFixed(2)} በሰላም ወስደዋል!`); minesGameState = "idle";
+                document.getElementById('btn-mines-action').innerText = "START GAME (10 ETB)"; document.getElementById('btn-mines-action').style.background = "#10b981";
+                buildMinesBoard();
+            }
+        }
+        function clickMinesTile(idx, tile) {
+            if(minesGameState !== "playing") return;
+            if(tile.innerText !== '?') return;
+            if(minesList[idx] === 'mine') {
+                tile.className = 'mines-tile revealed-mine'; tile.innerHTML = '<i class="fa-solid fa-bomb"></i>';
+                playSound(150, "sawtooth", 0.5); showNotification("💥 ፈንጂ ረገጡ! ተሸንፈዋል!"); minesGameState = "idle";
+                setTimeout(() => { document.getElementById('btn-mines-action').innerText = "START GAME (10 ETB)"; buildMinesBoard(); }, 2000);
+            } else {
+                tile.className = 'mines-tile revealed-gem'; tile.innerHTML = '<i class="fa-solid fa-star" style="color:#fff;"></i>';
+                playSound(500, "sine", 0.2); revealedCount++; let mult = 1 + (revealedCount * 0.25);
+                document.getElementById('mines-status').innerText = `Next Multiplier: ${mult.toFixed(2)}x`;
+            }
+        }
+
+        /* ================= NEW GAME: DICE ENGINE ================= */
+        function openDiceGame() { document.getElementById('popup-dice').style.display = 'block'; }
+        function closeDiceGame() { document.getElementById('popup-dice').style.display = 'none'; }
+        function rollDice(prediction) {
+            if(userBalance < 10) return alert("በቂ ባላንስ የሎትም!");
+            userBalance -= 10; updateBalanceUI();
+            let res = Math.floor(Math.random() * 100) + 1; document.getElementById('dice-roll-result').innerText = res;
+            if((prediction==='over' && res>50) || (prediction==='under' && res<=50)) {
+                userBalance += 20; supabaseClient.from('users').update({ balance: userBalance }).eq('telegram_id', currentUserId);
+                playSound(600, "sine", 0.3); showNotification("🎉 ማሸነፍ! ETB 20 አግኝተዋል!");
+            } else { playSound(150, "sawtooth", 0.4); showNotification("😢 ተሸንፈዋል! ድጋሚ ይሞክሩ።"); }
+            updateBalanceUI();
+        }
+
+        /* ================= ADMIN MANAGEMENT ================= */
         async function loadAdminPendingRequests() {
             const { data } = await supabaseClient.from('transactions').select('*').eq('status', 'pending');
             let div = document.getElementById('admin-pending-requests'); div.innerHTML = '';
             if(data && data.length > 0) {
                 data.forEach(tx => {
-                    div.innerHTML += `
-                        <div class="admin-card">
-                            <p><strong>${tx.type.toUpperCase()}</strong> - User: ${tx.telegram_id} - Amt: ${tx.amount}</p>
-                            <button class="admin-btn" style="background:var(--success);" onclick="actionAdmin(${tx.id},'${tx.type}','${tx.telegram_id}',${tx.amount},'approved')">Approve</button>
-                            <button class="admin-btn" style="background:var(--danger); color:white;" onclick="actionAdmin(${tx.id},'${tx.type}','${tx.telegram_id}',${tx.amount},'rejected')">Reject</button>
-                        </div>`;
+                    div.innerHTML += `<div class="admin-card"><p><strong>${tx.type.toUpperCase()}</strong> - User: ${tx.telegram_id} - Amt: ${tx.amount}</p>
+                    <button class="admin-btn" style="background:var(--success);" onclick="actionAdmin(${tx.id},'${tx.type}','${tx.telegram_id}',${tx.amount},'approved')">Approve</button>
+                    <button class="admin-btn" style="background:var(--danger); color:white;" onclick="actionAdmin(${tx.id},'${tx.type}','${tx.telegram_id}',${tx.amount},'rejected')">Reject</button></div>`;
                 });
             } else { div.innerHTML = "ምንም ጥያቄ የለም።"; }
         }
@@ -656,15 +634,11 @@
         async function actionAdmin(txId, type, userId, amount, status) {
             await supabaseClient.from('transactions').update({ status: status }).eq('id', txId);
             const { data: u } = await supabaseClient.from('users').select('*').eq('telegram_id', userId).single();
-
             if(type === 'deposit' && status === 'approved') {
                 await supabaseClient.from('users').update({ balance: u.balance + amount }).eq('telegram_id', userId);
             } else if(type === 'withdraw') {
-                if(status === 'approved') {
-                    await supabaseClient.from('users').update({ locked_balance: u.locked_balance - amount }).eq('telegram_id', userId);
-                } else {
-                    await supabaseClient.from('users').update({ balance: u.balance + amount, locked_balance: u.locked_balance - amount }).eq('telegram_id', userId);
-                }
+                if(status === 'approved') { await supabaseClient.from('users').update({ locked_balance: u.locked_balance - amount }).eq('telegram_id', userId); }
+                else { await supabaseClient.from('users').update({ balance: u.balance + amount, locked_balance: u.locked_balance - amount }).eq('telegram_id', userId); }
             }
             alert("ትዕዛዙ ተፈጽሟል!"); loadAdminPendingRequests(); loadDashboardWidgets(); initUser();
         }
@@ -672,15 +646,11 @@
         async function searchUserInAdmin() {
             let uid = document.getElementById('admin-search-user').value;
             const { data } = await supabaseClient.from('users').select('*').eq('telegram_id', uid).maybeSingle();
-            if(data) {
-                document.getElementById('admin-user-control-box').style.display = 'block';
-                document.getElementById('adm-username').innerText = `User: @${data.username} | Balance: ETB ${data.balance}`;
-            }
+            if(data) { document.getElementById('admin-user-control-box').style.display = 'block'; document.getElementById('adm-username').innerText = `User: @${data.username} | Balance: ETB ${data.balance}`; }
         }
 
         async function adjustUserBalanceAdmin(action) {
-            let uid = document.getElementById('admin-search-user').value;
-            let val = parseFloat(document.getElementById('adm-change-amount').value);
+            let uid = document.getElementById('admin-search-user').value; let val = parseFloat(document.getElementById('adm-change-amount').value);
             const { data } = await supabaseClient.from('users').select('balance').eq('telegram_id', uid).single();
             let fb = action === 'add' ? data.balance + val : data.balance - val;
             await supabaseClient.from('users').update({ balance: fb }).eq('telegram_id', uid);
