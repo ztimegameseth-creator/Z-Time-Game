@@ -315,3 +315,381 @@
                         <div class="bet-display">ETB <span id="keno-bet-value">5</span></div>
                         <button class="btn-step" onclick="adjustBet(5)">+</button>
                     </div>
+                    <button class="btn-clear" onclick="clearSelectedNumbers()">Clear <i class="fa-solid fa-trash"></i></button>
+                </div>
+                <div style="font-size:12px; color:#cbd5e1; margin-bottom:10px;" id="selected-count-msg">የመረጧቸው ቁጥሮች: 0 (እስከ 20 መምረጥ ይችላሉ)</div>
+                <button id="btn-submit-keno" class="btn-action" onclick="placeKenoBet()">ውርርድ አስምር (PLACE BET)</button>
+            </div>
+
+            <h4 style="margin: 10px 0 5px 0; color: var(--primary-color);"><i class="fa-solid fa-circle-dot"></i> Live Drawn Balls (20)</h4>
+            <div class="drawn-balls-box">
+                <div class="balls-wrapper" id="live-drawn-balls-container"></div>
+            </div>
+
+            <h4 style="margin: 15px 0 5px 0; color: #94a3b8;"><i class="fa-solid fa-history"></i> Recent Draws History</h4>
+            <div class="history-box" id="keno-history-list">
+                <div style="color: #64748b; font-size:12px;">ምንም ያለፈ ታሪክ የለም።</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-bar">
+        <div class="nav-item active" onclick="switchTab('sports', this)"><i class="fa-solid fa-building-columns"></i>Sports</div>
+        <div class="nav-item" onclick="switchTab('games', this)"><i class="fa-solid fa-gamepad"></i>Games</div>
+        <div class="nav-item" onclick="switchTab('invite', this)"><i class="fa-solid fa-gift"></i>Invite</div>
+        <div class="nav-item" onclick="switchTab('wallet', this)"><i class="fa-solid fa-wallet"></i>Wallet</div>
+        <div class="nav-item" onclick="switchTab('profile', this)"><i class="fa-solid fa-user"></i>Profile</div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = "https://pfmpsnpiafhzeunbpemm.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_3JXvZ4QYWC-c7wjTPLk3RA_v18uEzJN";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let currentUserId = "8525980303"; 
+        let currentUsername = "ebla2127";
+        let userBalance = 0;
+
+        // Keno Game State
+        let selectedNumbers = [];
+        let kenoBetAmount = 5;
+        let isKenoPopupOpen = false;
+
+        // Background Engine Variables
+        let currentRoundDrawnBalls = [];
+        let isUserBetInCurrentRound = false;
+        let placedBetData = null; 
+
+        async function initUser() {
+            const tg = window.Telegram?.WebApp;
+            if (tg && tg.initDataUnsafe?.user) {
+                currentUserId = tg.initDataUnsafe.user.id.toString();
+                currentUsername = tg.initDataUnsafe.user.username || "No_Name";
+                tg.expand();
+            }
+
+            document.getElementById('profile-username').innerText = "@" + currentUsername;
+            document.getElementById('avatar-letter').innerText = currentUsername.charAt(0).toUpperCase();
+            document.getElementById('member-id').innerText = currentUserId;
+
+            const { data } = await supabaseClient
+                .from('users')
+                .upsert({ telegram_id: currentUserId, username: currentUsername }, { onConflict: 'telegram_id' })
+                .select().single();
+
+            if (data) {
+                userBalance = data.balance || 0;
+                updateBalanceUI(userBalance);
+            }
+
+            startBackgroundLiveEngine();
+        }
+
+        async function syncBalance(newBal) {
+            userBalance = newBal;
+            updateBalanceUI(userBalance);
+            await supabaseClient.from('users').update({ balance: newBal }).eq('telegram_id', currentUserId);
+        }
+
+        function updateBalanceUI(bal) {
+            document.querySelectorAll('.user-balance').forEach(el => el.innerText = bal.toFixed(2));
+        }
+
+        function switchTab(tabId, element) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            if (element) element.classList.add('active');
+        }
+
+        function toggleWalletForm() {
+            const type = document.getElementById('tx-type').value;
+            document.getElementById('deposit-form').style.display = type === 'deposit' ? 'block' : 'none';
+            document.getElementById('withdraw-form').style.display = type === 'withdraw' ? 'block' : 'none';
+        }
+
+        /* ================= SERVER-LIKE GLOBAL TIME ENGINE ================= */
+        function startBackgroundLiveEngine() {
+            setInterval(() => {
+                const now = new Date();
+                const seconds = now.getSeconds(); 
+                let countdown = 60 - seconds; 
+
+                if (isKenoPopupOpen) {
+                    document.getElementById('timer-seconds').innerText = countdown;
+                    
+                    if (countdown <= 10) {
+                        document.getElementById('keno-timer-display').style.background = "#b91c1c";
+                        document.getElementById('btn-submit-keno').innerText = "ውርርድ ተዘግቷል (CLOSED)";
+                        document.getElementById('btn-submit-keno').disabled = true;
+                    } else {
+                        document.getElementById('keno-timer-display').style.background = "#ef4444";
+                        if(!isUserBetInCurrentRound) {
+                            document.getElementById('btn-submit-keno').disabled = false;
+                            document.getElementById('btn-submit-keno').innerText = "ውርርድ አስምር (PLACE BET)";
+                        }
+                    }
+                }
+
+                if (countdown === 60 || countdown === 0) {
+                    triggerGlobalDraw();
+                }
+            }, 1000);
+        }
+
+        function triggerGlobalDraw() {
+            currentRoundDrawnBalls = [];
+            while(currentRoundDrawnBalls.length < 20) {
+                let randNum = Math.floor(Math.random() * 80) + 1;
+                if(!currentRoundDrawnBalls.includes(randNum)) {
+                    currentRoundDrawnBalls.push(randNum);
+                }
+            }
+
+            if (isKenoPopupOpen) {
+                renderLiveBallsWithAnimation();
+            } else {
+                processPayoutBackend();
+            }
+        }
+
+        function renderLiveBallsWithAnimation() {
+            let container = document.getElementById('live-drawn-balls-container');
+            container.innerHTML = '';
+            document.getElementById('btn-submit-keno').innerText = "እጣ እየወጣ ነው (LIVE DRAWING...)";
+            document.getElementById('btn-submit-keno').disabled = true;
+
+            let ballCount = 0;
+            let drawInterval = setInterval(() => {
+                if(!isKenoPopupOpen) { 
+                    clearInterval(drawInterval);
+                    processPayoutBackend();
+                    return;
+                }
+
+                let currentBall = currentRoundDrawnBalls[ballCount];
+                let gridCell = document.querySelector(`[data-num='${currentBall}']`);
+                if(gridCell) gridCell.classList.add('drawn');
+
+                let ball = document.createElement('div');
+                ball.className = 'ball';
+                ball.innerText = currentBall;
+                container.appendChild(ball);
+
+                ballCount++;
+                if(ballCount >= 20) {
+                    clearInterval(drawInterval);
+                    processPayoutBackend();
+                }
+            }, 500); 
+        }
+
+        /* ================= KENO PAYOUT ENGINE ================= */
+        function processPayoutBackend() {
+            if (isUserBetInCurrentRound && placedBetData) {
+                let totalSelected = placedBetData.numbers.length;
+                let matches = placedBetData.numbers.filter(n => currentRoundDrawnBalls.includes(n)).length;
+                let winAmount = 0;
+                let bet = placedBetData.bet;
+
+                if (totalSelected === 20) {
+                    if (matches === 7 || matches === 8) winAmount = bet; 
+                    else if (matches === 9) winAmount = bet * 2; 
+                    else if (matches >= 10 && matches < 20) winAmount = bet * (matches - 7); 
+                    else if (matches === 20) winAmount = bet * 50; 
+                } 
+                else if (totalSelected === 3) {
+                    if (matches === 2) winAmount = bet * 1.5; 
+                    else if (matches === 3) winAmount = bet * 5;
+                } 
+                else if (totalSelected === 4) {
+                    if (matches === 3) winAmount = bet * 3; 
+                    else if (matches === 4) winAmount = bet * 12;
+                } 
+                else {
+                    let ratio = matches / totalSelected;
+                    if (ratio >= 0.75) winAmount = bet * 4; 
+                    else if (ratio >= 0.5) winAmount = bet * 1.5; 
+                }
+
+                if (winAmount > 0) {
+                    syncBalance(userBalance + winAmount);
+                    if(isKenoPopupOpen) alert(`🎉 እንኳን ደስ አሎት! ${matches}/${totalSelected} ቁጥሮች ገጥመውልዎ ETB ${winAmount.toFixed(2)} አሸንፈዋል።`);
+                } else {
+                    if(isKenoPopupOpen) alert(`የዚህ ዙር እጣ ተጠናቋል። የገጠሙት ቁጥሮች ብዛት: ${matches}/${totalSelected}። በሚቀጥለው ይሞክሩ!`);
+                }
+            }
+
+            saveToHistoryList(currentRoundDrawnBalls);
+
+            isUserBetInCurrentRound = false;
+            placedBetData = null;
+
+            if (isKenoPopupOpen) {
+                setTimeout(() => {
+                    if(isKenoPopupOpen) {
+                        buildKenoGrid80();
+                        document.getElementById('live-drawn-balls-container').innerHTML = '';
+                        selectedNumbers = [];
+                        document.getElementById('selected-count-msg').innerText = "የመረጧቸው ቁጥሮች: 0 (እስከ 20 መምረጥ ይችላሉ)";
+                    }
+                }, 3000);
+            }
+        }
+
+        /* ================= LIVE KENO UI INTERFACES ================= */
+        function openKenoGame() {
+            isKenoPopupOpen = true;
+            document.getElementById('popup-keno').style.display = 'block';
+            document.getElementById('keno-splash').style.display = 'flex';
+            
+            buildKenoGrid80();
+            
+            setTimeout(() => {
+                document.getElementById('keno-splash').style.display = 'none';
+                document.getElementById('live-drawn-balls-container').innerHTML = '';
+            }, 1500);
+        }
+
+        function closeKenoGame() {
+            isKenoPopupOpen = false;
+            document.getElementById('popup-keno').style.display = 'none';
+        }
+
+        function buildKenoGrid80() {
+            let container = document.getElementById('keno-grid-table');
+            container.innerHTML = '';
+            for(let i=1; i<=80; i++) {
+                let cell = document.createElement('div');
+                cell.className = 'keno-num';
+                cell.innerText = i;
+                cell.dataset.num = i;
+                cell.onclick = () => selectKenoNumber(i, cell);
+                if(selectedNumbers.includes(i)) cell.classList.add('selected');
+                container.appendChild(cell);
+            }
+        }
+
+        function selectKenoNumber(num, element) {
+            const now = new Date();
+            if((60 - now.getSeconds()) <= 10) return alert("ውርርድ ተዘግቷል! እባክዎ ቀጣዩን ዙር ይጠብቁ።");
+            if(isUserBetInCurrentRound) return alert("ውርርድ አስምረዋል! እባክዎ እጣው እስኪያልቅ ይጠብቁ።");
+
+            if(selectedNumbers.includes(num)) {
+                selectedNumbers = selectedNumbers.filter(n => n !== num);
+                element.classList.remove('selected');
+            } else {
+                if(selectedNumbers.length >= 20) return alert("ከ 20 በላይ ቁጥሮችን መምረጥ አይቻልም!");
+                selectedNumbers.push(num);
+                element.classList.add('selected');
+            }
+            document.getElementById('selected-count-msg').innerText = `የመረጧቸው ቁጥሮች: ${selectedNumbers.length} (እስከ 20 መምረጥ ይችላሉ)`;
+        }
+
+        function adjustBet(val) {
+            if(isUserBetInCurrentRound) return;
+            kenoBetAmount += val;
+            if(kenoBetAmount < 5) kenoBetAmount = 5; 
+            document.getElementById('keno-bet-value').innerText = kenoBetAmount;
+        }
+
+        function clearSelectedNumbers() {
+            if(isUserBetInCurrentRound) return;
+            selectedNumbers = [];
+            document.querySelectorAll('.keno-num').forEach(el => el.classList.remove('selected'));
+            document.getElementById('selected-count-msg').innerText = "የመረጧቸው ቁጥሮች: 0 (እስከ 20 መምረጥ ይችላሉ)";
+        }
+
+        function placeKenoBet() {
+            if(selectedNumbers.length < 2) return alert("እባክዎ ቢያንስ 2 ቁጥሮችን ይምረጡ!");
+            if(kenoBetAmount > userBalance) return alert("በቂ የብር ቀሪ የሎትም!");
+            if(isUserBetInCurrentRound) return alert("በዚህ ዙር ላይ አስቀድመው ውርርድ አስምረዋል!");
+
+            syncBalance(userBalance - kenoBetAmount);
+            
+            isUserBetInCurrentRound = true;
+            placedBetData = {
+                numbers: [...selectedNumbers],
+                bet: kenoBetAmount
+            };
+
+            document.getElementById('btn-submit-keno').innerText = "ውርርድ ተመዝግቧል ✓";
+            document.getElementById('btn-submit-keno').disabled = true;
+        }
+
+        function saveToHistoryList(draws) {
+            let histBox = document.getElementById('keno-history-list');
+            if(histBox.innerHTML.includes("ምንም ያለፈ ታሪክ የለም")) histBox.innerHTML = '';
+
+            let item = document.createElement('div');
+            item.className = 'history-item';
+            
+            let timeStamp = document.createElement('strong');
+            timeStamp.innerText = "DRAW: ";
+            timeStamp.style.color = "var(--primary-color)";
+            item.appendChild(timeStamp);
+
+            let numbersText = document.createElement('span');
+            numbersText.innerText = draws.slice(0, 8).join(', ') + "...";
+            item.appendChild(numbersText);
+
+            histBox.insertBefore(item, histBox.firstChild);
+        }
+
+        /* ================= MANUAL TRANSACTION SUBMISSIONS ================= */
+        async function submitDeposit() {
+            let amt = parseFloat(document.getElementById('dep-amount').value);
+            let tx = document.getElementById('dep-txid').value;
+            if(!amt || !tx) return alert('እባክዎ ሁሉንም ሳጥኖች ይሙሉ!');
+            
+            // የዴፖዚት መረጃ ወደ Supabase ብቻ ይላካል፤ ባላንስ ላይ አይጨምርም! (አንተ አፕሩቭ እስክታደርገው)
+            const { error } = await supabaseClient.from('transactions').insert({ 
+                telegram_id: currentUserId, 
+                type: 'deposit',
+                amount: amt,
+                txid: tx,
+                status: 'pending'
+            });
+
+            if(!error) {
+                alert('የተቀማጭ ገንዘብ ጥያቄዎ በስኬት ተልኳል። በአስተዳዳሪው ሲረጋገጥ ቀሪ ሂሳብዎ ላይ ይጨመራል!');
+                document.getElementById('dep-amount').value = '';
+                document.getElementById('dep-txid').value = '';
+            } else {
+                alert('ችግር አጋጥሟል! እባክዎ እንደገና ይሞክሩ።');
+            }
+        }
+
+        async function submitWithdraw() {
+            let amt = parseFloat(document.getElementById('wit-amount').value);
+            let phone = document.getElementById('wit-phone').value;
+            if(!amt || !phone) return alert('እባክዎ ሁሉንም ሳጥኖች ይሙሉ!');
+            if(amt > userBalance) return alert('የመውጫ ጥያቄ መጠን ከቀሪ ሂሳብዎ መብለጥ አይችልም!');
+
+            // ተጫዋቹ ደግሞ ደጋግሞ እንዳያወጣ መጀመሪያ ባላንሱን እንቀንሳለን (Pending ቢሆንም)
+            await syncBalance(userBalance - amt);
+
+            const { error } = await supabaseClient.from('transactions').insert({
+                telegram_id: currentUserId,
+                type: 'withdraw',
+                amount: amt,
+                phone: phone,
+                status: 'pending'
+            });
+
+            if(!error) {
+                alert('የገንዘብ ማውጫ ጥያቄዎ ተመዝግቧል። አስተዳዳሪው በአጭር ጊዜ ውስጥ ያስተላልፍልዎታል።');
+                document.getElementById('wit-amount').value = '';
+                document.getElementById('wit-phone').value = '';
+            } else {
+                // ዳታቤዙ ላይ መመዝገብ ካቃተው የቆረጥነውን ብር እንመልስለታለን
+                await syncBalance(userBalance + amt);
+                alert('ችግር አጋጥሟል! እባክዎ እንደገና ይሞክሩ።');
+            }
+        }
+
+        // አፑ ሲከፈት የዩዘር ፕሮፋይል መረጃዎችን በራስ-ሰር እንዲያመጣ
+        window.onload = initUser;
+    </script>
+</body>
+</html>
