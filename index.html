@@ -107,10 +107,14 @@
 
         .list-item { display: flex; justify-content: space-between; padding: 15px; background-color: var(--card-color); margin-bottom: 8px; border-radius: 10px; }
         .rank-badge { background: var(--primary-color); padding: 2px 8px; border-radius: 5px; font-weight: bold; }
-        .admin-card { background: #1e293b; color: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; }
-        .admin-btn { padding: 8px 14px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-right: 5px; }
+        
+        /* Admin Pending Request Styles (New) */
+        .admin-card { background: #1e293b; color: white; padding: 15px; border-radius: 10px; margin-bottom: 12px; border-left: 5px solid #3b82f6; box-shadow: 0 4px 6px rgba(0,0,0,0.2); }
+        .admin-card p { margin: 5px 0; font-size: 14px; }
+        .admin-card .req-highlight { color: #f1b82a; font-weight: 600; }
+        .admin-btn { padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; margin-right: 8px; margin-top: 10px; font-size: 13px; }
 
-        /* Bottom Nav (Updated to 4 Items) */
+        /* Bottom Nav */
         .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; height: 65px; background-color: #fff; display: flex; justify-content: space-around; align-items: center; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 1000; }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-muted); font-size: 11px; cursor: pointer; width: 25%; }
         .nav-item i { font-size: 20px; margin-bottom: 4px; }
@@ -125,13 +129,11 @@
 
     <div id="toast-container"></div>
 
-    <!-- Header -->
     <div class="header">
         <div class="logo">Z-Time Games <span style="font-size: 12px; color: var(--success);" id="top-vip-badge">Bronze</span></div>
-        <button class="admin-btn" style="background:#dc2626; color:white; padding: 5px 10px;" onclick="showAdminLoginModal()"><i class="fa-solid fa-lock"></i> Admin</button>
+        <button class="admin-btn" style="background:#dc2626; color:white; padding: 5px 10px; margin:0;" onclick="showAdminLoginModal()"><i class="fa-solid fa-lock"></i> Admin</button>
     </div>
 
-    <!-- 🔐 Secure Admin Login Modal -->
     <div class="admin-login-modal" id="adminModal">
         <div class="login-box">
             <h3 style="margin-top:0; color:var(--primary-color); text-align:center;"><i class="fa-solid fa-shield-halved"></i> Admin Gate</h3>
@@ -145,7 +147,6 @@
         </div>
     </div>
 
-    <!-- 1. GAMES TAB -->
     <div id="games" class="tab-content active">
         <div class="balance-card">
             <div>
@@ -153,7 +154,7 @@
                 <div class="balance-amount">ETB <span class="user-balance">0.00</span></div>
                 <div style="font-size:11px; color:var(--danger);">Locked: ETB <span id="locked-balance-view">0.00</span></div>
             </div>
-            <button class="btn-deposit" onclick="claimDailyBonus()">🎁 Daily Bonus</button>
+            <button class="btn-deposit" style="background:var(--primary-color); border:none; padding:10px 15px; border-radius:8px; font-weight:bold; cursor:pointer;" onclick="claimDailyBonus()">🎁 Daily Bonus</button>
         </div>
         
         <h3>Top Live Games</h3>
@@ -177,24 +178,21 @@
         </div>
     </div>
 
-    <!-- 2. REFERRAL TAB (NEW INDEPENDENT TAB) -->
     <div id="referral-tab" class="tab-content">
         <h3>👥 Invite Friends & Earn 5%</h3>
         <p style="color:var(--text-muted); font-size:14px;">ጓደኞችዎን በግል የቴሌግራም ሊንክዎ ይጋብዙ። እነሱ መጀመሪያ ሲያስገቡ የ 5% ኮሚሽን በቀጥታ ወደ ሂሳብዎ ይገባል!</p>
         <div class="referral-box">
             <span style="font-weight:600; color:var(--text-muted);">የእርስዎ መጋበዣ ሊንክ (Referral Link)</span>
-            <span class="ref-link-text" id="user-full-ref-link">https://t.me/YOUR_BOT_USERNAME?start=loading...</span>
+            <span class="ref-link-text" id="user-full-ref-link">https://t.me/ZT_Games_bot?start=loading...</span>
             <button class="btn-invite" onclick="copyReferralLink()"><i class="fa-solid fa-copy"></i> ሊንኩን ኮፒ አድርግ</button>
         </div>
     </div>
 
-    <!-- 3. LEADERBOARD TAB -->
     <div id="leaderboard-tab" class="tab-content">
         <h3>🏆 Top Winners Leaderboard</h3>
         <div id="leaderboard-list">የአሸናፊዎች ዝርዝር በመጫን ላይ...</div>
     </div>
 
-    <!-- 4. WALLET TAB -->
     <div id="wallet" class="tab-content">
         <div class="arada-tabs">
             <button id="tab-dep-btn" class="arada-tab-btn active" onclick="switchWalletForm('deposit')">Deposit</button>
@@ -218,7 +216,6 @@
         </div>
     </div>
 
-    <!-- 5. ADMIN PANEL TAB -->
     <div id="admin-panel" class="tab-content" style="background: #0f172a; color: white; min-height: 100vh;">
         <h2>🛠 Admin Management Dashboard</h2>
         <div class="widgets-grid">
@@ -239,11 +236,11 @@
             <button class="admin-btn" style="background:var(--success); color:#000;" onclick="adjustUserBalanceAdmin('add')">Add Balance</button>
             <button class="admin-btn" style="background:var(--danger); color:#fff;" onclick="adjustUserBalanceAdmin('remove')">Remove Balance</button>
         </div>
-        <h3>Pending Requests</h3>
+        
+        <h3>📥 Pending Requests (የመጡ ጥያቄዎች)</h3>
         <div id="admin-pending-requests">ምንም ጥያቄ የለም።</div>
     </div>
 
-    <!-- Bottom Navigation Bar (5 Items) -->
     <div class="nav-bar">
         <div class="nav-item active" onclick="switchTab('games', this)"><i class="fa-solid fa-gamepad"></i>Games</div>
         <div class="nav-item" onclick="switchTab('referral-tab', this)"><i class="fa-solid fa-user-plus"></i>Invite</div>
@@ -251,7 +248,6 @@
         <div class="nav-item" onclick="switchTab('wallet', this)"><i class="fa-solid fa-wallet"></i>Wallet</div>
     </div>
 
-    <!-- ================= LIVE KENO POPUP ================= -->
     <div id="popup-keno" class="game-popup">
         <div class="keno-header">
             <div>
@@ -275,7 +271,6 @@
         </div>
     </div>
 
-    <!-- ================= LIVE CRASH POPUP ================= -->
     <div id="popup-crash" class="game-popup" style="background: #0b0f19;">
         <div class="keno-header" style="background: #111827; border-bottom: 2px solid #f43f5e;">
             <div>
@@ -297,7 +292,6 @@
         </div>
     </div>
 
-    <!-- ================= NEW GAME: MINES POPUP ================= -->
     <div id="popup-mines" class="game-popup" style="background: #111827;">
         <div class="keno-header" style="background: #1f2937;">
             <div><span style="font-size:18px; font-weight:bold; color:#10b981;">MINES PRO</span></div>
@@ -310,7 +304,6 @@
         </div>
     </div>
 
-    <!-- ================= NEW GAME: DICE POPUP ================= -->
     <div id="popup-dice" class="game-popup" style="background: #0f172a;">
         <div class="keno-header" style="background: #1e293b;">
             <div><span style="font-size:18px; font-weight:bold; color:var(--primary-color);">ULTIMATE DICE</span></div>
@@ -337,7 +330,6 @@
         let lockedBalance = 0;
         let isAdminAuthenticated = false;
 
-        // Audio Engine
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playSound(frequency, type, duration) {
             try {
@@ -350,11 +342,8 @@
             } catch(e) {}
         }
 
-        // States
         let selectedNumbers = []; let kenoBetAmount = 5; let isKenoPopupOpen = false; let isUserBetInKeno = false;
         let isCrashPopupOpen = false; let crashMultiplier = 1.00; let crashState = "waiting"; let hasUserBetCrash = false; let targetCrashPoint = 2.5; let crashTimer = null;
-        
-        // Mines State
         let minesGameState = "idle"; let minesList = []; let revealedCount = 0;
 
         async function initUser() {
@@ -364,8 +353,8 @@
                 currentUsername = tg.initDataUnsafe.user.username || "User_" + currentUserId;
             }
             
-            // 🔗 ሪፈራል ሊንክ መፍጠሪያ (YOUR_BOT_USERNAME በቦትህ ዩዘርኔም ይተካል)
-            document.getElementById('user-full-ref-link').innerText = `https://t.me/YOUR_BOT_USERNAME?start=${currentUserId}`;
+            // 🔗 @ZT_Games_bot የተስተካከለ መጋበዣ ሊንክ
+            document.getElementById('user-full-ref-link').innerText = `https://t.me/ZT_Games_bot?start=${currentUserId}`;
 
             const { data } = await supabaseClient.from('users').select().eq('telegram_id', currentUserId).maybeSingle();
             if (!data) {
@@ -418,7 +407,6 @@
             if (element) element.classList.add('active');
         }
 
-        /* 📊 Fetch Live Data for Dashboard Widgets */
         async function loadDashboardWidgets() {
             const { count: totalUsers } = await supabaseClient.from('users').select('*', { count: 'exact', head: true });
             document.getElementById('wd-total-users').innerText = totalUsers || 0;
@@ -453,7 +441,7 @@
             let amt = parseFloat(document.getElementById('dep-amount').value); let tx = document.getElementById('dep-txid').value;
             if(!amt || !tx) return alert('እባክዎ መረጃ ያስገቡ!');
             document.getElementById('spinner-dep').style.display = 'block';
-            await supabaseClient.from('transactions').insert({ telegram_id: currentUserId, type: 'deposit', amount: amt, details: `TxID: ${tx}`, status: 'pending' });
+            await supabaseClient.from('transactions').insert({ telegram_id: currentUserId, type: 'deposit', amount: amt, details: `${tx}`, status: 'pending' });
             document.getElementById('spinner-dep').style.display = 'none';
             showNotification("📥 የዴፖዚት ጥያቄዎ ተልኳል!");
             document.getElementById('dep-amount').value = ''; document.getElementById('dep-txid').value = '';
@@ -465,7 +453,7 @@
             document.getElementById('spinner-wit').style.display = 'block';
             let newMain = userBalance - amt; let newLocked = lockedBalance + amt;
             await supabaseClient.from('users').update({ balance: newMain, locked_balance: newLocked }).eq('telegram_id', currentUserId);
-            await supabaseClient.from('transactions').insert({ telegram_id: currentUserId, type: 'withdraw', amount: amt, details: `Phone: ${phone}`, status: 'pending' });
+            await supabaseClient.from('transactions').insert({ telegram_id: currentUserId, type: 'withdraw', amount: amt, details: `${phone}`, status: 'pending' });
             userBalance = newMain; lockedBalance = newLocked; updateBalanceUI();
             document.getElementById('spinner-wit').style.display = 'none';
             showNotification("📤 የዊዝድሮው ጥያቄ ተመዝግቧል");
@@ -482,7 +470,7 @@
             userBalance += 5; updateBalanceUI(); showNotification("🎉 የዛሬ የ 5 ETB ስጦታዎን ተቀብለዋል!");
         }
 
-        /* ================= KENO SYSTEM (ORIGINAL) ================= */
+        /* ================= KENO SYSTEM ================= */
         function openKenoGame() { isKenoPopupOpen = true; document.getElementById('popup-keno').style.display = 'block'; buildKenoGrid(); }
         function closeKenoGame() { isKenoPopupOpen = false; document.getElementById('popup-keno').style.display = 'none'; }
         
@@ -564,7 +552,7 @@
             }
         }
 
-        /* ================= NEW GAME: MINES ENGINE ================= */
+        /* ================= MINES ENGINE ================= */
         function openMinesGame() { document.getElementById('popup-mines').style.display = 'block'; buildMinesBoard(); }
         function closeMinesGame() { document.getElementById('popup-mines').style.display = 'none'; minesGameState = "idle"; }
         function buildMinesBoard() {
@@ -604,7 +592,7 @@
             }
         }
 
-        /* ================= NEW GAME: DICE ENGINE ================= */
+        /* ================= DICE ENGINE ================= */
         function openDiceGame() { document.getElementById('popup-dice').style.display = 'block'; }
         function closeDiceGame() { document.getElementById('popup-dice').style.display = 'none'; }
         function rollDice(prediction) {
@@ -618,17 +606,44 @@
             updateBalanceUI();
         }
 
-        /* ================= ADMIN MANAGEMENT ================= */
+        /* ================= 🔥 UPDATED ADMIN LOGICS WITH SPECIFIC VIEWS ================= */
         async function loadAdminPendingRequests() {
-            const { data } = await supabaseClient.from('transactions').select('*').eq('status', 'pending');
+            const { data: requests } = await supabaseClient.from('transactions').select('*').eq('status', 'pending');
             let div = document.getElementById('admin-pending-requests'); div.innerHTML = '';
-            if(data && data.length > 0) {
-                data.forEach(tx => {
-                    div.innerHTML += `<div class="admin-card"><p><strong>${tx.type.toUpperCase()}</strong> - User: ${tx.telegram_id} - Amt: ${tx.amount}</p>
-                    <button class="admin-btn" style="background:var(--success);" onclick="actionAdmin(${tx.id},'${tx.type}','${tx.telegram_id}',${tx.amount},'approved')">Approve</button>
-                    <button class="admin-btn" style="background:var(--danger); color:white;" onclick="actionAdmin(${tx.id},'${tx.type}','${tx.telegram_id}',${tx.amount},'rejected')">Reject</button></div>`;
-                });
-            } else { div.innerHTML = "ምንም ጥያቄ የለም።"; }
+            
+            if(requests && requests.length > 0) {
+                for (const tx of requests) {
+                    // ከተጠቃሚው ሰንጠረዥ አሁን ያለውን አጠቃላይ ባላንስ በዝርዝር መውሰድ
+                    const { data: userData } = await supabaseClient.from('users').select('balance').eq('telegram_id', tx.telegram_id).maybeSingle();
+                    let currentTotalBalance = userData ? userData.balance : 0;
+
+                    let infoHTML = '';
+                    if(tx.type === 'deposit') {
+                        // የዲፖዚት ጥያቄ ከሆነ Transaction ID (TxID) በግልጽ ማሳየት
+                        infoHTML = `
+                            <p>👤 <strong>User Telegram ID:</strong> ${tx.telegram_id}</p>
+                            <p>💰 <strong>Deposit Amount:</strong> <span style="color:#10b981; font-weight:bold;">ETB ${tx.amount}</span></p>
+                            <p>🆔 <strong>Transaction ID (TxID):</strong> <span class="req-highlight">${tx.details}</span></p>
+                        `;
+                    } else if(tx.type === 'withdraw') {
+                        // የዊዝድሮው ጥያቄ ከሆነ የተጠቃሚውን አጠቃላይ ቀሪ ሂሳብ (Total Balance) ማሳየት
+                        infoHTML = `
+                            <p>👤 <strong>User Telegram ID:</strong> ${tx.telegram_id}</p>
+                            <p>📞 <strong>Telebirr Phone:</strong> ${tx.details}</p>
+                            <p>💵 <strong>Withdraw Amount:</strong> <span style="color:#ef4444; font-weight:bold;">ETB ${tx.amount}</span></p>
+                            <p>🏦 <strong>User's Total Balance:</strong> <span class="req-highlight">ETB ${currentTotalBalance.toFixed(2)}</span></p>
+                        `;
+                    }
+
+                    div.innerHTML += `
+                        <div class="admin-card">
+                            <h4 style="margin:0 0 10px 0; color:var(--primary-color); font-size:16px;">✏️ Pending ${tx.type.toUpperCase()} Request</h4>
+                            ${infoHTML}
+                            <button class="admin-btn" style="background:var(--success); color:black;" onclick="actionAdmin(${tx.id},'${tx.type}','${tx.telegram_id}',${tx.amount},'approved')"><i class="fa-solid fa-check"></i> Approve</button>
+                            <button class="admin-btn" style="background:var(--danger); color:white;" onclick="actionAdmin(${tx.id},'${tx.type}','${tx.telegram_id}',${tx.amount},'rejected')"><i class="fa-solid fa-xmark"></i> Reject</button>
+                        </div>`;
+                }
+            } else { div.innerHTML = "<p style='color:#94a3b8;'>ምንም የሚጠብቅ ጥያቄ የለም።</p>"; }
         }
 
         async function actionAdmin(txId, type, userId, amount, status) {
@@ -640,7 +655,7 @@
                 if(status === 'approved') { await supabaseClient.from('users').update({ locked_balance: u.locked_balance - amount }).eq('telegram_id', userId); }
                 else { await supabaseClient.from('users').update({ balance: u.balance + amount, locked_balance: u.locked_balance - amount }).eq('telegram_id', userId); }
             }
-            alert("ትዕዛዙ ተፈጽሟል!"); loadAdminPendingRequests(); loadDashboardWidgets(); initUser();
+            alert("ትዕዛዙ በተሳካ ሁኔታ ተፈጽሟል!"); loadAdminPendingRequests(); loadDashboardWidgets(); initUser();
         }
 
         async function searchUserInAdmin() {
