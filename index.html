@@ -46,6 +46,11 @@
         #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
         .toast { background: #334155; color: #fff; padding: 12px 20px; border-radius: 8px; font-size: 14px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); animation: slideIn 0.3s forwards; display: flex; align-items: center; gap: 10px; }
 
+        /* Referral Code Box */
+        .referral-box { background: var(--card-color); border: 2px dashed var(--primary-color); border-radius: 10px; padding: 15px; text-align: center; margin-bottom: 15px; }
+        .ref-code { font-size: 20px; font-weight: 700; color: #2c2512; letter-spacing: 2px; background: #fff; padding: 5px 15px; border-radius: 5px; display: inline-block; margin-top: 5px; }
+        .btn-invite { background: #2c2512; color: #fff; border: none; padding: 10px 20px; font-weight: bold; border-radius: 8px; margin-top: 10px; cursor: pointer; width: 100%; }
+
         /* Games Grid */
         .games-grid { display: grid; grid-template-columns: repeat(1, 1fr); gap: 12px; margin-top: 10px; }
         .game-card {
@@ -65,7 +70,7 @@
         .arada-btn-submit { width: 100%; padding: 15px; font-size: 16px; font-weight: 700; border-radius: 10px; border: none; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; }
         .btn-spinner { width: 18px; height: 18px; border: 3px solid rgba(255,255,255,0.3); border-top: 3px solid #fff; border-radius: 50%; animation: spin 0.8s linear infinite; display: none; }
 
-        /* Keno Game Popup Styles */
+        /* Keno Game Popup Styles (Original Unchanged) */
         .game-popup { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #0f172a; color: white; z-index: 2000; overflow-y: auto; padding-bottom: 40px; }
         .keno-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #1e293b; border-bottom: 2px solid var(--primary-color); }
         .timer-box { background: #ef4444; color: white; padding: 5px 12px; border-radius: 6px; font-weight: bold; }
@@ -78,10 +83,12 @@
         .balls-wrapper { display: flex; flex-wrap: wrap; gap: 6px; min-height: 40px; }
         .ball { width: 30px; height: 30px; background: var(--success); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 12px; font-weight: bold; }
 
-        /* Crash Game Graphic Area */
+        /* Crash Game Graphic & Splash Area */
         .crash-area { background: #070b19; height: 200px; margin: 15px; border-radius: 12px; position: relative; display: flex; justify-content: center; align-items: center; overflow: hidden; border: 1px solid #1e293b; }
         .crash-multiplier { font-size: 55px; font-weight: 800; color: #fff; z-index: 5; }
         .crash-plane { font-size: 35px; color: #f43f5e; position: absolute; bottom: 20px; left: 20px; transition: all 0.1s linear; }
+        .crash-splash { position: absolute; top:0; left:0; width:100%; height:100%; background:#111827; z-index:10; display:flex; flex-direction:column; justify-content:center; align-items:center; color:white; }
+        .crash-loader { border: 4px solid rgba(244,63,94,0.2); border-top: 4px solid #f43f5e; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 10px; }
 
         /* Leaderboard and List Styles */
         .list-item { display: flex; justify-content: space-between; padding: 15px; background-color: var(--card-color); margin-bottom: 8px; border-radius: 10px; }
@@ -104,11 +111,13 @@
 
     <div id="toast-container"></div>
 
+    <!-- Header -->
     <div class="header">
         <div class="logo">Z-Time Games <span style="font-size: 12px; color: var(--success);" id="top-vip-badge">Bronze</span></div>
         <button class="admin-btn" style="background:#dc2626; color:white; padding: 5px 10px;" onclick="openAdminPanel()"><i class="fa-solid fa-lock"></i> Admin</button>
     </div>
 
+    <!-- 1. GAMES TAB -->
     <div id="games" class="tab-content active">
         <div class="balance-card">
             <div>
@@ -117,6 +126,13 @@
                 <div style="font-size:11px; color:var(--danger);">Locked (ዊዝድሮው የተጠየቀ): ETB <span id="locked-balance-view">0.00</span></div>
             </div>
             <button class="btn-deposit" onclick="claimDailyBonus()">🎁 Daily Bonus</button>
+        </div>
+
+        <!-- 👥 Referral Invite Section -->
+        <div class="referral-box">
+            <span style="font-size:13px; font-weight:600; color:var(--text-muted);">Your Referral Code</span><br>
+            <span class="ref-code" id="user-referral-id">------</span>
+            <button class="btn-invite" onclick="inviteFriends()"><i class="fa-solid fa-user-plus"></i> Invite Friends</button>
         </div>
         
         <h3>Top Live Games</h3>
@@ -132,11 +148,13 @@
         </div>
     </div>
 
+    <!-- 2. LEADERBOARD TAB -->
     <div id="leaderboard-tab" class="tab-content">
         <h3>🏆 Top Winners Leaderboard</h3>
         <div id="leaderboard-list">የአሸናፊዎች ዝርዝር በመጫን ላይ...</div>
     </div>
 
+    <!-- 3. WALLET TAB -->
     <div id="wallet" class="tab-content">
         <div class="arada-tabs">
             <button id="tab-dep-btn" class="arada-tab-btn active" onclick="switchWalletForm('deposit')">Deposit</button>
@@ -160,6 +178,7 @@
         </div>
     </div>
 
+    <!-- 4. ADMIN PANEL TAB -->
     <div id="admin-panel" class="tab-content" style="background: #0f172a; color: white; min-height: 100vh;">
         <h2>🛠 Admin Management</h2>
         <div class="arada-form-group"><input type="text" id="admin-search-user" class="arada-input" placeholder="Search Telegram ID..." oninput="searchUserInAdmin()"></div>
@@ -175,6 +194,7 @@
         <div id="admin-pending-requests">ምንም ጥያቄ የለም።</div>
     </div>
 
+    <!-- ================= LIVE KENO POPUP ================= -->
     <div id="popup-keno" class="game-popup">
         <div class="keno-header">
             <div>
@@ -198,6 +218,7 @@
         </div>
     </div>
 
+    <!-- ================= LIVE CRASH (AVIATOR) POPUP ================= -->
     <div id="popup-crash" class="game-popup" style="background: #0b0f19;">
         <div class="keno-header" style="background: #111827; border-bottom: 2px solid #f43f5e;">
             <div>
@@ -206,7 +227,14 @@
             </div>
             <span style="font-size:30px; cursor:pointer;" onclick="closeCrashGame()">&times;</span>
         </div>
+
         <div class="crash-area">
+            <!-- 🚀 Splash Loader Screen -->
+            <div class="crash-splash" id="crash-splash-screen">
+                <div class="crash-loader"></div>
+                <div style="font-weight:bold; letter-spacing:1px; font-size:14px; color:#f43f5e;">CONNECTING TO SERVER Engine...</div>
+            </div>
+
             <div class="crash-multiplier" id="crash-mult-display">1.00x</div>
             <i class="fa-solid fa-plane crash-plane" id="crash-plane-obj"></i>
         </div>
@@ -215,6 +243,7 @@
         </div>
     </div>
 
+    <!-- Bottom Navigation Bar -->
     <div class="nav-bar">
         <div class="nav-item active" onclick="switchTab('games', this)"><i class="fa-solid fa-gamepad"></i>Games</div>
         <div class="nav-item" onclick="switchTab('leaderboard-tab', this)"><i class="fa-solid fa-trophy"></i>Leaderboard</div>
@@ -232,6 +261,23 @@
         let lockedBalance = 0;
         let isAdminAuthenticated = false;
 
+        // Web Audio Context & Sounds for Aviator
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(frequency, type, duration) {
+            try {
+                let osc = audioCtx.createOscillator();
+                let gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.value = frequency;
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                gain.gain.setValueAtTime(1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+                osc.stop(audioCtx.currentTime + duration);
+            } catch(e) { console.log("Audio play error", e); }
+        }
+
         // Game states
         let selectedNumbers = [];
         let kenoBetAmount = 5;
@@ -240,9 +286,9 @@
 
         let isCrashPopupOpen = false;
         let crashMultiplier = 1.00;
-        let crashState = "waiting"; // waiting, running, crashed
+        let crashState = "waiting"; 
         let hasUserBetCrash = false;
-        let targetCrashPoint = 2.5; // የደህንነት ማረጋገጫ፡ ይህ በሰርቨር ብቻ ነው የሚወሰነው
+        let targetCrashPoint = 2.5; 
         let crashTimer = null;
 
         async function initUser() {
@@ -251,6 +297,8 @@
                 currentUserId = tg.initDataUnsafe.user.id.toString();
                 currentUsername = tg.initDataUnsafe.user.username || "User_" + currentUserId;
             }
+
+            document.getElementById('user-referral-id').innerText = currentUserId;
 
             const { data } = await supabaseClient.from('users').select().eq('telegram_id', currentUserId).maybeSingle();
             if (!data) {
@@ -268,6 +316,15 @@
             startCrashEngineLoop();
         }
 
+        function inviteFriends() {
+            let copyText = currentUserId;
+            navigator.clipboard.writeText(copyText).then(() => {
+                showNotification("📋 የሪፈራል ኮድዎ ተገልብጧል! ለጓደኛዎ ይላኩ።");
+            }).catch(() => {
+                alert("ኮዱ፡ " + copyText);
+            });
+        }
+
         function updateBalanceUI() {
             document.querySelectorAll('.user-balance').forEach(el => el.innerText = userBalance.toFixed(2));
             document.getElementById('locked-balance-view').innerText = lockedBalance.toFixed(2);
@@ -283,10 +340,31 @@
         }
 
         function switchTab(tabId, element) {
+            if (tabId === 'admin-panel' && !isAdminAuthenticated) {
+                let p = prompt("የአድሚን ፓስወርድ ያስገቡ:");
+                if(p === "1234") { 
+                    isAdminAuthenticated = true; 
+                    loadAdminPendingRequests(); 
+                } else {
+                    alert("የተሳሳተ ፓስወርድ!");
+                    return;
+                }
+            }
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
             if (element) element.classList.add('active');
+        }
+
+        function openAdminPanel() {
+            let p = prompt("የአድሚን ፓስወርድ ያስገቡ:");
+            if(p === "1234") { 
+                isAdminAuthenticated = true; 
+                switchTab('admin-panel'); 
+                loadAdminPendingRequests(); 
+            } else {
+                alert("የተሳሳተ ፓስወርድ!");
+            }
         }
 
         function switchWalletForm(type) {
@@ -303,21 +381,19 @@
             }
         }
 
-        /* ================= WALLET PROCESSORS WITH LOADERS ================= */
+        /* ================= WALLET PROCESSORS ================= */
         async function submitDeposit() {
             let amt = parseFloat(document.getElementById('dep-amount').value);
             let tx = document.getElementById('dep-txid').value;
             if(!amt || !tx) return alert('እባክዎ መረጃ ያስገቡ!');
 
             document.getElementById('spinner-dep').style.display = 'block';
-
             const { error } = await supabaseClient.from('transactions').insert({
                 telegram_id: currentUserId, type: 'deposit', amount: amt, details: `TxID: ${tx}`, status: 'pending'
             });
-
             document.getElementById('spinner-dep').style.display = 'none';
             if(!error) {
-                showNotification("📥 የዴፖዚት ጥያቄዎ ተልኳል! በአድሚን እስኪረጋገጥ ይጠብቁ።");
+                showNotification("📥 የዴፖዚት ጥያቄዎ ተልኳል!");
                 document.getElementById('dep-amount').value = '';
                 document.getElementById('dep-txid').value = '';
             }
@@ -330,13 +406,10 @@
             if(amt > userBalance) return alert('በቂ ቀሪ ሂሳብ የሎትም!');
 
             document.getElementById('spinner-wit').style.display = 'block';
-
             let newMain = userBalance - amt;
             let newLocked = lockedBalance + amt;
 
-            // 🔐 ደህንነቱ የተጠበቀ መዋቅር፡ ብሩ በቀጥታ ሳይጠፋ ወደ Locked Balance ይዛወራል
             const { error } = await supabaseClient.from('users').update({ balance: newMain, locked_balance: newLocked }).eq('telegram_id', currentUserId);
-
             if(!error) {
                 await supabaseClient.from('transactions').insert({
                     telegram_id: currentUserId, type: 'withdraw', amount: amt, details: `Phone: ${phone}`, status: 'pending'
@@ -344,7 +417,7 @@
                 userBalance = newMain;
                 lockedBalance = newLocked;
                 updateBalanceUI();
-                showNotification("📤 የዊዝድሮው ጥያቄ ተመዝግቧል (ባላንስዎ በደህንነት ታግዷል)");
+                showNotification("📤 የዊዝድሮው ጥያቄ ተመዝግቧል");
             }
             document.getElementById('spinner-wit').style.display = 'none';
         }
@@ -368,7 +441,6 @@
                 let diffHours = (new Date() - lastClaim) / (1000 * 60 * 60);
                 if(diffHours < 24) return alert(`ቦነስ ለመውሰድ ${Math.ceil(24 - diffHours)} ሰዓት ይቀረዎታል!`);
             }
-
             await supabaseClient.from('users').update({ balance: userBalance + 5 }).eq('telegram_id', currentUserId);
             await supabaseClient.from('daily_bonus').insert({ telegram_id: currentUserId });
             userBalance += 5;
@@ -376,7 +448,7 @@
             showNotification("🎉 የዛሬ የ 5 ETB ስጦታዎን ተቀብለዋል!");
         }
 
-        /* ================= KENO SYSTEM (ያልተነካ ዲዛይን) ================= */
+        /* ================= KENO SYSTEM (ORIGINAL UNCHANGED) ================= */
         function openKenoGame() { isKenoPopupOpen = true; document.getElementById('popup-keno').style.display = 'block'; buildKenoGrid(); }
         function closeKenoGame() { isKenoPopupOpen = false; document.getElementById('popup-keno').style.display = 'none'; }
         
@@ -410,7 +482,6 @@
                 if(document.getElementById('timer-seconds')) document.getElementById('timer-seconds').innerText = countdown;
 
                 if(countdown === 0) {
-                    // Trigger Draw (ደህንነቱ የተጠበቀ አውቶማቲክ እጣ)
                     let drawn = [];
                     while(drawn.length < 20) {
                         let r = Math.floor(Math.random()*80)+1;
@@ -440,8 +511,15 @@
             }, 1000);
         }
 
-        /* ================= CRASH ENGINE (ANTI-CHEAT) ================= */
-        function openCrashGame() { isCrashPopupOpen = true; document.getElementById('popup-crash').style.display = 'block'; }
+        /* ================= CRASH ENGINE (SPLASH + SOUNDS) ================= */
+        function openCrashGame() { 
+            isCrashPopupOpen = true; 
+            document.getElementById('popup-crash').style.display = 'block'; 
+            document.getElementById('crash-splash-screen').style.display = 'flex';
+            setTimeout(() => {
+                document.getElementById('crash-splash-screen').style.display = 'none';
+            }, 2200); // 🚀 Splash screen auto hides after 2.2s
+        }
         function closeCrashGame() { isCrashPopupOpen = false; document.getElementById('popup-crash').style.display = 'none'; }
 
         function startCrashEngineLoop() {
@@ -455,7 +533,6 @@
                 }
                 setTimeout(() => {
                     crashState = "running";
-                    // 🔒 Anti-Cheat: የክራሽ ውጤት በቅድሚያ በሰርቨር ፎርሙላ ብቻ ይወሰናል
                     targetCrashPoint = (Math.random() < 0.15) ? 1.00 : (1.1 + Math.random() * 4);
                     if(isCrashPopupOpen && hasUserBetCrash) {
                         document.getElementById('btn-crash-action').innerText = "CASH OUT";
@@ -466,7 +543,10 @@
                         if(crashMultiplier >= targetCrashPoint) {
                             clearInterval(crashTimer);
                             crashState = "crashed";
+                            
+                            // 🔊 Crash/Flew Away Sound (የመውደቅ ድምጽ)
                             if(isCrashPopupOpen) {
+                                playSound(150, "sawtooth", 0.6); 
                                 document.getElementById('crash-mult-display').innerText = "💥 FLEW AWAY";
                                 document.getElementById('btn-crash-action').disabled = true;
                             }
@@ -498,18 +578,17 @@
                 userBalance += win;
                 supabaseClient.from('users').update({ balance: userBalance }).eq('telegram_id', currentUserId);
                 updateBalanceUI();
-                showNotification(`🎉 Crash ላይ ETB ${win.toFixed(2)} ፎርሽ አድርገዋል!`);
+                
+                // 🔊 Win / Cashout Sound (የማሸነፍ ድምጽ)
+                playSound(600, "sine", 0.4);
+                
+                showNotification(`🎉 Crash ላይ ETB ${win.toFixed(2)} አሸንፈዋል!`);
                 hasUserBetCrash = false;
                 document.getElementById('btn-crash-action').disabled = true;
             }
         }
 
-        /* ================= ADMIN FUNCTIONALITIES ================= */
-        function openAdminPanel() {
-            let p = prompt("የአድሚን ፓስወርድ ያስገቡ:");
-            if(p === "1234") { isAdminAuthenticated = true; switchTab('admin-panel'); loadAdminPendingRequests(); }
-        }
-
+        /* ================= ADMIN MANAGEMENT ================= */
         async function loadAdminPendingRequests() {
             const { data } = await supabaseClient.from('transactions').select('*').eq('status', 'pending');
             let div = document.getElementById('admin-pending-requests'); div.innerHTML = '';
@@ -531,7 +610,6 @@
 
             if(type === 'deposit' && status === 'approved') {
                 await supabaseClient.from('users').update({ balance: u.balance + amount }).eq('telegram_id', userId);
-                // 👥 ሪፈራል ካለው 5% በራስ-ሰር ይላካል
                 if(u.referred_by) {
                     const { data: r } = await supabaseClient.from('users').select('balance').eq('telegram_id', u.referred_by).single();
                     if(r) await supabaseClient.from('users').update({ balance: r.balance + (amount * 0.05) }).eq('telegram_id', u.referred_by);
