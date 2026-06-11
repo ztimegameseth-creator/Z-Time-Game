@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Z-Time Games</title>
+    <!-- Telegram & Supabase SDKs -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Google Font & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -198,6 +200,7 @@
 </head>
 <body>
 
+    <!-- Header -->
     <div class="header">
         <div class="logo">Z-Time Games</div>
         <div style="background: var(--card-color); padding: 5px 10px; border-radius: 20px; font-size: 12px;">
@@ -205,6 +208,7 @@
         </div>
     </div>
 
+    <!-- 1. SPORTS TAB -->
     <div id="sports" class="tab-content active">
         <div class="balance-card">
             <div>
@@ -217,6 +221,7 @@
         <p style="color: var(--text-muted);">በቅርቡ የሚለቀቅ... በስፖርት ጨዋታዎች ላይ መወራረድ በቅርቡ ይጀምራል።</p>
     </div>
 
+    <!-- 2. GAMES TAB -->
     <div id="games" class="tab-content">
         <div class="balance-card">
             <div>
@@ -236,6 +241,7 @@
         </div>
     </div>
 
+    <!-- 3. REFERRAL TAB -->
     <div id="invite" class="tab-content">
         <div class="form-group" style="text-align: center; padding: 30px 15px;">
             <i class="fa-solid fa-gift" style="font-size: 40px; color: var(--primary-color);"></i>
@@ -249,6 +255,7 @@
         </div>
     </div>
 
+    <!-- 4. WALLET TAB (ARADA BET STYLE) -->
     <div id="wallet" class="tab-content">
         <div class="arada-wallet-card">
             <div style="font-size: 13px; color: #aaa; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Main Balance</div>
@@ -261,9 +268,10 @@
             <button id="tab-wit-btn" class="arada-tab-btn" onclick="switchWalletForm('withdraw')">ብር ማውጣት (Withdraw)</button>
         </div>
 
+        <!-- Deposit Form Section -->
         <div id="arada-deposit-form">
             <div class="arada-instruction">
-                <strong>💡 የዴፖዚት መመሪያ፦</strong> እባክዎ በቴሌብር ቁጥራችን <code style="font-size:15px; background:var(--primary-color); padding:2px 6px; border-radius:4px; font-weight:bold; color:#000;">0912345678</code> ላይ ገንዘብ ካስተላለፉ በኋላ የትራንዛክሽን ቁጥሩን (TxID) ከታች ያስገቡ።
+                <strong>💡 የዴፖዚት መመሪያ፦</strong> እባክዎ በቴሌብር ቁጥራችን <code style="font-size:15px; background:var(--primary-color); padding:2px 6px; border-radius:4px; font-weight:bold; color:#000;">0954406366</code> ላይ ገንዘብ ካስተላለፉ በኋላ የትራንዛክሽን ቁጥሩን (TxID) ከታች ያስገቡ።
             </div>
             <div class="arada-form-group">
                 <label>የብር መጠን (ETB)</label>
@@ -282,6 +290,7 @@
             <button class="arada-btn-submit arada-btn-dep" onclick="submitDeposit()">ዴፖዚት ጠይቅ</button>
         </div>
 
+        <!-- Withdraw Form Section -->
         <div id="arada-withdraw-form" style="display: none;">
             <div class="arada-form-group">
                 <label>የብር መጠን (ETB)</label>
@@ -300,6 +309,7 @@
             <button class="arada-btn-submit arada-btn-wit" onclick="submitWithdraw()">ማውጫ ጠይቅ</button>
         </div>
 
+        <!-- Recent Activity Table -->
         <div class="tx-history-title"><i class="fa-solid fa-clock-rotate-left"></i> የቅርብ ጊዜ የገንዘብ እንቅስቃሴዎች</div>
         <table class="tx-table">
             <thead>
@@ -317,6 +327,7 @@
         </table>
     </div>
 
+    <!-- 5. PROFILE TAB -->
     <div id="profile" class="tab-content">
         <div class="form-group" style="display: flex; align-items: center; gap: 15px;">
             <div style="width: 50px; height: 50px; background: var(--primary-color); border-radius: 50%; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:20px;" id="avatar-letter">E</div>
@@ -329,13 +340,16 @@
         <div class="list-item"><span class="label">Payout Account</span><span class="value">Telebirr</span></div>
     </div>
 
+    <!-- ================= LIVE KENO POPUP SYSTEM ================= -->
     <div id="popup-keno" class="game-popup">
+        <!-- Splash Screen Cover -->
         <div id="keno-splash">
             <div class="spinner"></div>
             <div style="font-size: 18px; font-weight: bold; color: var(--primary-color);">LOADING LIVE KENO...</div>
             <div style="font-size: 12px; color: #aaa; margin-top: 5px;">Connecting to Live Betting Pool</div>
         </div>
 
+        <!-- Real Game Panel -->
         <div class="keno-header">
             <div>
                 <span style="font-size: 18px; font-weight: bold; color: var(--primary-color);">LIVE KENO</span>
@@ -348,8 +362,10 @@
         </div>
 
         <div class="keno-container">
+            <!-- 1 to 80 Grid Table -->
             <div class="keno-grid" id="keno-grid-table"></div>
 
+            <!-- Control Box (+ , - , clear, bet) -->
             <div class="keno-controls">
                 <div class="bet-row">
                     <div class="stepper">
@@ -363,11 +379,13 @@
                 <button id="btn-submit-keno" class="btn-action" onclick="placeKenoBet()">ውርርድ አስምር (PLACE BET)</button>
             </div>
 
+            <!-- Drawn Balls Live Feed -->
             <h4 style="margin: 10px 0 5px 0; color: var(--primary-color);"><i class="fa-solid fa-circle-dot"></i> Live Drawn Balls (20)</h4>
             <div class="drawn-balls-box">
                 <div class="balls-wrapper" id="live-drawn-balls-container"></div>
             </div>
 
+            <!-- Game History Panel -->
             <h4 style="margin: 15px 0 5px 0; color: #94a3b8;"><i class="fa-solid fa-history"></i> Recent Draws History</h4>
             <div class="history-box" id="keno-history-list">
                 <div style="color: #64748b; font-size:12px;">ምንም ያለፈ ታሪክ የለም።</div>
@@ -375,6 +393,7 @@
         </div>
     </div>
 
+    <!-- Bottom Navigation Bar -->
     <div class="nav-bar">
         <div class="nav-item active" onclick="switchTab('sports', this)"><i class="fa-solid fa-building-columns"></i>Sports</div>
         <div class="nav-item" onclick="switchTab('games', this)"><i class="fa-solid fa-gamepad"></i>Games</div>
@@ -387,6 +406,10 @@
         const SUPABASE_URL = "https://pfmpsnpiafhzeunbpemm.supabase.co";
         const SUPABASE_KEY = "sb_publishable_3JXvZ4QYWC-c7wjTPLk3RA_v18uEzJN";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // ⚠️ እባክዎ ከታች ባለው ቦታ የቴሌግራም ቦትዎን ትክክለኛ USERNAME ያስገቡ (ያለ @ ምልክት)
+        // ለምሳሌ ቦትዎ @ZTimeGamesBot ከሆነ "ZTimeGamesBot" ብለው ይፃፉት።
+        const BOT_USERNAME = "@ZT_Games_bot"; 
 
         let currentUserId = "8525980303"; 
         let currentUsername = "ebla2127";
@@ -410,7 +433,6 @@
                 currentUserId = tg.initDataUnsafe.user.id.toString();
                 currentUsername = tg.initDataUnsafe.user.username || "No_Name";
                 
-                // Referral Parameter ከሊንኩ ላይ ማንበብ
                 if(tg.initDataUnsafe.start_param) {
                     referredBy = tg.initDataUnsafe.start_param;
                 }
@@ -421,11 +443,9 @@
             document.getElementById('avatar-letter').innerText = currentUsername.charAt(0).toUpperCase();
             document.getElementById('member-id').innerText = currentUserId;
 
-            // የ Referral Link ማመንጫ ቁልፍ (የቦት ስምህን እዚህ መቀየር ትችላለህ)
-            let botUsername = "ZTimeGamesBot"; 
-            document.getElementById('ref-link-input').value = `https://t.me/${botUsername}?start=${currentUserId}`;
+            // Referral link ማመንጫ በትክክለኛው የቦት ስም ተስተካክሏል
+            document.getElementById('ref-link-input').value = `https://t.me/${BOT_USERNAME}?start=${currentUserId}`;
 
-            // ተጠቃሚውን መመዝገብ ወይም ማምጣት
             const { data, error } = await supabaseClient
                 .from('users')
                 .select()
@@ -433,7 +453,6 @@
                 .maybeSingle();
 
             if (!data) {
-                // አዲስ ተጠቃሚ ከሆነ እና በሪፈራል የመጣ ከሆነ
                 await supabaseClient.from('users').insert({
                     telegram_id: currentUserId,
                     username: currentUsername,
@@ -718,7 +737,7 @@
             histBox.insertBefore(item, histBox.firstChild);
         }
 
-        /* ================= TRANSACTION PROCESSES ================= */
+        /* ================= TRANSACTION PROCESSES (FIXED) ================= */
         async function loadTransactionHistory() {
             const { data } = await supabaseClient
                 .from('transactions')
@@ -750,11 +769,12 @@
             let tx = document.getElementById('dep-txid').value;
             if(!amt || !tx) return alert('እባክዎ ሁሉንም ሳጥኖች ይሙሉ!');
             
+            // 🛠 ማስተካከያ፡ መረጃው ወደ 'details' ኮለም እንዲገባ ተደርጓል
             const { error } = await supabaseClient.from('transactions').insert({ 
                 telegram_id: currentUserId, 
                 type: 'deposit',
                 amount: amt,
-                txid: tx,
+                details: `TxID: ${tx}`,
                 status: 'pending'
             });
 
@@ -764,7 +784,7 @@
                 document.getElementById('dep-txid').value = '';
                 loadTransactionHistory();
             } else {
-                alert('ችግር አጋጥሟል! እባክዎ እንደገና ይሞክሩ።');
+                alert('ችግር አጋጥሟል! እባክዎ ዳታቤዝዎ ላይ "details" ኮለም መኖሩን ያረጋግጡ።');
             }
         }
 
@@ -776,11 +796,12 @@
 
             await syncBalance(userBalance - amt);
 
+            // 🛠 ማስተካከያ፡ መረጃው ወደ 'details' ኮለም እንዲገባ ተደርጓል
             const { error } = await supabaseClient.from('transactions').insert({
                 telegram_id: currentUserId,
                 type: 'withdraw',
                 amount: amt,
-                phone: phone,
+                details: `Phone: ${phone}`,
                 status: 'pending'
             });
 
