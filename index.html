@@ -271,7 +271,7 @@
         <!-- Deposit Form Section -->
         <div id="arada-deposit-form">
             <div class="arada-instruction">
-                <strong>💡 የዴፖዚት መመሪያ፦</strong> እባክዎ በቴሌብር ቁጥራችን <code style="font-size:15px; background:var(--primary-color); padding:2px 6px; border-radius:4px; font-weight:bold; color:#000;">0954406366</code> ላይ ገንዘብ ካስተላለፉ በኋላ የትራንዛክሽን ቁጥሩን (TxID) ከታች ያስገቡ።
+                <strong>💡 የዴፖዚት መመሪያ፦</strong> እባክዎ በቴሌብር ቁጥራችን <code style="font-size:15px; background:var(--primary-color); padding:2px 6px; border-radius:4px; font-weight:bold; color:#000;">0912345678</code> ላይ ገንዘብ ካስተላለፉ በኋላ የትራንዛክሽን ቁጥሩን (TxID) ከታች ያስገቡ።
             </div>
             <div class="arada-form-group">
                 <label>የብር መጠን (ETB)</label>
@@ -407,9 +407,8 @@
         const SUPABASE_KEY = "sb_publishable_3JXvZ4QYWC-c7wjTPLk3RA_v18uEzJN";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // ⚠️ እባክዎ ከታች ባለው ቦታ የቴሌግራም ቦትዎን ትክክለኛ USERNAME ያስገቡ (ያለ @ ምልክት)
-        // ለምሳሌ ቦትዎ @ZTimeGamesBot ከሆነ "ZTimeGamesBot" ብለው ይፃፉት።
-        const BOT_USERNAME = "@ZT_Games_bot"; 
+        // 🎯 የቦትህ ዩዘርኔም እዚህ ጋር በቋሚነት ተስተካክሏል
+        const BOT_USERNAME = "ZT_Games_bot"; 
 
         let currentUserId = "8525980303"; 
         let currentUsername = "ebla2127";
@@ -443,7 +442,7 @@
             document.getElementById('avatar-letter').innerText = currentUsername.charAt(0).toUpperCase();
             document.getElementById('member-id').innerText = currentUserId;
 
-            // Referral link ማመንጫ በትክክለኛው የቦት ስም ተስተካክሏል
+            // Referral Link ማመንጫው አሁን በትክክል ይሰራል
             document.getElementById('ref-link-input').value = `https://t.me/${BOT_USERNAME}?start=${currentUserId}`;
 
             const { data, error } = await supabaseClient
@@ -769,7 +768,7 @@
             let tx = document.getElementById('dep-txid').value;
             if(!amt || !tx) return alert('እባክዎ ሁሉንም ሳጥኖች ይሙሉ!');
             
-            // 🛠 ማስተካከያ፡ መረጃው ወደ 'details' ኮለም እንዲገባ ተደርጓል
+            // 🛠 መረጃው ወደ 'details' ኮለም እንዲገባ ተደርጓል
             const { error } = await supabaseClient.from('transactions').insert({ 
                 telegram_id: currentUserId, 
                 type: 'deposit',
@@ -796,7 +795,7 @@
 
             await syncBalance(userBalance - amt);
 
-            // 🛠 ማስተካከያ፡ መረጃው ወደ 'details' ኮለም እንዲገባ ተደርጓል
+            // 🛠 መረጃው ወደ 'details' ኮለም እንዲገባ ተደርጓል
             const { error } = await supabaseClient.from('transactions').insert({
                 telegram_id: currentUserId,
                 type: 'withdraw',
